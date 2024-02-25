@@ -78,4 +78,10 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    // sports
+    public function sports()
+    {
+        return $this->belongsToMany(Sport::class, 'user_sport', 'user_id', 'sport_id');
+    }
 }

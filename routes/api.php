@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\SportController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
@@ -20,6 +21,13 @@ Route::group(['middleware' => 'api'], function () {
     Route::controller(AuthController::class)->group(function () {
         Route::post('/register','register');
         Route::post('/logout','login');
+    });
+});
+
+Route::group(['middleware' => ['auth:api']], function () {
+
+    Route::controller(SportController::class)->group(function () {
+        Route::get('/sports', 'getSports');
     });
 });
 

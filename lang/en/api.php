@@ -7,4 +7,7 @@ return [
         'logout' => 'User Logout successfully',
         'failed_logout' => 'User Logout failed'
     ],
+    'sports' => [
+        'sports' => 'Sports',
+    ]
 ];
