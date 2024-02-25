@@ -31,4 +31,9 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    's3' => [
+        'url' => env('AWS_S3_URL','https://bokit-app.s3.eu-north-1.amazonaws.com'),
+        'bucket' => env('AWS_BUCKET','bokit-app'),
+    ],
+
 ];
