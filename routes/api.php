@@ -36,6 +36,8 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::post('/cities', 'getCitiesByCountry');
         Route::post('/areas', 'getAreasByCity');
     });
+
+    Route::get('delete/account', [AuthController::class, 'deleteAccount']);
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

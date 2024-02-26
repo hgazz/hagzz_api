@@ -85,4 +85,11 @@ class AuthController extends Controller
             return $this->apiResponse(400, trans('api.auth.failed_logout'));
         }
     }
+
+    public function deleteAccount()
+    {
+        $user = User::where('id', auth()->id())->first();
+        $user->delete();
+        return $this->apiResponse(200, trans('api.auth.account_was_deleted'));
+    }
 }

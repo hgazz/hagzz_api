@@ -7,6 +7,7 @@ return [
         'logout' => 'User Logout successfully',
         'failed_logout' => 'User Logout failed',
         'registration_failed' => 'User Registration failed',
+        'account_was_deleted' => 'User Account Was Deleted'
     ],
     'sports' => [
         'sports' => 'Sports',
