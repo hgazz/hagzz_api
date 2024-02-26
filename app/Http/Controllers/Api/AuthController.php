@@ -76,57 +76,6 @@ class AuthController extends Controller
         }
     }
 
-    public function login(Request $request)
-    {
-        $otp = 1234;
-        $validation = Validator::make($request->all(),[
-            'phone'=> 'required|exists:users,phone',
-        ]);
-        if ($validation->fails()){
-            return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
-        }
-
-        $user =User::where('phone',$request->phone)->first();
-
-        auth()->loginUsingId($user->id);
-
-        $token = JWTAuth::fromUser($user);
-        return $this->apiResponse(200, 'login success', null, [
-            'otp'=>$otp,
-            'token'=>$token
-        ]);
-
-    }
-
-    public function resendCode(Request $request)
-    {
-        $otp = 1234;
-        $validation = Validator::make($request->all(),[
-            'phone'=> 'required|exists:users,phone',
-        ]);
-        if ($validation->fails()){
-            return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
-        }
-
-        return $this->apiResponse(200, 'resend code', null, [
-            "the otp"=>$otp
-        ]);
-    }
-
-    public function verifyCode(Request $request)
-    {
-        $otp = 1234;
-        $validation = Validator::make($request->all(),[
-            'otp'=>'required|numeric|min:4',
-        ]);
-        if ($validation->fails()){
-            return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
-        }
-        if ($request->otp != $otp){
-            return  $this->apiResponse(400 , 'failed the otp');
-        }
-        return  $this->apiResponse(200 ,'the verify code successfully');
-    }
     public function logout(Request $request)
     {
         try {
@@ -137,5 +86,10 @@ class AuthController extends Controller
         }
     }
 
-
+    public function deleteAccount()
+    {
+        $user = User::where('id', auth()->id())->first();
+        $user->delete();
+        return $this->apiResponse(200, trans('api.auth.account_was_deleted'));
+    }
 }
