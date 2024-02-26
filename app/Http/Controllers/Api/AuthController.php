@@ -9,6 +9,7 @@ use App\Http\Traits\FileUploader;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -30,6 +31,10 @@ class AuthController extends Controller
             'country_id' => 'required|exists:countries,id',
             'city_id' => 'required|exists:cities,id',
             'area_id' => 'required|exists:areas,id',
+            'sport_id' => 'required|exists:sports,id',
+            'sport_id.*' => 'required|array',
+            'level' => 'required|in:beginner,intermediate,advanced',
+            'level.*' => 'required|array|in:beginner,intermediate,advanced',
         ]);
 
         if($validation->fails())
@@ -37,23 +42,38 @@ class AuthController extends Controller
             return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
         }
 
-        $imageName = $request->hasFile('image') ? $this->upload($request->file('image'), User::PATH) : null;
-        $user = User::create([
-            'name' => $request->name,
-            'phone' => $request->phone,
-            'gender' => $request->gender,
-            'birth_date' => $request->birth_date,
-            'image' => $imageName,
-            'country_id' => $request->country_id,
-            'city_id' => $request->city_id,
-            'area_id' => $request->area_id,
-        ]);
+        try {
+            DB::beginTransaction();
 
-        auth()->loginUsingId($user->id);
+            $imageName = $request->hasFile('image') ? $this->upload($request->file('image'), User::PATH) : null;
 
-       // $token = JWTAuth::fromUser($user);
-        $token = '1234';
-        return $this->apiResponse(200, trans('api.auth.success_register'), null, new UserResource($user, $token));
+            $user = User::create([
+                'name' => $request->name,
+                'phone' => $request->phone,
+                'gender' => $request->gender,
+                'birth_date' => $request->birth_date,
+                'image' => $imageName,
+                'country_id' => $request->country_id,
+                'city_id' => $request->city_id,
+                'area_id' => $request->area_id,
+            ]);
+
+            $user->sports()->attach($request->sport_id, ['level' => $request->level]);
+
+            auth()->loginUsingId($user->id);
+
+            $token = JWTAuth::fromUser($user);
+
+            DB::commit();
+
+            return $this->apiResponse(200, trans('api.auth.success_register'), null, new UserResource($user, $token));
+        } catch (\Exception $e) {
+            // An error occurred, rollback the transaction
+            DB::rollback();
+
+            // Handle the error, log it, or return an error response
+            return $this->apiResponse(500, trans('api.auth.registration_failed'), $e->getMessage());
+        }
     }
 
     public function logout(Request $request)
