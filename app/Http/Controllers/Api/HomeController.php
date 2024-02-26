@@ -37,7 +37,7 @@ class HomeController extends Controller
     public function training()
     {
         $data = [];
-        $trainings = Training::where('academy_id',auth()->id())->get();
+        $trainings = Training::get();
         foreach ($trainings as $training){
           $data[] =  Sport::where('academy_id',$training->id)->get();
         }
