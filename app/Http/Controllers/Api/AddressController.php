@@ -17,7 +17,7 @@ class AddressController extends Controller
     public function getCountries()
     {
         $countries = Country::get();
-        return $this->apiResponse(200, trans('api.countries.countries'), $countries);
+        return $this->apiResponse(200, trans('api.countries.countries'), null, $countries);
     }
 
 
@@ -34,7 +34,7 @@ class AddressController extends Controller
         }
 
         $cities = City::where('country_id', $request->country_id)->get(['id', 'name']);
-        return $this->apiResponse(200, trans('api.countries.cities'), $cities);
+        return $this->apiResponse(200, trans('api.countries.cities'), null, $cities);
     }
 
     public function getAreasByCity(Request $request)
@@ -48,6 +48,6 @@ class AddressController extends Controller
             return $this->apiResponse(400, trans('api.validation_error'), $validator->errors());
         }
         $areas = Area::where('city_id', $request->city_id)->get(['id', 'name']);
-        return $this->apiResponse(200, trans('api.countries.areas'), $areas);
+        return $this->apiResponse(200, trans('api.countries.areas'), null, $areas);
     }
 }
