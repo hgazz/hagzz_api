@@ -7,7 +7,12 @@ return [
         'logout' => 'User Logout successfully',
         'failed_logout' => 'User Logout failed',
         'registration_failed' => 'User Registration failed',
-        'account_was_deleted' => 'User Account Was Deleted'
+        'account_was_deleted' => 'User Account Was Deleted',
+        'login success'=>'login success',
+        'resend code'=>'resend code',
+        'failed the otp'=>'failed the otp',
+        'the verify code successfully'=>'the verify code successfully',
+        ''
     ],
     'sports' => [
         'sports' => 'Sports',
