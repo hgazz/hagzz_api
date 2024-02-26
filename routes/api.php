@@ -38,6 +38,7 @@ Route::group(['middleware' => ['auth:api']], function () {
     });
 
     Route::get('delete/account', [AuthController::class, 'deleteAccount']);
+    Route::post('update/user-profile', [AuthController::class, 'updateProfile']);
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
