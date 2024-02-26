@@ -23,6 +23,7 @@ class AddressController extends Controller
 
     public function getCitiesByCountry(Request $request)
     {
+
         $validator = Validator::make($request->all(), [
             'country_id' => 'required|exists:countries,id'
         ]);
