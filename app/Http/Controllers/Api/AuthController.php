@@ -123,8 +123,9 @@ class AuthController extends Controller
             return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
         }
         if ($request->otp != $otp){
-
+            return  $this->apiResponse(400 , 'failed the otp');
         }
+        return  $this->apiResponse(200 ,'the verify code successfully');
     }
     public function logout(Request $request)
     {
