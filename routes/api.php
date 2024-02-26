@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AddressController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\SportController;
 use Illuminate\Http\Request;
@@ -31,6 +32,12 @@ Route::group(['middleware' => ['auth:api']], function () {
 
     Route::controller(SportController::class)->group(function () {
         Route::get('/sports', 'getSports');
+    });
+
+    Route::controller(AddressController::class)->group(function () {
+        Route::get('/countries', 'getCountries');
+        Route::post('/cities', 'getCitiesByCountry');
+        Route::post('/areas', 'getAreasByCity');
     });
 });
 

@@ -10,5 +10,10 @@ return [
     ],
     'sports' => [
         'sports' => 'Sports',
+    ],
+    'countries' => [
+        'countries' => 'Countries',
+        'areas' => 'Areas',
+        'cities' => 'Cities',
     ]
 ];
