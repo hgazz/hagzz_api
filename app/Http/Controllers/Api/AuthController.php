@@ -143,4 +143,45 @@ class AuthController extends Controller
         $user->delete();
         return $this->apiResponse(200, trans('api.auth.account_was_deleted'));
     }
+
+    public function updateProfile(Request $request)
+    {
+        $validation = Validator::make($request->all(),[
+            'name' => 'nullable',
+            'phone' => 'nullable|unique:users,phone',
+            'gender' => 'nullable|in:male,female',
+            'birth_date' => 'nullable|date',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'country_id' => 'nullable|exists:countries,id',
+            'city_id' => 'nullable|exists:cities,id',
+            'area_id' => 'nullable|exists:areas,id',
+        ]);
+
+        if($validation->fails())
+        {
+            return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
+        }
+
+        $user = User::findOrFail(auth()->id());
+        $imageName = $this->getImageName($request, $user);
+        $user->update([
+            'name' => $request->name ?? $user->name,
+            'phone' => $request->phone ?? $user->phone,
+            'gender' => $request->gender ?? $user->gender,
+            'birth_date' => $request->birth_date ?? $user->birth_date,
+            'image' => $imageName,
+            'country_id' => $request->country_id ?? $user->country_id,
+            'city_id' => $request->city_id ?? $user->city_id,
+            'area_id' => $request->area_id ?? $user->area_id,
+        ]);
+
+        return $this->apiResponse(200, trans('api.auth.profile_updated'), null, $user);
+    }
+
+    protected function getImageName(Request $request, User $user)
+    {
+        if ($request->hasFile('image')){
+          return !is_null($user->getRawOriginal('image')) ? $this->upload($request->image, User::PATH, User::PATH . DIRECTORY_SEPARATOR . $user->getRawOriginal('image')) : $this->upload($request->image, User::PATH);
+        }
+    }
 }
