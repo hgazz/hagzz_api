@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AddressController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\SportController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -39,6 +40,14 @@ Route::group(['middleware' => ['auth:api']], function () {
 
     Route::get('delete/account', [AuthController::class, 'deleteAccount']);
     Route::post('update/user-profile', [AuthController::class, 'updateProfile']);
+
+    Route::controller(HomeController::class)->group(function (){
+        Route::get('/banners','banners');
+        Route::get('/sport','sports');
+        Route::get('/academy','academy');
+        Route::get('/training','training');
+    });
+
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
