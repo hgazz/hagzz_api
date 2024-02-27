@@ -13,9 +13,6 @@ class ProfileController extends Controller
     public function getProfile($user)
     {
         $user = User::find($user);
-        if (is_null($user)){
-            return $this->apiResponse(400,trans('api.auth.User Not Found'));
-        }
         return $this->apiResponse(200 , trans('api.auth.User Profile'),null,[
             'profile'=>$user,
             'sports'=>$user->sports
