@@ -9,6 +9,7 @@ class Academies extends Model
 {
     use HasFactory;
 
+    const PATH ='images/academies';
     protected $fillable = [
         'first_name',
         'last_name',
@@ -25,10 +26,21 @@ class Academies extends Model
         'percentage',
         'national_id_number',
         'address',
+        'logo',
         'contract_number',
         'account_manager',
         'is_registered'
     ];
+
+    public function getFullNameAttribute()
+    {
+        return $this->first_name . ' ' . $this->last_name;
+    }
+
+    public function getImageAttribute($value)
+    {
+        return config('services.s3.url') . DIRECTORY_SEPARATOR . self::PATH . DIRECTORY_SEPARATOR . $value;
+    }
 
     public function sports()
     {

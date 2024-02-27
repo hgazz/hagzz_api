@@ -30,7 +30,7 @@ Route::group(['middleware' => 'api'], function () {
     });
 });
 
-Route::group(['middleware' => ['api']], function () {
+Route::group(['middleware' => 'auth:api'], function () {
 
     Route::controller(SportController::class)->group(function () {
         Route::get('/sports', 'getSports');

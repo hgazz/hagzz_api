@@ -10,6 +10,7 @@ class UserSport extends Model
     use HasFactory;
     protected $table = 'user_sport';
     protected $fillable  = ['user_id','sport_id','level'];
+    protected $hidden = ['created_at','updated_at'];
 
     public function user()
     {

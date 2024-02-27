@@ -18,8 +18,8 @@ class HomeController extends Controller
     {
         $data = [];
         $banners = Banner::limit(6)->inRandomOrder()->get();
-        $sports = UserSport::with('sport')->where('user_id',auth()->id())->get();
-        $academies = Academies::with('sports')->get();
+        $sports = UserSport::with('sport:id,name,icon,level')->where('user_id',auth()->id())->get();
+        $academies = Academies::with('sports')->get(['id','first_name','last_name','logo']);
         $trainings = Training::get();
         foreach ($trainings as $training){
             $data[] =  Sport::where('academy_id',$training->academy_id)->get();

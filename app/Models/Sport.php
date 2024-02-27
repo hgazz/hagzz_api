@@ -12,6 +12,7 @@ class Sport extends Model
 
     const PATH = 'images/sports';
     public $translatable = ['name'];
+    protected $hidden = ['created_at', 'updated_at'];
 
     protected $fillable = [
         'name',
