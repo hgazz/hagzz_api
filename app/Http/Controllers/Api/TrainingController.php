@@ -21,6 +21,7 @@ class TrainingController extends Controller
 
         $cityId = $user->city_id;
         $areaId = $user->area_id;
+        $today = now()->toDateString();
 
         $trainings = Training::whereHas('classes.academy.addresses', function ($query) use ($cityId, $areaId) {
             // Filter academies that are in the specified city or area
@@ -29,7 +30,7 @@ class TrainingController extends Controller
         })->whereHas('classes.academy.sports', function ($query) use ($userSports) {
             // Filter academies that offer sports the user is interested in
             $query->whereIn('sports.id', $userSports);
-        })->get();
+        })->whereDate('start_date', $today)->get();
 
         return $this->apiResponse(200, trans('api.home.All Training'), null, $trainings);
     }
