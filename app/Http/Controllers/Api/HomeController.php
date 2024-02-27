@@ -14,36 +14,23 @@ use Illuminate\Http\Request;
 class HomeController extends Controller
 {
     use apiResponse;
-    public function banners()
-    {
-        $banners = Banner::limit(6)->inRandomOrder()->get();
-        return $this->apiResponse(200,trans('api.home.Banners In Home Page'),null,array('banners' => $banners));
-    }
-
-    public function sports()
-    {
-        $sports = UserSport::with('sport')->where('user_id',auth()->id())->get();
-        return $this->apiResponse(200 ,trans('api.home.sport with user authenticated'),null,array('sports' => $sports));
-    }
-
-    public function academy()
-    {
-        $academies = Academies::with('sports')->get();
-        return $this->apiResponse(200 ,trans('api.home.All Academy and Sports'),null,[
-            'academies' => $academies,
-        ]);
-    }
-
-    public function training()
+    public function home()
     {
         $data = [];
+        $banners = Banner::limit(6)->inRandomOrder()->get();
+        $sports = UserSport::with('sport')->where('user_id',auth()->id())->get();
+        $academies = Academies::with('sports')->get();
         $trainings = Training::get();
         foreach ($trainings as $training){
-          $data[] =  Sport::where('academy_id',$training->id)->get();
+            $data[] =  Sport::where('academy_id',$training->academy_id)->get();
         }
-        return $this->apiResponse(200 ,trans('api.home.All Training and Sports'),null,[
-            'trainings'=> $trainings,
-            'sports' => $data,
+        return $this->apiResponse(200,trans('api.home.All Data in Home Screen'),null,[
+            'banners'=> $banners,
+            'sports related user authenticated'=> $sports,
+            'academies and related sports'=> $academies,
+            'training' => $training,
+            'sports related Training'=> $data,
         ]);
     }
+
 }
