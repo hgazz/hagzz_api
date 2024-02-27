@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AddressController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\HomeController;
+use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\SportController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -51,11 +52,10 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::get('/training','training');
     });
 
+    Route::get('/profile', [ProfileController::class,'getProfile']);
+
 });
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
 
 //Route::group(
 //    [
