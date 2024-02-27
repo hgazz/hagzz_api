@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\SportController;
+use App\Http\Controllers\Api\TrainingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
@@ -47,6 +48,10 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     Route::controller(HomeController::class)->group(function (){
         Route::get('/home','home');
+    });
+
+    Route::controller(TrainingController::class)->group(function (){
+        Route::get('/explore','index');
     });
 
     Route::get('/profile/{user}', [ProfileController::class,'getProfile']);

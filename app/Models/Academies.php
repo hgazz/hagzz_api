@@ -46,4 +46,9 @@ class Academies extends Model
     {
         return $this->belongsToMany(Sport::class,'academy_sport','academy_id','sport_id');
     }
+
+    public function addresses()
+    {
+        return $this->hasMany(Address::class, 'academy_id');
+    }
 }

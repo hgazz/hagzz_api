@@ -26,5 +26,6 @@ return [
     ],
     'home'=>[
        'All Data in Home Screen'=>'All Data in Home Screen',
+       'All Training' => 'All Training',
     ]
 ];
