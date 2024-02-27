@@ -23,6 +23,9 @@ Route::group(['middleware' => 'api'], function () {
     Route::controller(AuthController::class)->group(function () {
         Route::post('/register','register');
         Route::post('/logout','login');
+        Route::post('/login','login');
+        Route::post('/resendCode','resendCode');
+        Route::post('/verifyCode','verifyCode');
     });
 });
 
