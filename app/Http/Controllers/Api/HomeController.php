@@ -8,6 +8,7 @@ use App\Models\Academies;
 use App\Models\Banner;
 use App\Models\Sport;
 use App\Models\Training;
+use App\Models\User;
 use App\Models\UserSport;
 use Illuminate\Http\Request;
 
@@ -16,21 +17,31 @@ class HomeController extends Controller
     use apiResponse;
     public function home()
     {
-        $data = [];
         $banners = Banner::limit(6)->inRandomOrder()->get();
         $sports = UserSport::with('sport:id,name,icon,level')->where('user_id',auth()->id())->get();
-        $academies = Academies::with('sports')->get(['id','first_name','last_name','logo']);
-        $trainings = Training::get();
-        foreach ($trainings as $training){
-            $data[] =  Sport::where('academy_id',$training->academy_id)->get();
-        }
+       $academies = Academies::with('sports')->get(['id','first_name','last_name','logo']);
+       $trainings = $this->getUserTraining();
         return $this->apiResponse(200,trans('api.home.All Data in Home Screen'),null,[
             'banners'=> $banners,
             'sports related user authenticated'=> $sports,
             'academies and related sports'=> $academies,
-            'training' => $training,
-            'sports related Training'=> $data,
+            'training' => $trainings,
         ]);
+    }
+
+    protected function getUserTraining()
+    {
+
+        // Retrieve user's sports IDs
+        $userSportsIds = auth()->user()->sports()->pluck('sport_id')->toArray();
+
+        // Retrieve trainings related to those sports
+        $trainings = Training::whereHas('classes', function ($query) use ($userSportsIds) {
+            $query->whereHas('sport', function ($query) use ($userSportsIds) {
+                $query->whereIn('id', $userSportsIds);
+            });
+        })->get();
+        return $trainings;
     }
 
 }

@@ -46,7 +46,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('update/user-profile', [AuthController::class, 'updateProfile']);
 
     Route::controller(HomeController::class)->group(function (){
-        Route::get('/homeScreen','home');
+        Route::get('/home','home');
     });
 
     Route::get('/profile/{user}', [ProfileController::class,'getProfile']);

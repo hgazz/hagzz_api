@@ -35,4 +35,9 @@ class Training extends Model
     {
         return config('services.s3.url') . DIRECTORY_SEPARATOR . self::PATH . DIRECTORY_SEPARATOR . $value;
     }
+
+    public function classes()
+    {
+        return $this->belongsToMany(TClass::class ,'training_classes','training_id','class_id');
+    }
 }

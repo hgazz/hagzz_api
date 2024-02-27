@@ -44,6 +44,6 @@ class Academies extends Model
 
     public function sports()
     {
-        return $this->hasMany(Sport::class,'academy_id');
+        return $this->belongsToMany(Sport::class,'academy_sport','academy_id','sport_id');
     }
 }
