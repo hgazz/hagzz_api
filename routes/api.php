@@ -52,7 +52,7 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::get('/training','training');
     });
 
-    Route::get('/profile', [ProfileController::class,'getProfile']);
+    Route::get('/profile/{user}', [ProfileController::class,'getProfile']);
 
 });
 
