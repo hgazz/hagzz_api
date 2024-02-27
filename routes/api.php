@@ -31,17 +31,17 @@ Route::group(['middleware' => 'api'], function () {
     });
 });
 
+Route::controller(SportController::class)->group(function () {
+    Route::get('/sports', 'getSports');
+});
+
+Route::controller(AddressController::class)->group(function () {
+    Route::get('/countries', 'getCountries');
+    Route::post('/cities', 'getCitiesByCountry');
+    Route::post('/areas', 'getAreasByCity');
+});
+
 Route::group(['middleware' => 'auth:api'], function () {
-
-    Route::controller(SportController::class)->group(function () {
-        Route::get('/sports', 'getSports');
-    });
-
-    Route::controller(AddressController::class)->group(function () {
-        Route::get('/countries', 'getCountries');
-        Route::post('/cities', 'getCitiesByCountry');
-        Route::post('/areas', 'getAreasByCity');
-    });
 
     Route::get('delete/account', [AuthController::class, 'deleteAccount']);
     Route::post('update/user-profile', [AuthController::class, 'updateProfile']);
