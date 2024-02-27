@@ -25,9 +25,6 @@ return [
         'cities' => 'Cities',
     ],
     'home'=>[
-        'Banners In Home Page'=>'Banners In Home Page',
-        'sport with user authenticated'=>'sport with user authenticated',
-        'All Academy and Sports'=>'All Academy and Sports',
-        'All Training and Sports'=>'All Training and Sports',
+       'All Data in Home Screen'=>'All Data in Home Screen',
     ]
 ];

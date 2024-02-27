@@ -46,10 +46,7 @@ Route::group(['middleware' => ['api']], function () {
     Route::post('update/user-profile', [AuthController::class, 'updateProfile']);
 
     Route::controller(HomeController::class)->group(function (){
-        Route::get('/banners','banners');
-        Route::get('/sport','sports');
-        Route::get('/academy','academy');
-        Route::get('/training','training');
+        Route::get('/homeScreen','home');
     });
 
     Route::get('/profile/{user}', [ProfileController::class,'getProfile']);
