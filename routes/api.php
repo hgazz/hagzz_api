@@ -24,7 +24,6 @@ use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 Route::group(['middleware' => 'api'], function () {
     Route::controller(AuthController::class)->group(function () {
         Route::post('/register','register');
-        Route::post('/logout','login');
         Route::post('/login','login');
         Route::post('/resendCode','resendCode');
         Route::post('/verifyCode','verifyCode');
@@ -55,6 +54,8 @@ Route::group(['middleware' => 'auth:api'], function () {
     });
 
     Route::get('/profile/{id}', [ProfileController::class,'getProfile']);
+
+    Route::post('/logout',[AuthController::class,'logout']);
 
 });
 
