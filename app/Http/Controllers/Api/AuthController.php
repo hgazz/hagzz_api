@@ -153,7 +153,7 @@ class AuthController extends Controller
     {
         $validation = Validator::make($request->all(),[
             'name' => 'nullable',
-            'phone' => 'nullable|unique:users,phone',
+            'phone' => 'nullable|unique:users,phone,'. auth()->user(),
             'gender' => 'nullable|in:male,female',
             'birth_date' => 'nullable|date',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
