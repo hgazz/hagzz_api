@@ -51,7 +51,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     });
 
     Route::controller(TrainingController::class)->group(function (){
-        Route::get('/explore','index');
+        Route::post('/explore','index');
     });
 
     Route::get('/profile/{user}', [ProfileController::class,'getProfile']);

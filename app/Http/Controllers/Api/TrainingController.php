@@ -14,24 +14,50 @@ class TrainingController extends Controller
     // api get all training depend on user sports and in same city or area
     // training has relationship with classes and classes belongsTo academy and academy hasMany address
     // and address belongsTo city and belongsTo area
-    public function index()
+    public function index(Request $request)
     {
         $user = auth()->user();
-        $userSports = $user->sports()->pluck('sport_id')->toArray(); // Get user's interested sports IDs
 
-        $cityId = $user->city_id;
-        $areaId = $user->area_id;
-        $today = now()->toDateString();
+        // Consider eager loading related models if they are used in the response
+        $query = Training::query()
+            ->with('classes.academy.addresses'); // Adjust based on actual usage
 
-        $trainings = Training::whereHas('classes.academy.addresses', function ($query) use ($cityId, $areaId) {
-            // Filter academies that are in the specified city or area
-            $query->where('city_id', $cityId)
-                ->orWhere('area_id', $areaId);
-        })->whereHas('classes.academy.sports', function ($query) use ($userSports) {
-            // Filter academies that offer sports the user is interested in
-            $query->whereIn('sports.id', $userSports);
-        })->whereDate('start_date', $today)->get();
+        // Filter by "near me"
+        $query->when($request->filled('near_me'), function ($q) use ($user) {
+            $q->whereHas('classes.academy.addresses', function ($q) use ($user) {
+                $q->where('city_id', $user->city_id)
+                    ->where('area_id', $user->area_id);
+            });
+        });
+
+        // Filter by sport
+        $query->when($request->filled('sport_id'), function ($q) use ($request) {
+            $q->whereHas('classes.sport', function ($q) use ($request) {
+                $q->where('id', $request->input('sport_id'));
+            });
+        });
+
+        // Filter by search term
+        $query->when($request->filled('search'), function ($q) use ($request) {
+            $q->whereHas('classes.academy', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->input('search') . '%');
+            });
+        });
+
+        // Filter by start soon
+        $query->when($request->filled('start_soon'), function ($q) {
+            $q->whereHas('classes', function ($q) {
+                $q->where('start_date', '>=', now()->toDateString());
+            });
+        });
+
+        $trainings = $query->get();
 
         return $this->apiResponse(200, trans('api.home.All Training'), null, $trainings);
     }
+
+
+
+
+
 }
