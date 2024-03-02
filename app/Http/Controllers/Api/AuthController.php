@@ -84,14 +84,15 @@ class AuthController extends Controller
             return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
         }
 
-        $user =User::where('phone',$request->phone)->first();
+        $user = User::where('phone',$request->phone)->first();
 
         auth()->loginUsingId($user->id);
 
         $token = JWTAuth::fromUser($user);
         return $this->apiResponse(200, trans('api.auth.login success'), null, [
             'otp'=>$otp,
-            'token'=>$token
+            'token'=>$token,
+            'user'=> $user
         ]);
 
     }

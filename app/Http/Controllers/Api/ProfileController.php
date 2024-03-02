@@ -10,9 +10,9 @@ use Illuminate\Http\Request;
 class ProfileController extends Controller
 {
     use apiResponse;
-    public function getProfile($user)
+    public function getProfile($id)
     {
-        $user = User::find($user);
+        $user = User::find($id);
         return $this->apiResponse(200 , trans('api.auth.User Profile'),null,[
             'profile'=>$user,
             'sports'=>$user->sports
