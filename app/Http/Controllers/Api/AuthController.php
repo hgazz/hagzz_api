@@ -29,10 +29,10 @@ class AuthController extends Controller
             'country_id' => 'required|exists:countries,id',
             'city_id' => 'required|exists:cities,id',
             'area_id' => 'required|exists:areas,id',
-            'sport_id' => 'required|exists:sports,id',
-            'sport_id.*' => 'required|array',
-            'level' => 'required|in:beginner,intermediate,advanced',
-            'level.*' => 'required|array|in:beginner,intermediate,advanced',
+            'sport_id' => 'required|array',
+            'sport_id.*' => 'exists:sports,id',
+            'level' => 'required|array',
+            'level.*' => 'in:beginner,intermediate,advanced',
         ]);
 
         if($validation->fails())
@@ -56,7 +56,13 @@ class AuthController extends Controller
                 'area_id' => $request->area_id,
             ]);
 
-            $user->sports()->attach($request->sport_id, ['level' => $request->level]);
+            $sportsWithLevels = [];
+            foreach ($request->sport_id as $index => $sportId) {
+                if (isset($request->level[$index])) {
+                    $sportsWithLevels[$sportId] = ['level' => $request->level[$index]];
+                }
+            }
+            $user->sports()->attach($sportsWithLevels);
 
             auth()->loginUsingId($user->id);
 
