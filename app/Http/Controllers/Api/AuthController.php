@@ -8,6 +8,7 @@ use App\Http\Traits\apiResponse;
 use App\Http\Traits\FileUploader;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -132,14 +133,10 @@ class AuthController extends Controller
         }
         return  $this->apiResponse(200 ,trans('api.auth.the verify code successfully'));
     }
-    public function logout(Request $request)
+    public function logout()
     {
-        try {
-            JWTAuth::invalidate($request->input('token'));
+            Auth::logout();
             return $this->apiResponse(200, trans('api.auth.logout'));
-        } catch (JWTException $e) {
-            return $this->apiResponse(400, trans('api.auth.failed_logout'));
-        }
     }
 
     public function deleteAccount()
