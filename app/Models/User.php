@@ -69,7 +69,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function getImageAttribute($value)
     {
-        return config('services.s3.url') . DIRECTORY_SEPARATOR . self::PATH . DIRECTORY_SEPARATOR . $value;
+        return is_null($value) ? null : config('services.s3.url') . DIRECTORY_SEPARATOR . self::PATH . DIRECTORY_SEPARATOR . $value;
     }
 
     public function getJWTIdentifier()
