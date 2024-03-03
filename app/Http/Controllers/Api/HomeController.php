@@ -18,7 +18,7 @@ class HomeController extends Controller
     public function home()
     {
         $banners = Banner::limit(6)->inRandomOrder()->get();
-        $sports = UserSport::with('sport:id,name,icon,level')->where('user_id',auth()->id())->get();
+        $sports = UserSport::with('sport:id,name,icon')->where('user_id',auth()->id())->get();
        $academies = Academies::with('sports')->get(['id','first_name','last_name','logo']);
        $trainings = $this->getUserTraining();
         return $this->apiResponse(200,trans('api.home.All Data in Home Screen'),null,[
