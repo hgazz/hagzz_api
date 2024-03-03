@@ -18,8 +18,6 @@ class Sport extends Model
         'name',
         'icon',
         'status',
-        'level',
-        'academy_id',
     ];
 
     public function getIconAttribute($value)
@@ -37,9 +35,5 @@ class Sport extends Model
     public function scopeActive($query)
     {
         return $query->whereStatus('active');
-    }
-    public function academy()
-    {
-        return $this->belongsTo(Academies::class,'academy_id');
     }
 }
