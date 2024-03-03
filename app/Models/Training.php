@@ -23,6 +23,7 @@ class Training extends Model
         'end_time',
         'description',
         'coach_id',
+        'academy_id',
     ];
 
     public function coach()
