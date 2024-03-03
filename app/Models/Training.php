@@ -16,10 +16,14 @@ class Training extends Model
     protected $fillable = [
         'name',
         'image',
+        'price',
         'start_date',
         'end_date',
+        'start_time',
+        'end_time',
         'description',
         'coach_id',
+        'academy_id',
     ];
 
     public function coach()
