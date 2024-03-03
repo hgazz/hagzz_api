@@ -32,6 +32,7 @@ class Academies extends Model
         'is_registered'
     ];
 
+    protected $hidden = ['created_at', 'updated_at'];
     public function getFullNameAttribute()
     {
         return $this->first_name . ' ' . $this->last_name;
