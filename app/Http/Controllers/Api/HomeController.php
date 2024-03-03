@@ -19,8 +19,8 @@ class HomeController extends Controller
     {
         $banners = Banner::limit(6)->inRandomOrder()->get();
         $sports = UserSport::with('sport:id,name,icon')->where('user_id',auth()->id())->get();
-       $academies = Academies::with('sports')->get(['id','first_name','last_name','logo']);
-       $trainings = $this->getUserTraining();
+        $academies = Academies::with('sports')->get(['id','first_name','last_name','logo']);
+        $trainings = $this->getUserTraining();
         return $this->apiResponse(200,trans('api.home.All Data in Home Screen'),null,[
             'banners'=> $banners,
             'sports related user authenticated'=> $sports,
@@ -31,12 +31,11 @@ class HomeController extends Controller
 
     protected function getUserTraining()
     {
-
         // Retrieve user's sports IDs
         $userSportsIds = auth()->user()->sports()->pluck('sport_id')->toArray();
 
         // Retrieve trainings related to those sports
-        return Training::whereHas('classes', function ($query) use ($userSportsIds) {
+        return Training::with(['academy:id,commercial_name,logo,address'])->whereHas('classes', function ($query) use ($userSportsIds) {
             $query->whereHas('sport', function ($query) use ($userSportsIds) {
                 $query->whereIn('id', $userSportsIds);
             });
