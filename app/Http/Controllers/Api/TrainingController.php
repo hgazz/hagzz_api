@@ -56,6 +56,11 @@ class TrainingController extends Controller
         return $this->apiResponse(200, trans('api.home.All Training'), null, $trainings);
     }
 
+    public function trainingDetails($id)
+    {
+        $training = Training::with(['coach:id,name,description,image,active','academy'])->findOrfail($id);
+        return $this->apiResponse(200, trans('api.home.Training Detail'), null, $training);
+    }
 
 
 

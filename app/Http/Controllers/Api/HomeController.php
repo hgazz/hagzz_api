@@ -39,7 +39,7 @@ class HomeController extends Controller
             $query->whereHas('sport', function ($query) use ($userSportsIds) {
                 $query->whereIn('id', $userSportsIds);
             });
-        })->get();
+        })->withCount('classes')->get();
     }
 
 }
