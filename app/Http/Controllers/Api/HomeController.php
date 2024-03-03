@@ -36,12 +36,11 @@ class HomeController extends Controller
         $userSportsIds = auth()->user()->sports()->pluck('sport_id')->toArray();
 
         // Retrieve trainings related to those sports
-        $trainings = Training::whereHas('classes', function ($query) use ($userSportsIds) {
+        return Training::whereHas('classes', function ($query) use ($userSportsIds) {
             $query->whereHas('sport', function ($query) use ($userSportsIds) {
                 $query->whereIn('id', $userSportsIds);
             });
         })->get();
-        return $trainings;
     }
 
 }
