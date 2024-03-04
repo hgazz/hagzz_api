@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AcademyController;
 use App\Http\Controllers\Api\AddressController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CoachController;
+use App\Http\Controllers\Api\FavoriteController;
 use App\Http\Controllers\Api\FollowController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\JoinController;
@@ -77,6 +78,11 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('join/{id}','join');
     });
 
+    Route::controller(FavoriteController::class)->group(function (){
+        Route::get('favorites','favoriteList');
+        Route::post('addFavorite','addFavorite');
+        Route::post('deleteFavorite/{id}','deleteFavorite');
+    });
     Route::get('/profile/{id}', [ProfileController::class,'getProfile']);
 
     Route::post('/logout',[AuthController::class,'logout']);
