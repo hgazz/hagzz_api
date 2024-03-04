@@ -58,7 +58,9 @@ class TrainingController extends Controller
 
     public function trainingDetails($id)
     {
-        $training = Training::with(['coach:id,name,description,image,active','academy'])->find($id);
+        $training = Training::with(['coach:id,name,description,image,active','academy:id,logo,commercial_name'])
+            ->withCount(['classes', 'coach'])
+            ->find($id);
         if(!$training)
         {
             return $this->apiResponse(400, trans('api.validation_error'), trans('api.home.training_not_found'),);
