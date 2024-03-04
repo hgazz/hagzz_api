@@ -12,7 +12,7 @@ class Coach extends Model
     const PATH = 'images/coaches';
     public function getImageAttribute($value)
     {
-        return config('services.s3.url') . DIRECTORY_SEPARATOR . self::PATH . DIRECTORY_SEPARATOR . $value;
+        return is_null($value) ? null : config('services.s3.url') . DIRECTORY_SEPARATOR . self::PATH . DIRECTORY_SEPARATOR . $value;
     }
     protected $fillable = ['name', 'description', 'image', 'active', 'academy_id'];
     protected $hidden = ['created_at', 'updated_at'];

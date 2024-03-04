@@ -2,19 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Translatable\HasTranslations;
 
 class Academies extends Model
 {
-    use HasFactory;
+    use HasTranslations;
 
+    public $translatable = ['commercial_name'];
     const PATH ='images/academies';
     protected $fillable = [
-        'first_name',
-        'last_name',
-        'full_name_arabic',
         'email',
         'phone',
         'password',
@@ -34,14 +32,10 @@ class Academies extends Model
     ];
 
     protected $hidden = ['created_at', 'updated_at'];
-    public function getFullNameAttribute()
-    {
-        return $this->first_name . ' ' . $this->last_name;
-    }
 
     public function getLogoAttribute($value)
     {
-        return config('services.s3.url') . DIRECTORY_SEPARATOR . self::PATH . DIRECTORY_SEPARATOR . $value;
+        return is_null($value) ? null : config('services.s3.url') . DIRECTORY_SEPARATOR . self::PATH . DIRECTORY_SEPARATOR . $value;
     }
 
     public function sports()

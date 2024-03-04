@@ -19,9 +19,12 @@ class Training extends Model
         'price',
         'start_date',
         'end_date',
-        'start_time',
-        'end_time',
         'description',
+        'max_players',
+        'level',
+        'gender',
+        'age_group',
+        'address_id',
         'coach_id',
         'academy_id',
     ];
@@ -42,6 +45,6 @@ class Training extends Model
 
     public function classes()
     {
-        return $this->belongsToMany(TClass::class ,'training_classes','training_id','class_id');
+        return $this->hasMany(TClass::class ,'training_id');
     }
 }
