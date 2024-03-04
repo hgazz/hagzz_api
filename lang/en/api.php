@@ -42,5 +42,9 @@ return [
         'joined as training successfully'=>'joined as training successfully',
         'join by user'=>'join by user',
         'join not found'=>'join not found',
+        'favorite already exists'=>'favorite already exists',
+        'add favorite successfully'=>'add favorite successfully',
+        'Favorite not found'=>'Favorite not found',
+        'delete favorite successfully'=>'delete favorite successfully',
     ]
 ];
