@@ -37,5 +37,10 @@ return [
         'unfollow' => 'Unfollow',
         'following_success' => 'Following Success',
         'there_is_no_follow' => 'There Is No Follow',
+        'join list'=>'join list',
+        'join training already exists'=>'join training already exists',
+        'joined as training successfully'=>'joined as training successfully',
+        'join by user'=>'join by user',
+        'join not found'=>'join not found',
     ]
 ];
