@@ -19,7 +19,7 @@ class AcademyController extends Controller
 
         $academy = Academies::with(['trainings','galleries', 'sports'])
             ->select(['id', 'phone', 'commercial_name', 'logo', 'address', 'facebook', 'instagram'])
-            ->withCount(['follows','classes','coaches', 'trainings', 'addresses'])
+            //->withCount(['follows','classes','coaches', 'trainings', 'addresses'])
             ->find($id);
 
         if(!$academy)
