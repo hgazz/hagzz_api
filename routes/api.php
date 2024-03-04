@@ -3,7 +3,8 @@
 use App\Http\Controllers\Api\AcademyController;
 use App\Http\Controllers\Api\AddressController;
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\coachController;
+use App\Http\Controllers\Api\CoachController;
+use App\Http\Controllers\Api\FollowController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\SportController;
@@ -60,8 +61,14 @@ Route::group(['middleware' => 'auth:api'], function () {
        Route::get('academyDetails/{id}','academyDetails');
     });
 
-    Route::controller(coachController::class)->group(function (){
+    Route::controller(CoachController::class)->group(function (){
         Route::get('coachProfile/{id}','coachProfile');
+    });
+
+    Route::controller(FollowController::class)->group(function (){
+        Route::get('follows','followList');
+        Route::post('follow/addFollow','addFollow');
+        Route::post('follow/deleteFollow','deleteFollow');
     });
 
     Route::get('/profile/{id}', [ProfileController::class,'getProfile']);

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Academies extends Model
 {
@@ -38,7 +39,7 @@ class Academies extends Model
         return $this->first_name . ' ' . $this->last_name;
     }
 
-    public function getImageAttribute($value)
+    public function getLogoAttribute($value)
     {
         return config('services.s3.url') . DIRECTORY_SEPARATOR . self::PATH . DIRECTORY_SEPARATOR . $value;
     }
@@ -51,5 +52,30 @@ class Academies extends Model
     public function addresses()
     {
         return $this->hasMany(Address::class, 'academy_id');
+    }
+
+    public function follows()
+    {
+        return $this->morphMany(Follow::class, 'followable');
+    }
+
+    public function classes()
+    {
+        return $this->hasMany(TClass::class, 'academy_id');
+    }
+
+    public function coaches(): HasMany
+    {
+        return $this->hasMany(Coach::class, 'academy_id');
+    }
+
+    public function trainings(): HasMany
+    {
+        return $this->hasMany(Training::class, 'academy_id');
+    }
+
+    public function galleries(): HasMany
+    {
+        return $this->hasMany(Gallery::class, 'academy_id');
     }
 }
