@@ -26,10 +26,10 @@ class AcademyController extends Controller
         {
             return $this->apiResponse(400, trans('api.validation_error'), trans('api.home.academy_not_found'));
         }
-        $isFollowing = $this->checkAcademyFollow($academy);
+       // $isFollowing = $this->checkAcademyFollow($academy);
         $data = [
             'academy' => $academy,
-            'isFollowing' => $isFollowing,
+        //    'isFollowing' => $isFollowing,
         ];
         return $this->apiResponse(200,trans('api.home.Academy Details'),null, $data);
     }
