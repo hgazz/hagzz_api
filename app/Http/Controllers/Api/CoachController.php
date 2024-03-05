@@ -12,7 +12,12 @@ class CoachController extends Controller
     use apiResponse;
     public function coachProfile($id)
     {
-        $coach = Coach::with(['academy:id,phone,commercial_name,logo,address,facebook,instagram'])
+        $coach = Coach::with([
+            'academy:id,phone,commercial_name,logo,address,facebook,instagram',
+            'trainings' => [
+                'academy:id,logo,commercial_name',
+            ]
+        ])
             ->find($id);
         if(!$coach)
         {
@@ -23,7 +28,7 @@ class CoachController extends Controller
         $data =  [
             'is_follow' => $isFollow,
             'coach' => $coach,
-            'classes_count' => 0, // will be displayed later
+            'classes_count' => $coach->trainings->count(), // will be displayed later
             'users_count' => 0, // will be displayed later
         ];
        return $this->apiResponse(200,trans('api.home.coach profile'),null, $data);

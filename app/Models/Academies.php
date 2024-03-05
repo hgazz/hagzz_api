@@ -33,6 +33,8 @@ class Academies extends Model
 
     protected $hidden = ['created_at', 'updated_at'];
 
+    protected $withCount = ['follows'];
+
     public function getLogoAttribute($value)
     {
         return is_null($value) ? null : config('services.s3.url') . DIRECTORY_SEPARATOR . self::PATH . DIRECTORY_SEPARATOR . $value;
