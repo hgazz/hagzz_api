@@ -67,7 +67,7 @@ class Academies extends Model
 
     public function trainings(): HasMany
     {
-        return $this->hasMany(Training::class, 'academy_id');
+        return $this->hasMany(Training::class, 'academy_id')->withCount(['classes', 'joins']);
     }
 
     public function galleries(): HasMany

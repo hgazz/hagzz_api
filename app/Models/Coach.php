@@ -24,7 +24,7 @@ class Coach extends Model
 
     public function trainings()
     {
-        return $this->hasMany(Training::class, 'coach_id');
+        return $this->hasMany(Training::class, 'coach_id')->withCount(['classes', 'joins']);
     }
 
     public function follows()
