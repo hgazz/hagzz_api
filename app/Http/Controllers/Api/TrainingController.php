@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\apiResponse;
 use App\Models\Training;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class TrainingController extends Controller
@@ -39,7 +40,7 @@ class TrainingController extends Controller
 
         // Filter by search term
         $query->when($request->filled('search'), function ($q) use ($request) {
-            $q->whereHas('classes.academy', function ($q) use ($request) {
+            $q->whereHas('classes.training', function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->input('search') . '%');
             });
         });
@@ -48,6 +49,16 @@ class TrainingController extends Controller
         $query->when($request->filled('start_soon'), function ($q) {
             $q->whereHas('classes', function ($q) {
                 $q->where('start_date', '>=', now()->toDateString());
+            });
+        });
+        $query->when($request->filled('user_date'), function ($q) use ($request) {
+            $user_date = $request->input('user_date');
+
+            $user_date = Carbon::createFromFormat('Y-m-d', $user_date);
+
+            $q->whereHas('classes', function ($q) use ($user_date) {
+                $q->whereDate('start_date', '<=', $user_date)
+                    ->whereDate('end_date', '>=', $user_date);
             });
         });
 
