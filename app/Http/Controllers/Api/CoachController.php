@@ -16,12 +16,11 @@ class CoachController extends Controller
     public function coachProfile($id)
     {
 
-
-
         $coach = Coach::with([
             'academy:id,phone,commercial_name,logo,address,facebook,instagram',
             'trainings' => [
                 'academy:id,logo,commercial_name',
+                'address'
             ]
         ])
             ->find($id);
