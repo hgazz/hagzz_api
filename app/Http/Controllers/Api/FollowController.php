@@ -23,9 +23,44 @@ class FollowController extends Controller
     public function followList()
     {
         $user = auth()->user();
-        $follows = $user->follows;
-        return $this->apiResponse(200, trans('api.home.following_list'), null, $follows);
+
+        // Eager load the followable relationship
+        $follows = $user->follows()->get();
+
+        // Transform the follows collection to customize the response
+        $customFollows = $follows->map(function ($follow) {
+            // Directly access the followable entity here
+            $followable = $follow->followable_type;
+            // Initialize an empty array to avoid undefined variable issues
+            $data = [];
+
+            if ($followable == Coach::class) {
+                    // Customize the data for a Coach
+                    $data = [
+                        'id' => $follow->followable_id,
+                        'type' => 'Coach',
+                        'data' => Coach::find($follow->followable_id),
+                    ];
+                } elseif ($followable == Academies::class) {
+                    // Customize the data for an Academy
+                    $data = [
+                        'id' => $follow->followable_id,
+                        'type' => 'Academy',
+                        'data' => Academies::find($follow->followable_id),
+                    ];
+            }
+
+            return $data;
+        });
+
+        // Filter out any empty arrays that may have been added for followables that don't exist or don't match the conditions
+        $filteredCustomFollows = $customFollows->filter(function ($value) {
+            return !empty($value);
+        });
+
+        return $this->apiResponse(200, trans('api.home.following_list'), null, $filteredCustomFollows);
     }
+
 
     public function addFollow(Request $request)
     {
