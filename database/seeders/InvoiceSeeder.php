@@ -14,8 +14,8 @@ class InvoiceSeeder extends Seeder
     public function run(): void
     {
         DB::table('invoices')->insert([
-            'user_id'=>1,
-            'training_id'=>1,
+            'user_id'=>3,
+            'training_id'=>2,
             'order_number'=>23,
             'status'=>'paid',
             'amount'=>123
