@@ -72,6 +72,7 @@ class TrainingController extends Controller
         $training = Training::with([
             'coach:id,name,description,image,active',
             'academy:id,logo,commercial_name',
+            'classes'
         ])
             ->withCount(['classes', 'coach'])
             ->find($id);
