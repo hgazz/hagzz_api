@@ -25,52 +25,51 @@ class TrainingController extends Controller
             ->with('classes.academy.addresses'); // Adjust based on actual usage
 
         // Filter by "near me"
-        $query->when($request->filled('near_me'), function ($q) use ($user) {
-            $q->whereHas('classes.academy.addresses', function ($q) use ($user) {
-                $q->where('city_id', $user->city_id)
-                    ->where('area_id', $user->area_id);
-            });
-        });
+//        $query->when($request->filled('near_me'), function ($q) use ($user) {
+//            $q->whereHas('classes.academy.addresses', function ($q) use ($user) {
+//                $q->where('city_id', $user->city_id)
+//                    ->where('area_id', $user->area_id);
+//            });
+//        });
 
         // Filter by sport
-        $query->when($request->filled('sport_id'), function ($q) use ($request) {
-            $q->whereHas('classes.sport', function ($q) use ($request) {
-                $q->where('id', $request->input('sport_id'));
-            });
-        });
+//        $query->when($request->filled('sport_id'), function ($q) use ($request) {
+//            $q->whereHas('classes.sport', function ($q) use ($request) {
+//                $q->where('id', $request->input('sport_id'));
+//            });
+//        });
 
         // Filter by search term
         $query->when($request->filled('search'), function ($q) use ($request) {
-            $q->whereHas('classes.training', function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->input('search') . '%');
-            });
+            return $q->where('name->en', 'like', '%' . $request->search . '%')
+                ->orWhere('name->ar', 'like', '%' . $request->search . '%');
         });
 
         // Filter by start soon
-        $query->when($request->filled('start_soon'), function ($q) {
-            $q->whereHas('classes', function ($q) {
-                $q->where('start_date', '>=', now()->toDateString());
-            });
-        });
+//        $query->when($request->filled('start_soon'), function ($q) {
+//            $q->whereHas('classes', function ($q) {
+//                $q->where('start_date', '>=', now()->toDateString());
+//            });
+//        });
+//
 
-
-        $query->when($request->filled('start_date') && $request->filled('end_date'), function ($q) use ($request) {
-            $start_date = $request->input('start_date');
-            $end_date = $request->input('end_date');
-
-            $start_date = Carbon::createFromFormat('Y-m-d', $start_date);
-            $end_date = Carbon::createFromFormat('Y-m-d', $end_date);
-
-            $q->whereHas('classes', function ($q) use ($start_date, $end_date) {
-                $q->whereDate('start_date', '>=', $start_date)
-                    ->whereDate('end_date', '<=', $end_date);
-            });
-        });
+//        $query->when($request->filled('start_date') && $request->filled('end_date'), function ($q) use ($request) {
+//            $start_date = $request->input('start_date');
+//            $end_date = $request->input('end_date');
+//
+//            $start_date = Carbon::createFromFormat('Y-m-d', $start_date);
+//            $end_date = Carbon::createFromFormat('Y-m-d', $end_date);
+//
+//            $q->whereHas('classes', function ($q) use ($start_date, $end_date) {
+//                $q->whereDate('start_date', '>=', $start_date)
+//                    ->whereDate('end_date', '<=', $end_date);
+//            });
+//        });
 
 
         $trainings = $query->with(['academy:id,logo,commercial_name',
             'address:id,address',
-            'academy.follows'])->withCount(['classes', 'joins'])->get();
+            'academy.follows'])->get();
 
         return $this->apiResponse(200, trans('api.home.All Training'), null, $trainings);
     }
