@@ -36,7 +36,9 @@ class Training extends Model
 
     public function academy()
     {
-        return $this->belongsTo(Academies::class,'academy_id');
+        return $this->belongsTo(Academies::class,'academy_id')
+            ->with('sports:id,name')
+            ->withCount(['follows']);
     }
     public function getImageAttribute($value)
     {
@@ -50,11 +52,12 @@ class Training extends Model
 
     public function joins()
     {
-        return $this->hasMany(Join::class, 'training_id');
+        return $this->hasMany(Join::class, 'training_id')->withCount('joins');
     }
 
     public function address()
     {
         return $this->belongsTo(Address::class, 'address_id');
     }
+
 }

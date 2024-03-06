@@ -81,7 +81,8 @@ class TrainingController extends Controller
             'coach:id,name,description,image,active',
             'academy:id,logo,commercial_name',
             'address:id,address,longitude,latitude',
-            'classes'
+            'classes',
+            'joins.user:id,image',
         ])
             ->withCount(['classes', 'coach', 'joins'])
             ->find($id);
@@ -92,7 +93,7 @@ class TrainingController extends Controller
         $is_joined = Join::whereBelongsTo(auth()->user(), 'user')->whereBelongsTo($training, 'training')->exists();
         $data = [
             'training' => $training,
-            'academy_follow' => $training->academy->follows->count(),
+         //   'academy_follow' => $training->academy->follows->count(),
             'is_joined' => $is_joined
         ];
         return $this->apiResponse(200, trans('api.home.Training Detail'), null, $data);
