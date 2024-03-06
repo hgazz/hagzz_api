@@ -43,6 +43,7 @@ Route::controller(AddressController::class)->group(function () {
     Route::get('/countries', 'getCountries');
     Route::post('/cities', 'getCitiesByCountry');
     Route::post('/areas', 'getAreasByCity');
+    Route::get('/all-area', 'getAreas');
 });
 
 Route::group(['middleware' => 'auth:api'], function () {
