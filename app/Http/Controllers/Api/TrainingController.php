@@ -52,16 +52,21 @@ class TrainingController extends Controller
                 $q->where('start_date', '>=', now()->toDateString());
             });
         });
-        $query->when($request->filled('user_date'), function ($q) use ($request) {
-            $user_date = $request->input('user_date');
 
-            $user_date = Carbon::createFromFormat('Y-m-d', $user_date);
 
-            $q->whereHas('classes', function ($q) use ($user_date) {
-                $q->whereDate('start_date', '<=', $user_date)
-                    ->whereDate('end_date', '>=', $user_date);
+        $query->when($request->filled('start_date') && $request->filled('end_date'), function ($q) use ($request) {
+            $start_date = $request->input('start_date');
+            $end_date = $request->input('end_date');
+
+            $start_date = Carbon::createFromFormat('Y-m-d', $start_date);
+            $end_date = Carbon::createFromFormat('Y-m-d', $end_date);
+
+            $q->whereHas('classes', function ($q) use ($start_date, $end_date) {
+                $q->whereDate('start_date', '>=', $start_date)
+                    ->whereDate('end_date', '<=', $end_date);
             });
         });
+
 
         $trainings = $query->get();
 
