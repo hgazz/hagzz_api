@@ -13,6 +13,8 @@ class TClass extends Model
     public $translatable = ['title', 'subtitle'];
     protected $guarded = [];
 
+    protected $hidden = ['created_at', 'updated_at'];
+
     public function academy()
     {
         return $this->belongsTo(Academies::class, 'academy_id', 'id');

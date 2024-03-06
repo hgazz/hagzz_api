@@ -23,8 +23,9 @@ class TrainingController extends Controller
         });
 
         $request->whenHas('search', function ($search) use($query){
-            $query->where('name->en', 'like', '%' . $search . '%')
-                ->orWhere('name->ar', 'like', '%' . $search . '%');
+            $lowercaseSearchTerm = '%' . mb_strtolower($search) . '%'; // Always lowercase
+            $query->whereRaw('LOWER(JSON_UNQUOTE(name->"$.en")) LIKE ?', [$lowercaseSearchTerm])
+                ->orWhereRaw('LOWER(JSON_UNQUOTE(name->"$.ar")) LIKE ?', [$lowercaseSearchTerm]);
         });
 
         $request->whenHas('start_soon', function () use($query){
@@ -59,13 +60,14 @@ class TrainingController extends Controller
     public function trainingDetails($id)
     {
         $training = Training::with([
-            'coach:id,name,description,image,active',
-            'academy:id,logo,commercial_name',
+            'coach:id,name,image',
+            'academy:id,commercial_name',
             'address:id,address,longitude,latitude',
             'classes',
             'joins.user:id,image',
         ])
             ->withCount(['classes', 'coach', 'joins'])
+            ->select('id','name','price','start_date','end_date','max_players','level','gender','age_group','academy_id','address_id','sport_id')
             ->find($id);
         if(!$training)
         {
