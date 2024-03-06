@@ -35,11 +35,12 @@ class HomeController extends Controller
         $userSportsIds = auth()->user()->sports()->pluck('sport_id')->toArray();
 
         // Retrieve trainings related to those sports
-        return Training::with(['academy:id,commercial_name,logo,address'])->whereHas('classes', function ($query) use ($userSportsIds) {
+        return Training::with(['academy:id,commercial_name,logo,address',
+            'address:id,address', 'academy.follows'])->whereHas('classes', function ($query) use ($userSportsIds) {
             $query->whereHas('sport', function ($query) use ($userSportsIds) {
                 $query->whereIn('id', $userSportsIds);
             });
-        })->withCount('classes')->get();
+        })->withCount(['classes', 'joins'])->get();
     }
 
 }

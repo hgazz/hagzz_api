@@ -19,7 +19,8 @@ class AcademyController extends Controller
 
         $academy = Academies::with(['trainings' => [
             'academy:id,logo,commercial_name',
-            'academy.follows'
+            'academy.follows',
+            'address'
         ],'galleries', 'sports'])
             ->select(['id', 'phone', 'commercial_name', 'logo', 'address', 'facebook', 'instagram'])
             ->withCount(['follows','classes','coaches', 'trainings', 'addresses'])

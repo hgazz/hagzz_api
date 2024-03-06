@@ -16,12 +16,11 @@ class CoachController extends Controller
     public function coachProfile($id)
     {
 
-
-
         $coach = Coach::with([
             'academy:id,phone,commercial_name,logo,address,facebook,instagram',
             'trainings' => [
                 'academy:id,logo,commercial_name',
+                'address:id,address'
             ]
         ])
             ->find($id);
@@ -37,8 +36,6 @@ class CoachController extends Controller
         $data =  [
             'is_follow' => $isFollow,
             'coach' => $coach,
-            'classes_count' => $coach->trainings->count(), // will be displayed later
-            'users_count' => $numberOfUsers, // will be displayed later
         ];
        return $this->apiResponse(200,trans('api.home.coach profile'),null, $data);
     }

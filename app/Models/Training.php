@@ -52,4 +52,9 @@ class Training extends Model
     {
         return $this->hasMany(Join::class, 'training_id');
     }
+
+    public function address()
+    {
+        return $this->belongsTo(Address::class, 'address_id');
+    }
 }

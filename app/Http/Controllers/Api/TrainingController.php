@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Traits\apiResponse;
+use App\Models\Join;
 use App\Models\Training;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -77,6 +78,7 @@ class TrainingController extends Controller
         $training = Training::with([
             'coach:id,name,description,image,active',
             'academy:id,logo,commercial_name',
+            'classes'
         ])
             ->withCount(['classes', 'coach'])
             ->find($id);
@@ -84,9 +86,11 @@ class TrainingController extends Controller
         {
             return $this->apiResponse(400, trans('api.validation_error'), trans('api.home.training_not_found'),);
         }
+        $is_joined = Join::whereBelongsTo(auth()->user(), 'user')->whereBelongsTo($training, 'training')->exists();
         $data = [
             'training' => $training,
-            'academy_follow' => $training->academy->follows->count()
+            'academy_follow' => $training->academy->follows->count(),
+            'is_joined' => $is_joined
         ];
         return $this->apiResponse(200, trans('api.home.Training Detail'), null, $data);
     }
