@@ -70,7 +70,7 @@ class TrainingController extends Controller
 
         $trainings = $query->with(['academy:id,logo,commercial_name',
             'address:id,address',
-            'academy.follows'])->get();
+            'academy.follows'])->withCount(['classes', 'joins'])->get();
 
         return $this->apiResponse(200, trans('api.home.All Training'), null, $trainings);
     }
