@@ -47,10 +47,10 @@ class Training extends Model
 
     public function getIsFavAttribute()
     {
-       return Favorite::where([
-           ['user_id', auth()->id()],
-           ['training_id', $this->id]
-       ])->exists();
+        return Favorite::where([
+            ['user_id', auth()->id()],
+            ['training_id', $this->id]
+        ])->exists();
     }
 
 

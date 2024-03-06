@@ -15,44 +15,45 @@ class TrainingController extends Controller
 
     public function index(Request $request)
     {
-    $query = Training::query()
-        ->select('id','name','price','start_date','end_date','max_players','level','gender','age_group','academy_id','address_id','sport_id');
+        $query = Training::query()
+            ->select('id','name','price','start_date','end_date','max_players','level','gender','age_group','academy_id','address_id','sport_id');
 
-    $request->whenHas('sports_ids', function($sportsIds) use($query){
-        $query->whereIn('sport_id', $sportsIds);
-    });
-
-    $request->whenHas('search', function ($search) use($query){
-        $query->where('name->en', 'like', '%' . $search . '%')
-            ->orWhere('name->ar', 'like', '%' . $search . '%');
-    });
-
-    $request->whenHas('start_soon', function () use($query){
-        $query->whereDate('start_date','<=', Carbon::now()->addDay(10)->toDateString());
-    });
-
-    $request->whenHas('age_group', function ($age_group) use($query){
-        $query->whereIn('age_group',$age_group);
-    });
-
-    $request->whenHas('gender', function ($gender) use($query){
-        $query->where('gender',$gender);
-    });
-
-    $request->whenHas('area_id', function($areaId) use($query){
-        $query->whereHas('address', function($query) use($areaId){
-            return $query->whereIn('area_id',$areaId);
+        $request->whenHas('sports_ids', function($sportsIds) use($query){
+            $query->whereIn('sport_id', $sportsIds);
         });
-    });
 
-    $query->when($request->start_date && $request->end_date, function ($q) use ($request) {
-    $q->whereBetween('start_date', [$request->start_date, $request->end_date]);
-    });
+        $request->whenHas('search', function ($search) use($query){
+            $query->where('name->en', 'like', '%' . $search . '%')
+                ->orWhere('name->ar', 'like', '%' . $search . '%');
+        });
 
-    $trainings = $query->with(['academy:id,commercial_name',
-        'address:id,address'])->withCount(['classes', 'joins'])->get();
+        $request->whenHas('start_soon', function () use($query){
+            $query->whereDate('start_date','<=', Carbon::now()->addDay(10)->toDateString());
+        });
 
-    return $this->apiResponse(200, trans('api.home.All Training'), null, $trainings);
+        $request->whenHas('age_group', function ($age_group) use($query){
+            $query->whereIn('age_group',$age_group);
+        });
+
+        $request->whenHas('gender', function ($gender) use($query){
+            $query->where('gender',$gender);
+        });
+
+        $request->whenHas('area_id', function($areaId) use($query){
+            $query->whereHas('address', function($query) use($areaId){
+                return $query->whereIn('area_id',$areaId);
+            });
+        });
+
+        $query->when($request->start_date && $request->end_date, function ($q) use ($request) {
+            $q->whereBetween('start_date', [$request->start_date, $request->end_date]);
+        });
+
+        $trainings = $query->with(['academy:id,commercial_name',
+            'address:id,address'])->withCount(['classes', 'joins'])->get();
+
+
+        return $this->apiResponse(200, trans('api.home.All Training'), null, $trainings);
     }
 
     public function trainingDetails($id)
@@ -73,7 +74,7 @@ class TrainingController extends Controller
         $is_joined = Join::whereBelongsTo(auth()->user(), 'user')->whereBelongsTo($training, 'training')->exists();
         $data = [
             'training' => $training,
-         //   'academy_follow' => $training->academy->follows->count(),
+            //   'academy_follow' => $training->academy->follows->count(),
             'is_joined' => $is_joined
         ];
         return $this->apiResponse(200, trans('api.home.Training Detail'), null, $data);

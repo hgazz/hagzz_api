@@ -50,4 +50,10 @@ class AddressController extends Controller
         $areas = Area::where('city_id', $request->city_id)->get(['id', 'name']);
         return $this->apiResponse(200, trans('api.countries.areas'), null, $areas);
     }
+
+    public function getAreas(Request $request)
+    {
+        $areas = Area::get(['id', 'name']);
+        return $this->apiResponse(200, trans('api.countries.areas'), null, $areas);
+    }
 }
