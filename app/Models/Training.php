@@ -11,7 +11,9 @@ class Training extends Model
     use HasFactory, HasTranslations;
 
     protected $translatable = ['name', 'description'];
-    protected $hidden = ['created_at', 'updated_at'];
+    protected $hidden = ['created_at', 'updated_at','academy_id','address_id'];
+
+    protected $appends = ['is_fav'];
     const PATH = 'images/trainings';
     protected $fillable = [
         'name',
@@ -36,14 +38,21 @@ class Training extends Model
 
     public function academy()
     {
-        return $this->belongsTo(Academies::class,'academy_id')
-            ->with('sports:id,name')
-            ->withCount(['follows']);
+        return $this->belongsTo(Academies::class,'academy_id')->withCount('follows');
     }
     public function getImageAttribute($value)
     {
         return config('services.s3.url') . DIRECTORY_SEPARATOR . self::PATH . DIRECTORY_SEPARATOR . $value;
     }
+
+    public function getIsFavAttribute()
+    {
+       return Favorite::where([
+           ['user_id', auth()->id()],
+           ['training_id', $this->id]
+       ])->exists();
+    }
+
 
     public function classes()
     {
@@ -52,7 +61,7 @@ class Training extends Model
 
     public function joins()
     {
-        return $this->hasMany(Join::class, 'training_id')->withCount('joins');
+        return $this->hasMany(Join::class, 'training_id');
     }
 
     public function address()
