@@ -20,7 +20,8 @@ class CoachController extends Controller
             'academy:id,phone,commercial_name,logo,address,facebook,instagram',
             'trainings' => [
                 'academy:id,logo,commercial_name',
-                'address:id,address'
+                'address:id,address',
+                'academy.follows'
             ]
         ])
             ->find($id);
