@@ -68,7 +68,9 @@ class TrainingController extends Controller
         });
 
 
-        $trainings = $query->get();
+        $trainings = $query->with(['academy:id,logo,commercial_name',
+            'address:id,address',
+            'academy.follows'])->get();
 
         return $this->apiResponse(200, trans('api.home.All Training'), null, $trainings);
     }
