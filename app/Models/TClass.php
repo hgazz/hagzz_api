@@ -29,4 +29,10 @@ class TClass extends Model
     {
         return $this->belongsTo(Training::class, 'training_id');
     }
+
+    public function getOutComesAttribute($value)
+    {
+        return nl2br($value);
+    }
+
 }

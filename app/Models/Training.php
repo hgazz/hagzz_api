@@ -71,10 +71,6 @@ class Training extends Model
         return $this->belongsTo(Address::class, 'address_id');
     }
 
-    public function getOutComesAttribute($value)
-    {
-        return nl2br($value);
-    }
 
 
 }
