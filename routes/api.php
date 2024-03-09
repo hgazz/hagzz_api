@@ -46,7 +46,7 @@ Route::controller(AddressController::class)->group(function () {
     Route::get('/all-area', 'getAreas');
 });
 
-Route::group(['middleware' => 'auth:api'], function () {
+Route::group(['middleware' => ['auth:api', 'setLang']], function () {
 
     Route::get('delete/account', [AuthController::class, 'deleteAccount']);
     Route::post('update/user-profile', [AuthController::class, 'updateProfile']);
