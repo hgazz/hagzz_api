@@ -11,6 +11,7 @@ use App\Models\Training;
 use App\Models\User;
 use App\Models\UserSport;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class HomeController extends Controller
 {
@@ -28,7 +29,24 @@ class HomeController extends Controller
             'training' => $trainings,
         ]);
     }
+    public function changeLang(Request $request)
+    {
+        $validation = Validator::make($request->all(),[
+            'lang' => 'required|in:en,ar',
+        ]);
 
+        if($validation->fails())
+        {
+            return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
+        }
+
+        $user = User::where('id', auth()->id())->first();
+        $user->update([
+            'language' => $request->lang
+        ]);
+
+        return $this->apiResponse(200, trans('api.lang_changed'));
+    }
     protected function getUserTraining()
     {
         // Retrieve user's sports IDs

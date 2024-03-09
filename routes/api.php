@@ -53,6 +53,7 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     Route::controller(HomeController::class)->group(function (){
         Route::get('/home','home');
+        Route::post('/language', 'changeLang');
     });
 
     Route::controller(TrainingController::class)->group(function (){
