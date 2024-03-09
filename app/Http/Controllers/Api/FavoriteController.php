@@ -16,8 +16,20 @@ class FavoriteController extends Controller
     public function favoriteList()
     {
 
-        $favorites = Favorite::withwith(['academy:id,commercial_name,logo,address',
-            'address:id,address,longitude,latitude', 'academy.follows'])
+        $favorites = Favorite::with([
+            'training' => function ($query) {
+                $query->where('active',true);
+                $query->select('id', 'name', 'image', 'price', 'start_date', 'end_date', 'max_players', 'level', 'gender', 'age_group','address_id','academy_id');
+                $query->withCount('joins');
+            },
+            'training.academy'=>function ($query){
+                $query->select('id','commercial_name');
+            },
+            'training.address'=>function($query){
+                $query->select('id','address','longitude','latitude');
+            },
+            'training.academy.follows'
+        ])
             ->where('user_id', auth()->id())
             ->get();
         return $this->apiResponse(200 ,'Favorite list',null , $favorites);
