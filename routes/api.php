@@ -75,9 +75,8 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::post('follow/deleteFollow','deleteFollow');
     });
     Route::controller(JoinController::class)->group(function (){
-        Route::get('joins','joinList');
         Route::post('addJoin','addJoin');
-        Route::get('join/{id}','join');
+        Route::get('join','join');
     });
 
     Route::controller(FavoriteController::class)->group(function (){

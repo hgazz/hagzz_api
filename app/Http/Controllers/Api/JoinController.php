@@ -11,14 +11,6 @@ use Illuminate\Support\Facades\Validator;
 class JoinController extends Controller
 {
     use apiResponse;
-    public function joinList()
-    {
-        $joins = Join::with(['user:id,name,phone','invoice:id,order_number,status,amount','training:id,name,start_date,end_date'])->get();
-        return $this->apiResponse(200 ,trans('api.home.join list') , null ,[
-            'joins' => $joins
-        ]);
-    }
-
     public function addJoin(Request $request)
     {
         $validations = Validator::make($request->all(),[
@@ -29,7 +21,10 @@ class JoinController extends Controller
         if ($validations->fails()){
             return $this->apiResponse(400, trans('api.validation_error'), $validations->errors());
         }
-        $joinsExist = Join::where('user_id',auth()->id())->exists();
+        $joinsExist = Join::where([
+            ['user_id',auth()->id()],
+            ['training_id',$request->training_id],
+        ])->exists();
         if ($joinsExist){
             return  $this->apiResponse(400 , null,trans('api.home.join training already exists'));
         }
@@ -42,14 +37,24 @@ class JoinController extends Controller
         return $this->apiResponse(200,trans('api.home.joined as training successfully'),null , $joins);
     }
 
-    public function join($id)
+    public function join()
     {
-        $join = Join::with(['training:id,name,start_date,end_date'])
-            ->find($id);
-        if(!$join)
-        {
-            return $this->apiResponse(400, trans('api.validation_error'), trans('api.home.join not found'));
-        }
+        $join = Join::with([
+            'training' => function ($query) {
+                $query->where('active',true);
+                $query->select('id', 'name', 'image', 'price', 'start_date', 'end_date', 'max_players', 'level', 'gender', 'age_group','address_id','academy_id','active');
+                $query->withCount(['joins', 'classes']);
+            },
+            'training.academy'=>function ($query){
+                $query->select('id','commercial_name');
+            },
+            'training.address'=>function($query){
+                $query->select('id','address');
+            },
+            'training.academy.follows'
+         ])
+        ->where('user_id', auth()->id())
+         ->get();
 
         return  $this->apiResponse(200 , trans('api.home.join by user'),null , $join);
     }
