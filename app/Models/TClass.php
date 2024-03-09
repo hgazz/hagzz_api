@@ -13,7 +13,7 @@ class TClass extends Model
     public $translatable = ['title', 'subtitle'];
     protected $guarded = [];
 
-    protected $hidden = ['created_at', 'updated_at'];
+    protected $hidden = ['created_at', 'updated_at','academy_id','sport_id','training_id'];
 
     public function academy()
     {
