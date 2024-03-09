@@ -7,6 +7,7 @@ use App\Http\Traits\apiResponse;
 use App\Models\Favorite;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use function Laravel\Prompts\select;
 
 class FavoriteController extends Controller
 {
@@ -14,7 +15,22 @@ class FavoriteController extends Controller
 
     public function favoriteList()
     {
-        $favorites = Favorite::with('training')->where('user_id',auth()->id())->get();
+
+        $favorites = Favorite::with([
+            'training' => function ($query) {
+                $query->where('active',true);
+                $query->select('id', 'name', 'image', 'price', 'start_date', 'end_date', 'max_players', 'level', 'gender', 'age_group','address_id','academy_id');
+                $query->withCount('joins');
+            },
+            'training.academy'=>function ($query){
+                $query->select('id','commercial_name');
+            },
+            'training.address'=>function($query){
+                $query->select('id','address','longitude','latitude');
+            },
+        ])
+            ->where('user_id', auth()->id())
+            ->get();
         return $this->apiResponse(200 ,'Favorite list',null , $favorites);
    }
     public function addFavorite(Request $request)

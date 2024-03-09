@@ -44,7 +44,7 @@ class JoinController extends Controller
 
     public function join($id)
     {
-        $join = Join::with(['user:id,name,phone','invoice:id,order_number,status,amount','training:id,name,start_date,end_date'])
+        $join = Join::with(['training:id,name,start_date,end_date'])
             ->find($id);
         if(!$join)
         {

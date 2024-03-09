@@ -11,7 +11,7 @@ class Training extends Model
     use HasFactory, HasTranslations;
 
     protected $translatable = ['name', 'description'];
-    protected $hidden = ['created_at', 'updated_at','academy_id','address_id'];
+    protected $hidden = ['created_at', 'updated_at','academy_id','address_id','coach_id'];
 
     protected $appends = ['is_fav'];
     const PATH = 'images/trainings';
