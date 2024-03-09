@@ -15,7 +15,6 @@ class FavoriteController extends Controller
 
     public function favoriteList()
     {
-
         $favorites = Favorite::with([
             'training' => function ($query) {
                 $query->where('active',true);
@@ -26,7 +25,7 @@ class FavoriteController extends Controller
                 $query->select('id','commercial_name');
             },
             'training.address'=>function($query){
-                $query->select('id','address','longitude','latitude');
+                $query->select('id','address');
             },
             'training.academy.follows'
         ])
