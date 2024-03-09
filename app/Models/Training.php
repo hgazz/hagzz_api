@@ -71,6 +71,14 @@ class Training extends Model
         return $this->belongsTo(Address::class, 'address_id');
     }
 
+    protected function getNameAttribute()
+    {
+        return $this->getTranslations('name')[$this->getLocale()];
+    }
 
+    protected function getDescriptionAttribute()
+    {
+        return $this->getTranslations('description')[$this->getLocale()];
+    }
 
 }

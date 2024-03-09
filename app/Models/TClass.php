@@ -35,4 +35,14 @@ class TClass extends Model
         return nl2br($value);
     }
 
+    protected function getTitleAttribute()
+    {
+        return $this->getTranslations('title')[$this->getLocale()];
+    }
+
+    protected function getSubTitleAttribute()
+    {
+        return $this->getTranslations('subtitle')[$this->getLocale()];
+    }
+
 }

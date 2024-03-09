@@ -9,7 +9,7 @@ use Spatie\Translatable\HasTranslations;
 
 class Address extends Model
 {
-    use HasFactory,HasTranslations;
+    use HasFactory, HasTranslations;
 
     protected $fillable = [
         'academy_id',
@@ -44,5 +44,9 @@ class Address extends Model
         return $this->belongsTo(Country::class, 'country_id');
     }
 
+    protected function getAddressAttribute()
+    {
+        return $this->getTranslations('address')[$this->getLocale()];
+    }
 
 }

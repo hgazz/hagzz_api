@@ -28,4 +28,9 @@ class City extends Model
     {
         return $this->hasMany(Area::class);
     }
+
+    protected function getNameAttribute()
+    {
+        return $this->getTranslations('name')[$this->getLocale()];
+    }
 }
