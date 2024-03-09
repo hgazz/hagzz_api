@@ -36,14 +36,14 @@ class FavoriteController extends Controller
     public function addFavorite(Request $request)
     {
         $validation = Validator::make($request->all() , [
-            'training_id'=>'required|exists:trainings,id',
+            'training_id' => 'required|exists:trainings,id',
         ]);
 
         if ($validation->fails()){
             return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
         }
 
-        $favExist = Favorite::where('user_id',auth()->id())->exists();
+        $favExist = Favorite::where(['user_id' =>auth()->id(), 'training_id' => $request->training_id])->exists();
         if ($favExist){
             return  $this->apiResponse(400 , null,trans('api.home.favorite already exists'));
         }
