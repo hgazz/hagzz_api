@@ -36,11 +36,9 @@ class HomeController extends Controller
 
         // Retrieve trainings related to those sports
         return Training::with(['academy:id,commercial_name,logo,address',
-            'address:id,address', 'academy.follows'])->whereHas('classes', function ($query) use ($userSportsIds) {
-            $query->whereHas('sport', function ($query) use ($userSportsIds) {
-                $query->whereIn('id', $userSportsIds);
-            });
-        })->withCount(['classes', 'joins'])->get();
+            'address:id,address', 'academy.follows', 'classes'])
+            ->withCount(['classes', 'joins'])
+            ->get();
     }
 
 }
