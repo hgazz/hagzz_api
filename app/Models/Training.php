@@ -29,6 +29,8 @@ class Training extends Model
         'address_id',
         'coach_id',
         'academy_id',
+        'active',
+        'sport_id'
     ];
 
     public function coach()
