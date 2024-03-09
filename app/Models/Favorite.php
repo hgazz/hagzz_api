@@ -10,7 +10,7 @@ class Favorite extends Model
 {
     use HasFactory;
     protected $fillable = ['user_id','training_id'];
-    protected $hidden = ['created_at', 'updated_at'];
+    protected $hidden = ['created_at', 'updated_at', 'training_id'];
 
     public function user(): BelongsTo
     {
