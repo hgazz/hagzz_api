@@ -56,7 +56,7 @@ class FavoriteController extends Controller
 
     public function deleteFavorite($id)
     {
-        $favorite = Favorite::where('user_id',auth()->id())->find($id);
+        $favorite = Favorite::where([['user_id',auth()->id()], ['training_id', $id]])->first();
        if (!$favorite){
            return $this->apiResponse(400, trans('api.validation_error'), trans('api.home.Favorite not found'));
        }
