@@ -18,6 +18,6 @@ class Favorite extends Model
     }
     public function training(): BelongsTo
     {
-        return $this->belongsTo(Training::class);
+        return $this->belongsTo(Training::class)->withCount('classes');
     }
 }
