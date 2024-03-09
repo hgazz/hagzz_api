@@ -23,8 +23,10 @@ class JoinSeeder extends Seeder
         ]);
 
         Join::create([
+           'user_id'=>$invoice->user_id,
            'invoice_id'=>$invoice->id,
            'training_id'=>$invoice->training_id,
+           'price' => $invoice->amount
         ]);
     }
 }
