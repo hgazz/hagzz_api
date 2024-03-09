@@ -12,7 +12,7 @@ class ProfileController extends Controller
     use apiResponse;
     public function getProfile($id)
     {
-        $user = User::find($id);
+        $user = User::with(['country', 'city', 'area'])->find($id)->makeHidden(['country_id', 'city_id', 'area_id']);
         return $this->apiResponse(200 , trans('api.auth.User Profile'),null,[
             'profile'=>$user,
             'sports'=>$user->sports
