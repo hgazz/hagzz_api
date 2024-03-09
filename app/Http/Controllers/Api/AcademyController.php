@@ -23,7 +23,7 @@ class AcademyController extends Controller
             'address:id,address,longitude,latitude',
         ],'galleries', 'sports'])
             ->select(['id', 'phone', 'commercial_name', 'logo', 'address', 'facebook', 'instagram'])
-            ->withCount(['follows','coaches', 'trainings', 'addresses', 'trainings.classes'])
+            ->withCount(['follows','coaches', 'trainings', 'addresses'])
             ->find($id);
 
         if(!$academy)
