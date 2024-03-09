@@ -55,11 +55,6 @@ class Academies extends Model
         return $this->morphMany(Follow::class, 'followable');
     }
 
-    public function classes()
-    {
-        return $this->hasMany(TClass::class, 'academy_id');
-    }
-
     public function coaches(): HasMany
     {
         return $this->hasMany(Coach::class, 'academy_id');
