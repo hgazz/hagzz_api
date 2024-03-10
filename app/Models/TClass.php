@@ -51,7 +51,7 @@ class TClass extends Model
 
     }
 
-    public function getBringWithYouAttribute($value)
+    public function getBringWithMeAttribute($value)
     {
         return json_decode($value, true);
 
