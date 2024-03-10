@@ -15,10 +15,10 @@ class TClass extends Model
 
     protected $hidden = ['created_at', 'updated_at','academy_id','sport_id','training_id'];
 
-    protected $casts = [
-        'out_comes' => 'array',
-        'bring_with_me' => 'array',
-    ];
+//    protected $casts = [
+//        'out_comes' => 'array',
+//        'bring_with_me' => 'array',
+//    ];
     public function academy()
     {
         return $this->belongsTo(Academies::class, 'academy_id', 'id');
@@ -47,13 +47,13 @@ class TClass extends Model
 
     public function getOutComesAttribute($value)
     {
-        return json_decode($value, true);
+        return json_decode($value);
 
     }
 
-//    public function getBringWithMeAttribute($value)
-//    {
-//        return json_decode($value, true);
-//    }
+    public function getBringWithMeAttribute($value)
+    {
+        return json_decode($value);
+    }
 
 }
