@@ -46,7 +46,7 @@ class TrainingController extends Controller
 
         $request->whenHas('almost_full', function () use ($query) {
             $query->whereRaw('
-                (SELECT COUNT(*) FROM joins WHERE joins.training_id = trainings.id) / trainings.max_players * 100 >= 60
+                (SELECT COUNT(*) FROM joins WHERE joins.training_id = trainings.id) / trainings.max_players * 100 >= 50
                 AND
                 (SELECT COUNT(*) FROM joins WHERE joins.training_id = trainings.id) / trainings.max_players * 100 < 100
             ');
