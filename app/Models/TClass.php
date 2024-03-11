@@ -15,6 +15,10 @@ class TClass extends Model
 
     protected $hidden = ['created_at', 'updated_at','academy_id','sport_id','training_id'];
 
+//    protected $casts = [
+//        'out_comes' => 'array',
+//        'bring_with_me' => 'array',
+//    ];
     public function academy()
     {
         return $this->belongsTo(Academies::class, 'academy_id', 'id');
@@ -30,10 +34,6 @@ class TClass extends Model
         return $this->belongsTo(Training::class, 'training_id');
     }
 
-    public function getOutComesAttribute($value)
-    {
-        return nl2br($value);
-    }
 
     protected function getTitleAttribute()
     {
@@ -43,6 +43,17 @@ class TClass extends Model
     protected function getSubTitleAttribute()
     {
         return $this->getTranslations('subtitle')[$this->getLocale()];
+    }
+
+    public function getOutComesAttribute($value)
+    {
+        return json_decode($value);
+
+    }
+
+    public function getBringWithMeAttribute($value)
+    {
+        return json_decode($value);
     }
 
 }
