@@ -56,6 +56,10 @@ class TrainingController extends Controller
             $query->where('gender',$gender);
         });
 
+        $request->whenHas('level', function ($level) use($query){
+            $query->whereIn('level',$level);
+        });
+
         $request->whenHas('near_me', function () use($query){
             $query->whereHas('address', function($query){
                return $query->where('city_id', auth()->user()->city_id);

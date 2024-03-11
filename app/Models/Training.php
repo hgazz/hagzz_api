@@ -40,7 +40,7 @@ class Training extends Model
 
     public function academy()
     {
-        return $this->belongsTo(Academies::class,'academy_id')->with('sports:id,name')->withCount('follows');
+        return $this->belongsTo(Academies::class,'academy_id')->with('sports:id,name');
     }
     public function getImageAttribute($value)
     {
