@@ -36,17 +36,27 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $e)
     {
         if ($e instanceof AuthenticationException) {
-            return $this->apiResponse(401, 'error 401', 'You Not Authorized to access this route, try with correct route');
+            return $this->apiResponse(401, 'error 401', 'You are not authorized to access this route. Please try with the correct route.');
         }
+
         if ($e instanceof NotFoundHttpException) {
-            return $this->apiResponse(404, 'error 404', $request->url().' Not Found, try with correct url');
+            return $this->apiResponse(404, 'error 404', $request->url().' not found. Please try with the correct URL.');
         }
+
         if ($e instanceof MethodNotAllowedHttpException) {
-            return $this->apiResponse(405, 'error 405', $request->method().' method Not allow for this route, try with correct method');
+            return $this->apiResponse(405, 'error 405', $request->method().' method is not allowed for this route. Please try with the correct method.');
         }
+
         if ($e instanceof ValidationException) {
             return $this->apiResponse(422, 'Unprocessable Content', $e->errors());
         }
+
+        // Fallback for other unhandled exceptions
+        if ($e instanceof \Exception) { // Catch any other exceptions
+            return $this->apiResponse(500, 'error 500', 'An unexpected error occurred. Please try again later.');
+        }
+
+        return parent::render($request, $e);
 
     }
 }
