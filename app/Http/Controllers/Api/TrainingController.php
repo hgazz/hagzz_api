@@ -39,6 +39,7 @@ class TrainingController extends Controller
             $query->whereDate('start_date', '>=', $today)
                 ->whereDate('start_date', '<=', $tenDaysFromNow);
         });
+
         $request->whenHas('age_group', function ($age_group) use($query){
             $query->whereIn('age_group',$age_group);
         });
