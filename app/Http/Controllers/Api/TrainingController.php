@@ -44,6 +44,14 @@ class TrainingController extends Controller
             $query->whereIn('age_group',$age_group);
         });
 
+        $request->whenHas('almost_full', function () use ($query) {
+            $query->whereRaw('
+        (SELECT COUNT(*) FROM joins WHERE joins.training_id = trainings.id) / trainings.max_players * 100 >= 60
+        AND
+        (SELECT COUNT(*) FROM joins WHERE joins.training_id = trainings.id) / trainings.max_players * 100 < 100
+    ');
+        });
+
         $request->whenHas('gender', function ($gender) use($query){
             $query->where('gender',$gender);
         });
