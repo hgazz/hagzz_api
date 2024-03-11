@@ -32,7 +32,7 @@ class TrainingController extends Controller
         });
 
         $request->whenHas('start_soon', function () use($query){
-            $query->whereDate('start_date','<=', Carbon::now()->addDay(10)->toDateString());
+            $query->whereDate('start_date','>=', Carbon::now()->addDay(10)->toDateString());
         });
 
         $request->whenHas('age_group', function ($age_group) use($query){
