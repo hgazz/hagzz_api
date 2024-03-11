@@ -15,6 +15,8 @@ class FavoriteController extends Controller
 
     public function favoriteList()
     {
+        $pageSize = 10;
+        $page = (request()->has('page')) ? request('page') : 1;
         $favorites = Favorite::with([
             'training' => function ($query) {
                 $query->where('active',true);
@@ -29,6 +31,7 @@ class FavoriteController extends Controller
             },
             'training.academy.follows'
         ])
+            ->skip($page * $pageSize - $pageSize)->limit($pageSize)
             ->where('user_id', auth()->id())
             ->get();
         return $this->apiResponse(200 ,'Favorite list',null , $favorites);
