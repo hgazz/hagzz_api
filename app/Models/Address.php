@@ -21,7 +21,7 @@ class Address extends Model
         'active',
         'country_id',
     ];
-
+   protected $hidden = ['created_at', 'updated_at', 'city_id', 'area_id'];
     public $translatable = ['address'];
 
     public function academy(): BelongsTo
