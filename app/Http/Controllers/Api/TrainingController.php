@@ -15,7 +15,7 @@ class TrainingController extends Controller
 
     public function index(Request $request)
     {
-        $pageSize = 10;
+        $pageSize = 2;
         $page = (request()->has('page')) ? request('page') : 1;
 
         $query = Training::query()->skip($page * $pageSize - $pageSize)->limit($pageSize)
