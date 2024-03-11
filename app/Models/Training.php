@@ -40,7 +40,7 @@ class Training extends Model
 
     public function academy()
     {
-        return $this->belongsTo(Academies::class,'academy_id')->with('sports:id,name')->withCount('follows');
+        return $this->belongsTo(Academies::class,'academy_id')->with('sports:id,name');
     }
     public function getImageAttribute($value)
     {
@@ -68,7 +68,7 @@ class Training extends Model
 
     public function address()
     {
-        return $this->belongsTo(Address::class, 'address_id');
+        return $this->belongsTo(Address::class, 'address_id')->with('area', 'city');
     }
 
     protected function getNameAttribute()

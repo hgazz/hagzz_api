@@ -15,7 +15,7 @@ class JoinSeeder extends Seeder
     public function run(): void
     {
         $invoice = Invoice::create([
-            'user_id'=>5,
+            'user_id'=>13,
             'training_id'=>2,
             'order_number'=>23,
             'status'=>'paid',
