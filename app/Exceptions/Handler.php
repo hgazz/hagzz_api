@@ -51,11 +51,6 @@ class Handler extends ExceptionHandler
             return $this->apiResponse(422, 'Unprocessable Content', $e->errors());
         }
 
-        // Fallback for other unhandled exceptions
-        if ($e instanceof \Exception) { // Catch any other exceptions
-            return $this->apiResponse(500, 'error 500', 'An unexpected error occurred. Please try again later.');
-        }
-
         return parent::render($request, $e);
 
     }

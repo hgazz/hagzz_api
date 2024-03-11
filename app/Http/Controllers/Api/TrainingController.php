@@ -7,6 +7,7 @@ use App\Http\Traits\apiResponse;
 use App\Models\Join;
 use App\Models\Training;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 
 class TrainingController extends Controller
@@ -15,73 +16,77 @@ class TrainingController extends Controller
 
     public function index(Request $request)
     {
-        $pageSize = 10;
-        $page = (request()->has('page')) ? request('page') : 1;
 
-        $query = Training::query()->skip($page * $pageSize - $pageSize)->limit($pageSize)
-            ->select('id','name','price','start_date','end_date','max_players','level','gender','age_group','academy_id','address_id','sport_id');
+        try {
+            $pageSize = 10;
+            $page = (request()->has('page')) ? request('page') : 1;
+            $query = Training::query()->skip($page * $pageSize - $pageSize)->limit($pageSize)
+                ->select('id','name','price','start_date','end_date','max_players','level','gender','age_group','academy_id','address_id','sport_id');
 
-        $request->whenHas('sports_ids', function($sportsIds) use($query){
-            $query->whereIn('sport_id', $sportsIds);
-        });
+            $request->whenHas('sports_ids', function($sportsIds) use($query){
+                $query->whereIn('sport_id', $sportsIds);
+            });
 
-        $request->whenHas('search', function ($search) use($query){
-            $lowercaseSearchTerm = '%' . mb_strtolower($search) . '%'; // Always lowercase
-            $query->whereRaw('LOWER(JSON_UNQUOTE(name->"$.en")) LIKE ?', [$lowercaseSearchTerm])
-                ->orWhereRaw('LOWER(JSON_UNQUOTE(name->"$.ar")) LIKE ?', [$lowercaseSearchTerm]);
-        });
+            $request->whenHas('search', function ($search) use($query){
+                $lowercaseSearchTerm = '%' . mb_strtolower($search) . '%'; // Always lowercase
+                $query->whereRaw('LOWER(JSON_UNQUOTE(name->"$.en")) LIKE ?', [$lowercaseSearchTerm])
+                    ->orWhereRaw('LOWER(JSON_UNQUOTE(name->"$.ar")) LIKE ?', [$lowercaseSearchTerm]);
+            });
 
-        $request->whenHas('start_soon', function () use ($query) {
-            $today = Carbon::now()->toDateString();
-            $tenDaysFromNow = Carbon::now()->addDays(10)->toDateString();
+            $request->whenHas('start_soon', function () use ($query) {
+                $today = Carbon::now()->toDateString();
+                $tenDaysFromNow = Carbon::now()->addDays(10)->toDateString();
 
-            // Update the query to filter between today and 10 days from now
-            $query->whereDate('start_date', '>=', $today)
-                ->whereDate('start_date', '<=', $tenDaysFromNow);
-        });
+                // Update the query to filter between today and 10 days from now
+                $query->whereDate('start_date', '>=', $today)
+                    ->whereDate('start_date', '<=', $tenDaysFromNow);
+            });
 
-        $request->whenHas('age_group', function ($age_group) use($query){
-            $query->whereIn('age_group',$age_group);
-        });
+            $request->whenHas('age_group', function ($age_group) use($query){
+                $query->whereIn('age_group',$age_group);
+            });
 
-        $request->whenHas('almost_full', function () use ($query) {
-            $query->whereRaw('
+            $request->whenHas('almost_full', function () use ($query) {
+                $query->whereRaw('
                 (SELECT COUNT(*) FROM joins WHERE joins.training_id = trainings.id) / trainings.max_players * 100 >= 50
                 AND
                 (SELECT COUNT(*) FROM joins WHERE joins.training_id = trainings.id) / trainings.max_players * 100 < 100
             ');
-        });
-
-        $request->whenHas('gender', function ($gender) use($query){
-            $query->where('gender',$gender);
-        });
-
-        $request->whenHas('level', function ($level) use($query){
-            $query->whereIn('level',$level);
-        });
-
-        $request->whenHas('near_me', function () use($query){
-            $query->whereHas('address', function($query){
-               return $query->where('city_id', auth()->user()->city_id);
             });
-        });
 
-        $request->whenHas('areas_ids', function($areaId) use($query){
-            $query->whereHas('address', function($query) use($areaId){
-                return $query->whereIn('area_id',$areaId);
+            $request->whenHas('gender', function ($gender) use($query){
+                $query->where('gender',$gender);
             });
-        });
 
-        $query->when($request->start_date && $request->end_date, function ($q) use ($request) {
-            $q->whereBetween('start_date', [$request->start_date, $request->end_date]);
-        });
+            $request->whenHas('level', function ($level) use($query){
+                $query->whereIn('level',$level);
+            });
 
-        $trainings = $query->with(['academy:id,commercial_name',
-            'address:id,address,area_id,city_id'])
-            ->withCount(['classes', 'joins'])->get();
+            $request->whenHas('near_me', function () use($query){
+                $query->whereHas('address', function($query){
+                    return $query->where('city_id', auth()->user()->city_id);
+                });
+            });
+
+            $request->whenHas('areas_ids', function($areaId) use($query){
+                $query->whereHas('address', function($query) use($areaId){
+                    return $query->whereIn('area_id',$areaId);
+                });
+            });
+
+            $query->when($request->start_date && $request->end_date, function ($q) use ($request) {
+                $q->whereBetween('start_date', [$request->start_date, $request->end_date]);
+            });
+
+            $trainings = $query->with(['academy:id,commercial_name',
+                'address:id,address,area_id,city_id'])
+                ->withCount(['classes', 'joins'])->get();
 
 
-        return $this->apiResponse(200, trans('api.home.All Training'), null, $trainings);
+            return $this->apiResponse(200, trans('api.home.All Training'), null, $trainings);
+        }catch (Exception $exception){
+            return $this->apiResponse(400, trans('api.validation_error'), $exception->getMessage());
+        }
     }
 
     public function trainingDetails($id)
