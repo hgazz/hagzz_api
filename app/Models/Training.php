@@ -68,7 +68,7 @@ class Training extends Model
 
     public function address()
     {
-        return $this->belongsTo(Address::class, 'address_id')->with('area');
+        return $this->belongsTo(Address::class, 'address_id')->with('area', 'city');
     }
 
     protected function getNameAttribute()
