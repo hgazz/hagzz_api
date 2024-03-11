@@ -62,7 +62,7 @@ class TrainingController extends Controller
             });
         });
 
-        $request->whenHas('area_id', function($areaId) use($query){
+        $request->whenHas('areas_ids', function($areaId) use($query){
             $query->whereHas('address', function($query) use($areaId){
                 return $query->whereIn('area_id',$areaId);
             });
