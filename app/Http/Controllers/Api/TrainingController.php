@@ -73,7 +73,7 @@ class TrainingController extends Controller
         });
 
         $trainings = $query->with(['academy:id,commercial_name',
-            'address:id,address,area_id, city_id'])
+            'address:id,address,area_id,city_id'])
             ->withCount(['classes', 'joins'])->get();
 
 

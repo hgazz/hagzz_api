@@ -22,7 +22,7 @@ class Address extends Model
         'country_id',
     ];
     public $translatable = ['address'];
-   protected $hidden = ['created_at', 'updated_at'];
+   protected $hidden = ['created_at', 'updated_at', 'city_id', 'area_id'];
 
     public function academy(): BelongsTo
     {
