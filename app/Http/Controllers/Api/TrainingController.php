@@ -86,12 +86,16 @@ class TrainingController extends Controller
 
     public function trainingDetails($id)
     {
+        $pageSize = 10;
+        $page = (request()->has('page')) ? request('page') : 1;
         $training = Training::with([
             'coach:id,name,image',
             'academy:id,commercial_name,logo',
             'address:id,address,longitude,latitude',
-            'classes',
             'joins.user:id,image',
+            'classes'=>function ($q) use ($pageSize , $page) {
+                $q->skip($page * $pageSize - $pageSize)->limit($pageSize);
+            }
         ])
             ->where('active', true)
             ->find($id);

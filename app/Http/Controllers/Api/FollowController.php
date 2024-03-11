@@ -24,8 +24,10 @@ class FollowController extends Controller
     {
         $user = auth()->user();
 
+        $pageSize = 10;
+        $page = (request()->has('page')) ? request('page') : 1;
         // Eager load the followable relationship
-        $follows = $user->follows()->get();
+        $follows = $user->follows()->skip($page * $pageSize - $pageSize)->limit($pageSize)->get();
 
         // Transform the follows collection to customize the response
         $customFollows = $follows->map(function ($follow) {
