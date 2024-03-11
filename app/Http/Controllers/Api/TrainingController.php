@@ -15,7 +15,10 @@ class TrainingController extends Controller
 
     public function index(Request $request)
     {
-        $query = Training::query()
+        $pageSize = 10;
+        $page = (request()->has('page')) ? request('page') : 1;
+
+        $query = Training::query()->skip($page * $pageSize - $pageSize)->limit($pageSize)
             ->select('id','name','price','start_date','end_date','max_players','level','gender','age_group','academy_id','address_id','sport_id');
 
         $request->whenHas('sports_ids', function($sportsIds) use($query){

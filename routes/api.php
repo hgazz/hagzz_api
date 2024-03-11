@@ -89,11 +89,3 @@ Route::group(['middleware' => ['auth:api', 'setLang']], function () {
     Route::post('/logout',[AuthController::class,'logout']);
 
 });
-
-
-//Route::group(
-//    [
-//        'prefix' => LaravelLocalization::setLocale(),
-//        'middleware' => [ 'localeSessionRedirect', 'localizationRedirect', 'localeViewPath' ]
-//    ], function(){ //...
-//});
