@@ -10,6 +10,7 @@ use App\Models\Join;
 use App\Models\Training;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class CoachController extends Controller
 {
@@ -44,29 +45,42 @@ class CoachController extends Controller
         $pageSize = 10;
         $page = $request->has('page') ? (int) $request->input('page') : 1;
 
-        // Start building the query with necessary relationships
-        $query = Training::where('coach_id', $id)
+        $trainings = Training::where('coach_id', $id)
             ->with([
                 'academy:id,logo,commercial_name',
                 'address:id,address,city_id,area_id,longitude,latitude',
             ])
             ->withCount(['joins', 'classes'])
-            ->isActive();
+            ->isActive()
+            ->get();
 
-        // Get the total count of records that match the query criteria before applying pagination
-        $total = $query->count();
+        // Split into upcoming and past trainings based on the start_date
+        $today = Carbon::now()->startOfDay();
 
-        // Apply pagination to the query
-        $trainings = $query->skip(($page - 1) * $pageSize)->take($pageSize)->get();
+        $upcomingTrainings = $trainings->filter(function ($training) use ($today) {
+            return Carbon::parse($training->start_date)->startOfDay()->isAfter($today);
+        });
 
-        // Prepare and return the API response with the paginated data and other details
+        $pastTrainings = $trainings->filter(function ($training) use ($today) {
+            return Carbon::parse($training->start_date)->startOfDay()->isBefore($today);
+        });
+        $upcomingPaginated = $upcomingTrainings->skip(($page - 1) * $pageSize)->take($pageSize);
+        $pastPaginated = $pastTrainings->skip(($page - 1) * $pageSize)->take($pageSize);
+        $total = $trainings->count();
+
         $data = [
-            'trainings' => $trainings,
+            'upcoming_trainings' => $upcomingPaginated,
+            'past_trainings' => $pastPaginated,
             'total' => $total,
             'page' => $page,
             'pageSize' => $pageSize,
-            'totalPages' => ceil($total / $pageSize)
+            'totalPages' => ceil($total / $pageSize),
+            'total_upcoming' => $upcomingTrainings->count(),
+            'total_past' => $pastTrainings->count(),
+            'totalPages_upcoming' => ceil($upcomingTrainings->count() / $pageSize),
+            'totalPages_past' => ceil($pastTrainings->count() / $pageSize),
         ];
+
         return $this->apiResponse(200,trans('api.home.coach_trainings'),null, $data);
     }
 }
