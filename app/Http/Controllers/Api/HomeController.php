@@ -54,7 +54,7 @@ class HomeController extends Controller
 
         // Retrieve trainings related to those sports
         return Training::with(['academy:id,commercial_name,logo,address',
-            'address:id,address', 'academy.follows', 'classes'])
+            'address:id,address', 'classes'])
             ->withCount(['classes', 'joins'])
             ->get();
     }

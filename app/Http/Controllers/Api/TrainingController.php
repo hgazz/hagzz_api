@@ -20,8 +20,7 @@ class TrainingController extends Controller
         try {
             $pageSize = 10;
             $page = (request()->has('page')) ? request('page') : 1;
-            $query = Training::query()->skip($page * $pageSize - $pageSize)->limit($pageSize)
-                ->select('id','name','price','start_date','end_date','max_players','level','gender','age_group','academy_id','address_id','sport_id');
+            $query = Training::query()->select(['id','name','price','start_date','end_date','max_players','level','gender','age_group','academy_id','address_id','sport_id']);
 
             $request->whenHas('sports_ids', function($sportsIds) use($query){
                 $query->whereIn('sport_id', $sportsIds);
@@ -77,13 +76,22 @@ class TrainingController extends Controller
             $query->when($request->start_date && $request->end_date, function ($q) use ($request) {
                 $q->whereBetween('start_date', [$request->start_date, $request->end_date]);
             });
-
+            $total = $query->count();
+            $query = $query->skip($page * $pageSize - $pageSize)->limit($pageSize);
+            // Calculate the total number of pages
+            $totalPages = ceil($total / $pageSize);
             $trainings = $query->with(['academy:id,commercial_name',
                 'address:id,address,area_id,city_id'])
                 ->withCount(['classes', 'joins'])->get();
+            $data = [
+                'trainings' => $trainings,
+                'total' => $total,
+                'page' => $page,
+                'pageSize' => $pageSize,
+                'totalPages' => $totalPages
+            ];
 
-
-            return $this->apiResponse(200, trans('api.home.All Training'), null, $trainings);
+            return $this->apiResponse(200, trans('api.home.All Training'), null, $data);
         }catch (Exception $exception){
             return $this->apiResponse(400, trans('api.validation_error'), $exception->getMessage());
         }

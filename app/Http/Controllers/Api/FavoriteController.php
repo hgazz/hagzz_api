@@ -17,7 +17,7 @@ class FavoriteController extends Controller
     {
         $pageSize = 10;
         $page = (request()->has('page')) ? request('page') : 1;
-        $favorites = Favorite::with([
+        $query = Favorite::with([
             'training' => function ($query) {
                 $query->where('active',true);
                 $query->select('id', 'name', 'image', 'price', 'start_date', 'end_date', 'max_players', 'level', 'gender', 'age_group','address_id','academy_id','active');
@@ -30,11 +30,23 @@ class FavoriteController extends Controller
                 $query->select('id','address');
             },
             'training.academy.follows'
-        ])
-            ->skip($page * $pageSize - $pageSize)->limit($pageSize)
-            ->where('user_id', auth()->id())
-            ->get();
-        return $this->apiResponse(200 ,'Favorite list',null , $favorites);
+        ])->where('user_id', auth()->id());
+        $totalFavorites = $query->count();
+        // Apply pagination to the query
+        $favorites = $query->skip($page * $pageSize - $pageSize)->limit($pageSize)->get();
+
+        // Calculate the total number of pages
+        $totalPages = ceil($totalFavorites / $pageSize);
+
+        // Prepare the response data including total counts and pagination details
+        $data = [
+            'favorites' => $favorites,
+            'total' => $totalFavorites,
+            'page' => $page,
+            'pageSize' => $pageSize,
+            'totalPages' => $totalPages
+        ];
+        return $this->apiResponse(200 ,'Favorite list',null , $data);
    }
     public function addFavorite(Request $request)
     {

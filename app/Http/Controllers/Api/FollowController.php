@@ -26,42 +26,48 @@ class FollowController extends Controller
 
         $pageSize = 10;
         $page = (request()->has('page')) ? request('page') : 1;
-        // Eager load the followable relationship
-        $follows = $user->follows()->skip($page * $pageSize - $pageSize)->limit($pageSize)->get();
+
+        // Start by getting the total count for proper pagination
+        $totalFollows = $user->follows()->count();
+
+        // Eager load the followable relationship with proper pagination
+        $follows = $user->follows()->with('followable')->skip(($page - 1) * $pageSize)->limit($pageSize)->get();
 
         // Transform the follows collection to customize the response
         $customFollows = $follows->map(function ($follow) {
-            // Directly access the followable entity here
-            $followable = $follow->followable_type;
-            // Initialize an empty array to avoid undefined variable issues
-            $data = [];
+            $followable = $follow->followable;
 
-            if ($followable == Coach::class) {
-                    // Customize the data for a Coach
-                    $data = [
-                        'id' => $follow->followable_id,
-                        'type' => 'Coach',
-                        'data' => Coach::find($follow->followable_id),
-                    ];
-                } elseif ($followable == Academies::class) {
-                    // Customize the data for an Academy
-                    $data = [
-                        'id' => $follow->followable_id,
-                        'type' => 'Academy',
-                        'data' => Academies::find($follow->followable_id),
-                    ];
+            if ($followable instanceof Coach) {
+                // Customize the data for a Coach
+                return [
+                    'id' => $followable->id,
+                    'type' => 'Coach',
+                    'data' => $followable, // Assuming $followable is already the Coach model instance
+                ];
+            } elseif ($followable instanceof Academies) {
+                // Customize the data for an Academy
+                return [
+                    'id' => $followable->id,
+                    'type' => 'Academy',
+                    'data' => $followable, // Assuming $followable is already the Academies model instance
+                ];
             }
 
-            return $data;
-        });
+            // Return null for non-matching or non-existing followables (just in case)
+            return null;
+        })->filter();
 
-        // Filter out any empty arrays that may have been added for followables that don't exist or don't match the conditions
-        $filteredCustomFollows = $customFollows->filter(function ($value) {
-            return !empty($value);
-        });
+        $data = [
+            'follows' => $customFollows,
+            'total' => $totalFollows,
+            'page' => $page,
+            'pageSize' => $pageSize,
+            'totalPages' => ceil($totalFollows / $pageSize),
+        ];
 
-        return $this->apiResponse(200, trans('api.home.following_list'), null, $filteredCustomFollows);
+        return $this->apiResponse(200, trans('api.home.following_list'), null, $data);
     }
+
 
 
     public function addFollow(Request $request)
