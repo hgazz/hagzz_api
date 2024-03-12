@@ -47,5 +47,6 @@ return [
         'add favorite successfully'=>'add favorite successfully',
         'Favorite not found'=>'Favorite not found',
         'delete favorite successfully'=>'delete favorite successfully',
+        'coach_trainings' => 'Coach Trainings',
     ]
 ];

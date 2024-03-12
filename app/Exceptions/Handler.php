@@ -4,8 +4,11 @@ namespace App\Exceptions;
 
 use App\Http\Traits\apiResponse;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\RelationNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
@@ -51,6 +54,11 @@ class Handler extends ExceptionHandler
             return $this->apiResponse(422, 'Unprocessable Content', $e->errors());
         }
 
+        if ($e instanceof RelationNotFoundException) {
+            // Return a custom response or use the apiResponse method if you have one
+            return $this->apiResponse(500, 'Requested relationship is not defined in the model.',
+           ResponseAlias::HTTP_BAD_REQUEST ); // You can choose the appropriate status code
+        }
         return parent::render($request, $e);
 
     }

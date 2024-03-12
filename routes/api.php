@@ -63,10 +63,12 @@ Route::group(['middleware' => ['auth:api', 'setLang']], function () {
 
     Route::controller(AcademyController::class)->group(function (){
        Route::get('academyDetails/{id}','academyDetails');
+       Route::get('academyTrainings/{id}','getTrainingsByAcademy');
     });
 
     Route::controller(CoachController::class)->group(function (){
         Route::get('coachProfile/{id}','coachProfile');
+        Route::get('coach/trainings/{id}','getTrainingsByCoach');
     });
 
     Route::controller(FollowController::class)->group(function (){

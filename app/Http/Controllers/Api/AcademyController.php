@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Traits\apiResponse;
 use App\Models\Academies;
 use App\Models\Follow;
+use App\Models\Training;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -17,11 +18,7 @@ class AcademyController extends Controller
     public function academyDetails($id)
     {
 
-        $academy = Academies::with(['trainings' => [
-            'academy:id,logo,commercial_name',
-            'academy.follows',
-            'address:id,address,longitude,latitude',
-        ],'galleries', 'sports'])
+        $academy = Academies::with(['addresses','galleries', 'sports'])
             ->select(['id', 'phone', 'commercial_name', 'logo', 'address', 'facebook', 'instagram'])
             ->withCount(['follows','coaches', 'trainings', 'addresses'])
             ->find($id);
@@ -36,6 +33,38 @@ class AcademyController extends Controller
             'isFollowing' => $isFollowing,
         ];
         return $this->apiResponse(200,trans('api.home.Academy Details'),null, $data);
+    }
+
+    public function getTrainingsByAcademy($id, Request $request)
+    {
+        $pageSize = 10;
+        $page = $request->has('page') ? (int) $request->input('page') : 1;
+
+        // Start building the query with necessary relationships
+        $query = Training::where('academy_id', $id)
+            ->with([
+                'academy:id,logo,commercial_name',
+                'address:id,address,city_id,area_id,longitude,latitude',
+            ])
+            ->withCount(['joins', 'classes'])
+            ->isActive();
+
+        // Get the total count of records that match the query criteria before applying pagination
+        $total = $query->count();
+
+        // Apply pagination to the query
+        $trainings = $query->skip(($page - 1) * $pageSize)->take($pageSize)->get();
+
+        // Prepare and return the API response with the paginated data and other details
+        $data = [
+            'trainings' => $trainings,
+            'total' => $total,
+            'page' => $page,
+            'pageSize' => $pageSize,
+            'totalPages' => ceil($total / $pageSize)
+        ];
+
+        return $this->apiResponse(200, trans('api.home.All Training'), null, $data);
     }
 
     /**

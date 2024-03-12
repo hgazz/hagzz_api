@@ -81,4 +81,9 @@ class Training extends Model
         return $this->getTranslations('description')[$this->getLocale()];
     }
 
+    //scope return only active
+    public function scopeIsActive($query)
+    {
+        return $query->where('active', 1);
+    }
 }
