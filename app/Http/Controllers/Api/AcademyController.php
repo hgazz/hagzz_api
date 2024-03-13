@@ -15,6 +15,28 @@ use Illuminate\Http\Request;
 class AcademyController extends Controller
 {
     use  apiResponse;
+
+    public function getAllAcademies(Request $request)
+    {
+        $pageSize = 10;
+        $page = $request->has('page') ? (int) $request->input('page') : 1;
+        $query = Academies::query();
+        $total = $query->count();
+        $academies = $query->select(['id', 'commercial_name', 'logo'])
+            ->with('sports')
+            ->withCount(['follows','coaches', 'trainings'])
+            ->skip($page * $pageSize - $pageSize)->limit($pageSize)
+        ->get();
+        $data = [
+            'academies' => $academies,
+            'total' => $total,
+            'page' => $page,
+            'pageSize' => $pageSize,
+            'totalPages' => ceil($total / $pageSize)
+        ];
+        return $this->apiResponse(200, trans('api.home.Academy List'), null, $data);
+    }
+
     public function academyDetails($id)
     {
 

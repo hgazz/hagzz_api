@@ -62,6 +62,7 @@ Route::group(['middleware' => ['auth:api', 'setLang']], function () {
     });
 
     Route::controller(AcademyController::class)->group(function (){
+       Route::get('academies','getAllAcademies');
        Route::get('academyDetails/{id}','academyDetails');
        Route::get('academyTrainings/{id}','getTrainingsByAcademy');
     });
