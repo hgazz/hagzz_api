@@ -14,6 +14,28 @@ class TrainingController extends Controller
 {
     use apiResponse;
 
+    public function getAllTrainings(Request $request)
+    {
+        $pageSize = 10;
+        $page = (request()->has('page')) ? request('page') : 1;
+        $query = Training::query()->select(['id','name','price','start_date','end_date','max_players','level','gender','age_group','academy_id','address_id','sport_id']);
+        $total = $query->count();
+        $query = $query->skip($page * $pageSize - $pageSize)->limit($pageSize);
+        $trainings = $query->with(['academy:id,commercial_name',
+            'address:id,address,area_id,city_id'])
+            ->withCount(['classes', 'joins'])->get();
+        $data = [
+            'trainings' => $trainings,
+            'total' => $total,
+            'page' => $page,
+            'pageSize' => $pageSize,
+            'totalPages' => ceil($total / $pageSize)
+        ];
+
+        return $this->apiResponse(200, trans('api.home.Training List'), null, $data);
+
+    }
+
     public function index(Request $request)
     {
 
