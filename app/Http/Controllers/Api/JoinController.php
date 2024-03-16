@@ -37,25 +37,37 @@ class JoinController extends Controller
         return $this->apiResponse(200,trans('api.home.joined as training successfully'),null , $joins);
     }
 
-    public function join()
+    public function join(Request $request)
     {
-        $join = Join::with([
+        $pageSize = 10;
+        $page = $request->has('page') ? (int) $request->input('page') : 1;
+
+        $query = Join::query()->with([
             'training' => function ($query) {
-                $query->where('active',true);
-                $query->select('id', 'name', 'image', 'price', 'start_date', 'end_date', 'max_players', 'level', 'gender', 'age_group','address_id','academy_id','active');
+                $query->where('active', true);
+                $query->select(['id', 'name', 'image', 'price', 'start_date', 'end_date', 'max_players', 'level', 'gender', 'age_group', 'address_id', 'academy_id', 'active']);
                 $query->withCount(['joins', 'classes']);
             },
-            'training.academy'=>function ($query){
-                $query->select('id','commercial_name');
+            'training.academy' => function ($query) {
+                $query->select(['id', 'commercial_name']);
             },
-            'training.address'=>function($query){
-                $query->select('id','address');
+            'training.address' => function ($query) {
+                $query->select(['id', 'address']);
             },
             'training.academy.follows'
-         ])
-        ->where('user_id', auth()->id())
-         ->get();
+        ])->where('user_id', auth()->id());
 
-        return  $this->apiResponse(200 , trans('api.home.join by user'),null , $join);
+        $total = $query->count();
+        $joins = $query->skip(($page - 1) * $pageSize)->take($pageSize)->get();
+
+        $data = [
+            'joins' => $joins,
+            'total' => $total,
+            'page' => $page,
+            'pageSize' => $pageSize,
+            'totalPages' => ceil($total / $pageSize)
+        ];
+
+        return $this->apiResponse(200, trans('api.home.join by user'), null, $data);
     }
 }
