@@ -29,7 +29,7 @@ class CoachController extends Controller
             return $this->apiResponse(400, trans('api.validation_error'), trans('api.home.coach_not_found'),);
         }
         $isFollow = Follow::whereBelongsTo(auth()->user(), 'user')
-            ->where( 'followable_id', $coach->id)->exists();
+            ->where( 'followable_id', $coach->id)->first();
 
         $numberOfUsers = Join::with(['training.coach', 'user'])
             ->count();
