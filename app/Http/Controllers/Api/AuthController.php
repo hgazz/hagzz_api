@@ -103,13 +103,15 @@ class AuthController extends Controller
 
         $user = User::where('phone',$request->phone)->first();
         $user->update(['otp' => $otp]);
-        $this->smsOtp->sendOtp('+2'.$request->phone, $otp);
+        $response = $this->smsOtp->sendOtp('+2'.$request->phone, $otp);
+
         auth()->loginUsingId($user->id);
 
         $token = JWTAuth::fromUser($user);
         return $this->apiResponse(200, trans('api.auth.login success'), null, [
             'token'=>$token,
-            'user'=> $user
+            'user'=> $user,
+            'otp_res' => $response
         ]);
 
     }
