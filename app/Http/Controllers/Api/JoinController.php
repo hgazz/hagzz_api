@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Traits\apiResponse;
 use App\Models\Join;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
 
 class JoinController extends Controller
@@ -41,8 +42,12 @@ class JoinController extends Controller
     {
         $pageSize = 10;
         $page = $request->has('page') ? (int) $request->input('page') : 1;
+        $today = Carbon::now()->startOfDay();
 
-        $query = Join::query()->with([
+        // Query for upcoming trainings
+        $upcomingQuery = Join::query()->whereHas('training', function ($query) use ($today) {
+            $query->where('start_date', '>', $today);
+        })->with([
             'training' => function ($query) {
                 $query->where('active', true);
                 $query->select(['id', 'name', 'image', 'price', 'start_date', 'end_date', 'max_players', 'level', 'gender', 'age_group', 'address_id', 'academy_id', 'active']);
@@ -53,19 +58,43 @@ class JoinController extends Controller
             },
             'training.address' => function ($query) {
                 $query->select(['id', 'address']);
-            },
-            'training.academy.follows'
+            }
         ])->where('user_id', auth()->id());
 
-        $total = $query->count();
-        $joins = $query->skip(($page - 1) * $pageSize)->take($pageSize)->get();
+        // Query for past trainings
+        $pastQuery = Join::query()->whereHas('training', function ($query) use ($today) {
+            $query->where('start_date', '<', $today);
+        })->with([
+            'training' => function ($query) {
+                $query->where('active', true);
+                $query->select(['id', 'name', 'image', 'price', 'start_date', 'end_date', 'max_players', 'level', 'gender', 'age_group', 'address_id', 'academy_id', 'active']);
+                $query->withCount(['joins', 'classes']);
+            },
+            'training.academy' => function ($query) {
+                $query->select(['id', 'commercial_name']);
+            },
+            'training.address' => function ($query) {
+                $query->select(['id', 'address']);
+            }
+        ])->where('user_id', auth()->id());
+
+        // Pagination for upcoming trainings
+        $upcomingTotal = $upcomingQuery->count();
+        $upcomingJoins = $upcomingQuery->skip(($page - 1) * $pageSize)->take($pageSize)->get();
+
+        // Pagination for past trainings
+        $pastTotal = $pastQuery->count();
+        $pastJoins = $pastQuery->skip(($page - 1) * $pageSize)->take($pageSize)->get();
 
         $data = [
-            'joins' => $joins,
-            'total' => $total,
+            'upcoming_joins' => $upcomingJoins,
+            'past_joins' => $pastJoins,
+            'total_upcoming' => $upcomingTotal,
+            'total_past' => $pastTotal,
             'page' => $page,
             'pageSize' => $pageSize,
-            'totalPages' => ceil($total / $pageSize)
+            'totalPages_upcoming' => ceil($upcomingTotal / $pageSize),
+            'totalPages_past' => ceil($pastTotal / $pageSize),
         ];
 
         return $this->apiResponse(200, trans('api.home.join by user'), null, $data);
