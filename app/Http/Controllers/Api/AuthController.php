@@ -19,13 +19,16 @@ class AuthController extends Controller
 {
     use apiResponse, FileUploader;
 
+    private $userModel;
     private $smsOtp;
 
     /**
+     * @param User $user
      * @param SmsMisrOtpSender $smsOtp
      */
-    public function __construct(SmsMisrOtpSender $smsOtp)
+    public function __construct(User $user, SmsMisrOtpSender $smsOtp)
     {
+        $this->userModel = $user;
         $this->smsOtp = $smsOtp;
     }
 
@@ -101,9 +104,9 @@ class AuthController extends Controller
             return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
         }
 
-        $user = User::where('phone',$request->phone)->first();
+        $user = $this->userModel::where('phone',$request->phone)->first();
         $user->update(['otp' => $otp]);
-        $response = $this->smsOtp->sendOtp('2'.$request->phone, $otp);
+        $response = $this->smsOtp->sendOtp('+2'.$request->phone, $otp);
 
         auth()->loginUsingId($user->id);
 
@@ -118,31 +121,29 @@ class AuthController extends Controller
 
     public function resendCode(Request $request)
     {
-        $otp = 1234;
         $validation = Validator::make($request->all(),[
             'phone'=> 'required|exists:users,phone',
         ]);
         if ($validation->fails()){
             return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
         }
-
+        $user = $this->userModel::where('phone',$request->phone)->first();
+        $response = $this->smsOtp->sendOtp('+2'.$request->phone, $user->otp);
         return $this->apiResponse(200, trans('api.auth.resend code'), null, [
-            "the otp"=>$otp
+            "status" => $response
         ]);
     }
 
     public function verifyCode(Request $request)
     {
-        $otp = 1234;
         $validation = Validator::make($request->all(),[
-            'otp'=>'required|numeric|min:4',
+            'otp'=>'required|numeric|min:5|exists:users,otp',
         ]);
+
         if ($validation->fails()){
             return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
         }
-        if ($request->otp != $otp){
-            return  $this->apiResponse(400 , trans('api.auth.failed the otp'));
-        }
+
         return  $this->apiResponse(200 ,trans('api.auth.the verify code successfully'));
     }
     public function logout()

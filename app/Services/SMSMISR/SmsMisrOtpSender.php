@@ -42,11 +42,10 @@ class SmsMisrOtpSender
             ]);
 
             $body = json_decode($response->getBody()->getContents(), true);
-
-            $body['message'] = $this->getMessageForCode($body['code']);
+            $body['message'] = $this->getMessageForCode($body['Code']);
 
             return [
-                'code' => $body['code'],
+                'code' => $body['Code'],
                 'message' => $body['message'],
             ];
         } catch (GuzzleException $e) {
