@@ -35,5 +35,13 @@ return [
         'url' => env('AWS_S3_URL','https://bokit-app.s3.eu-north-1.amazonaws.com'),
         'bucket' => env('AWS_BUCKET','bokit-app'),
     ],
+    'sms' => [
+        'environment' => env('SMS_ENVIRONMENT',2),// 1 = live, 2 = test
+        'username' => env('SMS_USERNAME','a61cb53f-8b66-474b-9cb9-8044decb4d3f'),
+        'password' => env('SMS_PASSWORD','d5b03150e4ae915b8b0891439b786559518a9c4d1d75d00ac4149c82363e849f'),
+        'sender' => env('SMS_SENDER','Test Sender'),
+        'base_url_otp' => env('SMS_BASE_URL_OTP','https://smsmisr.com/api/OTP/'),
+        'template_token' => env('SMS_TEMPLATE_TOKEN','e83faf6025ec41d0f40256d2812629f5fa9291d05c8322f31eea834302501da8'),
+    ]
 
 ];

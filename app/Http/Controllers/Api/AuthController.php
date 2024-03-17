@@ -7,6 +7,7 @@ use App\Http\Resources\UserResource;
 use App\Http\Traits\apiResponse;
 use App\Http\Traits\FileUploader;
 use App\Models\User;
+use App\Services\SMSMISR\SmsMisrOtpSender;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -18,7 +19,16 @@ class AuthController extends Controller
 {
     use apiResponse, FileUploader;
 
-    // register account
+    private $smsOtp;
+
+    /**
+     * @param SmsMisrOtpSender $smsOtp
+     */
+    public function __construct(SmsMisrOtpSender $smsOtp)
+    {
+        $this->smsOtp = $smsOtp;
+    }
+
     public function register(Request $request)
     {
         $validation = Validator::make($request->all(),[
@@ -83,7 +93,7 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $otp = 1234;
+        $otp = rand(10000,99999);
         $validation = Validator::make($request->all(),[
             'phone'=> 'required|exists:users,phone',
         ]);
@@ -92,12 +102,12 @@ class AuthController extends Controller
         }
 
         $user = User::where('phone',$request->phone)->first();
-
+        $user->update(['otp' => $otp]);
+        $this->smsOtp->sendOtp($request->phone, $otp);
         auth()->loginUsingId($user->id);
 
         $token = JWTAuth::fromUser($user);
         return $this->apiResponse(200, trans('api.auth.login success'), null, [
-            'otp'=>$otp,
             'token'=>$token,
             'user'=> $user
         ]);
