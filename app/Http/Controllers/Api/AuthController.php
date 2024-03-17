@@ -103,7 +103,7 @@ class AuthController extends Controller
 
         $user = User::where('phone',$request->phone)->first();
         $user->update(['otp' => $otp]);
-        $response = $this->smsOtp->sendOtp('+2'.$request->phone, $otp);
+        $response = $this->smsOtp->sendOtp('2'.$request->phone, $otp);
 
         auth()->loginUsingId($user->id);
 
