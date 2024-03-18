@@ -65,7 +65,10 @@ class AcademyController extends Controller
         // Start building the query with necessary relationships
         $query = Training::where('academy_id', $id)
             ->with([
-                'academy:id,logo,commercial_name',
+                'academy' => function ($model) {
+                    $model->select(['id', 'commercial_name', 'logo']);
+                    $model->withCount(['follows']);
+                },
                 'address:id,address,city_id,area_id,longitude,latitude',
             ])
             ->withCount(['joins', 'classes'])

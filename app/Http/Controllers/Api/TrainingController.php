@@ -21,7 +21,11 @@ class TrainingController extends Controller
         $query = Training::query()->select(['id','name','price','start_date','end_date','max_players','level','gender','age_group','academy_id','address_id','sport_id']);
         $total = $query->count();
         $query = $query->skip($page * $pageSize - $pageSize)->limit($pageSize);
-        $trainings = $query->with(['academy:id,commercial_name',
+        $trainings = $query->with(['academy'=> function ($query) {
+            $query->select(['id', 'commercial_name', 'logo']);
+            $query->withCount('follows');
+
+        },
             'address:id,address,area_id,city_id'])
             ->withCount(['classes', 'joins'])->get();
         $data = [
@@ -102,7 +106,10 @@ class TrainingController extends Controller
             $query = $query->skip($page * $pageSize - $pageSize)->limit($pageSize);
             // Calculate the total number of pages
             $totalPages = ceil($total / $pageSize);
-            $trainings = $query->with(['academy:id,commercial_name',
+            $trainings = $query->with(['academy'=> function ($query) {
+                $query->select(['id', 'commercial_name', 'logo']);
+                $query->withCount('follows');
+            },
                 'address:id,address,area_id,city_id'])
                 ->withCount(['classes', 'joins'])->get();
             $data = [
@@ -125,7 +132,10 @@ class TrainingController extends Controller
         $page = (request()->has('page')) ? request('page') : 1;
         $training = Training::with([
             'coach:id,name,image',
-            'academy:id,commercial_name,logo',
+            'academy' => function ($query) {
+                $query->select(['id', 'commercial_name', 'logo']);
+                $query->withCount('follows');
+            },
             'address:id,address,longitude,latitude',
             'joins.user:id,image',
             'classes'=>function ($q) use ($pageSize , $page) {

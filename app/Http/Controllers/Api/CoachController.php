@@ -47,7 +47,10 @@ class CoachController extends Controller
 
         $trainings = Training::where('coach_id', $id)
             ->with([
-                'academy:id,logo,commercial_name',
+                'academy' => function ($query){
+                    $query->select('id', 'phone', 'commercial_name', 'logo', 'address', 'facebook', 'instagram')
+                        ->withCount('follows');
+                },
                 'address:id,address,city_id,area_id,longitude,latitude',
             ])
             ->withCount(['joins', 'classes'])
