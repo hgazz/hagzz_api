@@ -9,11 +9,14 @@ class UserResource extends JsonResource
 {
 
     public $token;
+    public $response;
 
-    public function __construct($resource, $token)
+    public function __construct($resource, $token, $response)
     {
         parent::__construct($resource);
         $this->token = $token;
+        $this->response = $response;
+
     }
     /**
      * Transform the resource into an array.
@@ -33,6 +36,7 @@ class UserResource extends JsonResource
             'city_id' => $this->city_id,
             'area_id' => $this->area_id,
             'token' => $this->token,
+            'otp_status' => $this->response
         ];
     }
 }

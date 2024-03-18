@@ -58,7 +58,7 @@ class AuthController extends Controller
             DB::beginTransaction();
 
             $imageName = $request->hasFile('image') ? $this->upload($request->file('image'), User::PATH) : null;
-
+            $otp = rand(10000,99999);
             $user = User::create([
                 'name' => $request->name,
                 'phone' => $request->phone,
@@ -68,6 +68,7 @@ class AuthController extends Controller
                 'country_id' => $request->country_id,
                 'city_id' => $request->city_id,
                 'area_id' => $request->area_id,
+                'otp' => $otp
             ]);
 
             $sportsWithLevels = [];
@@ -81,10 +82,10 @@ class AuthController extends Controller
             auth()->loginUsingId($user->id);
 
             $token = JWTAuth::fromUser($user);
-
+            $response = $this->smsOtp->sendOtp('+2'.$request->phone, $otp);
             DB::commit();
 
-            return $this->apiResponse(200, trans('api.auth.success_register'), null, new UserResource($user, $token));
+            return $this->apiResponse(200, trans('api.auth.success_register'), null, new UserResource($user, $token, $response));
         } catch (\Exception $e) {
             // An error occurred, rollback the transaction
             DB::rollback();
@@ -148,8 +149,8 @@ class AuthController extends Controller
     }
     public function logout()
     {
-            Auth::logout();
-            return $this->apiResponse(200, trans('api.auth.logout'));
+        Auth::logout();
+        return $this->apiResponse(200, trans('api.auth.logout'));
     }
 
     public function deleteAccount()
