@@ -45,14 +45,12 @@ Route::controller(AddressController::class)->group(function () {
     Route::post('/areas', 'getAreasByCity');
     Route::get('/all-area', 'getAreas');
 });
-
+Route::get('home',[HomeController::class,'home']);
 Route::group(['middleware' => ['auth:api', 'setLang']], function () {
-
     Route::get('delete/account', [AuthController::class, 'deleteAccount']);
     Route::post('update/user-profile', [AuthController::class, 'updateProfile']);
 
     Route::controller(HomeController::class)->group(function (){
-        Route::get('/home','home');
         Route::post('/language', 'changeLang');
     });
 
