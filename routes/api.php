@@ -50,6 +50,7 @@ Route::get('home',[HomeController::class,'home']);
 Route::post('explore',[TrainingController::class,'index']);
 Route::get('trainingDetails/{id}', [TrainingController::class,'trainingDetails']);
 Route::get('academyDetails/{id}',[AcademyController::class,'academyDetails']);
+Route::get('academyTrainings/{id}',[AcademyController::class,'getTrainingsByAcademy']);
 Route::get('coachProfile/{id}',[CoachController::class,'coachProfile']);
 
 Route::group(['middleware' => ['auth:api', 'setLang']], function () {
@@ -66,7 +67,6 @@ Route::group(['middleware' => ['auth:api', 'setLang']], function () {
 
     Route::controller(AcademyController::class)->group(function (){
        Route::get('academies','getAllAcademies');
-       Route::get('academyTrainings/{id}','getTrainingsByAcademy');
     });
 
     Route::controller(CoachController::class)->group(function (){
