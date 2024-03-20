@@ -51,12 +51,12 @@ Route::get('home',[HomeController::class,'home']);
 Route::controller(TrainingController::class)->group(function (){
     Route::get('trainings/list', 'getAllTrainings');
     Route::get('trainingDetails/{id}', 'trainingDetails');
-    Route::get('academyDetails/{id}','academyDetails');
     Route::post('explore','index');
 });
 
 Route::controller(AcademyController::class)->group(function (){
     Route::get('academies','getAllAcademies');
+    Route::get('academyDetails/{id}','academyDetails');
     Route::get('academyTrainings/{id}','getTrainingsByAcademy');
 });
 
