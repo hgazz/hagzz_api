@@ -51,7 +51,7 @@ class AcademyController extends Controller
         $isFollowing = $this->checkAcademyFollow($academy);
         $data = [
             'academy' => $academy,
-            'isFollowing' => $isFollowing ?? null,
+            'isFollowing' => $isFollowing,
         ];
         return $this->apiResponse(200,trans('api.home.Academy Details'),null, $data);
     }
@@ -97,7 +97,11 @@ class AcademyController extends Controller
      */
     public function checkAcademyFollow(Model|Collection|Builder|array $academy)
     {
-        return Follow::whereBelongsTo(auth('api')->user(), 'user')
-            ->where('followable_id', $academy->id)->exists();
+        $isFollow = null;
+        if(auth('api')->check()){
+            $isFollow = Follow::whereBelongsTo(auth('api')->user(), 'user')
+                ->where('followable_id', $academy->id)->exists();
+        }
+        return $isFollow;
     }
 }
