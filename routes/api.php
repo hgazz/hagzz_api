@@ -60,8 +60,11 @@ Route::controller(AcademyController::class)->group(function (){
     Route::get('academyTrainings/{id}','getTrainingsByAcademy');
 });
 
+Route::controller(CoachController::class)->group(function (){
+    Route::get('coach/trainings/{id}','getTrainingsByCoach');
+    Route::get('coachProfile/{id}','coachProfile');
+});
 
-Route::get('coachProfile/{id}',[CoachController::class,'coachProfile']);
 
 Route::group(['middleware' => ['auth:api', 'setLang']], function () {
     Route::get('delete/account', [AuthController::class, 'deleteAccount']);
@@ -69,10 +72,6 @@ Route::group(['middleware' => ['auth:api', 'setLang']], function () {
 
     Route::controller(HomeController::class)->group(function (){
         Route::post('/language', 'changeLang');
-    });
-
-    Route::controller(CoachController::class)->group(function (){
-        Route::get('coach/trainings/{id}','getTrainingsByCoach');
     });
 
     Route::controller(FollowController::class)->group(function (){
