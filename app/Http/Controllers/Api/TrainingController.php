@@ -148,7 +148,7 @@ class TrainingController extends Controller
         {
             return $this->apiResponse(400, trans('api.validation_error'), trans('api.home.training_not_found'),);
         }
-        $is_joined = Join::whereBelongsTo(auth()->user(), 'user')->whereBelongsTo($training, 'training')->exists();
+        $is_joined = auth('api')->check() ? Join::whereBelongsTo(auth()->user(), 'user')->whereBelongsTo($training, 'training')->exists() : null;
         $data = [
             'training' => $training,
             'is_joined' => $is_joined
