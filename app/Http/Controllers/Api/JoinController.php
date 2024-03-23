@@ -12,6 +12,7 @@ use App\Models\CanceledBooking;
 use App\Models\Invoice;
 use App\Notifications\CancelBookingNotifications;
 use App\Services\Booking\BookingService;
+use App\Services\Firebase\NotificationService;
 use App\Services\SMSMISR\SmsMisrOtpSender;
 use App\Services\SMSMISR\SmsService;
 use Illuminate\Http\Request;
@@ -29,6 +30,7 @@ class JoinController extends Controller
 
     /**
      * @param BookingService $bookingService
+     * @param SmsService $smsService
      */
     public function __construct(BookingService $bookingService , SmsService $smsService)
     {
@@ -75,21 +77,14 @@ class JoinController extends Controller
             //notification to academy
             $academyTitle = 'New Booking';
             $academyDescription = $join->user->name.' booked '.$join->training->academy->commercial_name;
-            Notification::create([
-                'id'=>Str::uuid(),
-                'type'=> $academyTitle,
-               'notifiable_type'=> Academies::class,
-                'notifiable_id'=> $join->training->academy_id,
-                'data'=> $academyDescription,
-            ]);
-
+            NotificationService::dbNotification($join->training->academy_id,Academies::class, $academyTitle, $academyTitle, $academyDescription);
             $this->smsService->sendMessage($join->training->academy->phone, "{$academyTitle} - {$academyDescription}");
 
             //notifications to user
             $title = 'Booking Confirmed';
             $body = 'your booking with '.$join->training->academy->commercial_name.' is confirmed';
             $this->smsService->sendMessage($join->user->phone, "{$title} - {$body}");
-
+            NotificationService::dbNotification($join->user_id,User::class, $title, $title, $body);
             DB::commit();
             return $this->apiResponse(200,trans('api.home.joined as training successfully'),null , $join);
         }catch (\Exception $e){

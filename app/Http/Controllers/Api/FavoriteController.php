@@ -9,6 +9,7 @@ use App\Models\Join;
 use App\Models\Notification;
 use App\Models\Training;
 use App\Models\User;
+use App\Services\Firebase\NotificationService;
 use App\Services\SMSMISR\SmsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -20,7 +21,7 @@ class FavoriteController extends Controller
 {
    use  apiResponse;
 
-   private $smsService;
+   private SmsService $smsService;
     public function __construct(SmsService $smsService)
     {
         $this->smsService = $smsService;
@@ -32,7 +33,7 @@ class FavoriteController extends Controller
         $query = Favorite::with([
             'training' => function ($query) {
                 $query->where('active',true);
-                $query->select('id', 'name', 'image', 'price', 'start_date', 'end_date', 'max_players', 'level', 'gender', 'age_group','address_id','academy_id','active');
+                $query->select('id', 'name', 'price', 'start_date', 'end_date', 'max_players', 'level', 'gender', 'age_group','address_id','academy_id','active');
                 $query->withCount(['joins', 'classes']);
             },
             'training.academy'=>function ($query){
@@ -86,21 +87,16 @@ class FavoriteController extends Controller
 
             $training = Training::find($fav->training_id);
 
-            $slotsAvailable = $joinsCount - $training->max_players;
+            $slotsAvailable = $training->max_players - $joinsCount;
 
-            if ($slotsAvailable == -2) {
+            if ($slotsAvailable <= 2) {
 
                 $title = "Don't miss out";
                 $body = "Only two slots are available in a training you saved";
-                Notification::create([
-                    'id'=>Str::uuid(),
-                    'type'=> $title,
-                    'notifiable_type'=> User::class,
-                    'notifiable_id'=> auth()->id(),
-                    'data'=> $body,
-                ]);
-                
-                $this->smsService->sendMessage($fav->user->phone, "{$title} - {$body}");
+
+                NotificationService::dbNotification(auth()->id(), User::class, 'Saved Training', $title, $body);
+
+              $this->smsService->sendMessage($fav->user->phone, "{$title} - {$body}");
             }
             DB::commit();
             return $this->apiResponse(200 ,trans('api.home.add favorite successfully'),null, $fav);

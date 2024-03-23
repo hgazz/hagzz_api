@@ -2,7 +2,9 @@
 
 namespace App\Services\Firebase;
 
-use Illuminate\Support\Facades\Notification;
+
+use App\Models\Notification;
+use Illuminate\Support\Str;
 
 class NotificationService
 {
@@ -36,15 +38,16 @@ class NotificationService
         return true;
     }
 
-    public static function dbNotification($data, $sender, $receiver, $senderType)
+    public static function dbNotification($sender, $senderType, $type, $title, $body)
     {
 
         Notification::create([
-            'sender_id' => $sender,
-            'receiver_id' => $receiver,
-            'sender_type' => $senderType,
-            'title' => $data['title'],
-            'message' => $data['message'],
+            'id'=>Str::uuid(),
+            'notifiable_id' => $sender,
+            'notifiable_type' => $senderType,
+            'type' =>$type,
+            'title' => $title,
+            'data' => $body,
         ]);
 
     }
