@@ -10,7 +10,7 @@ class NotificationService
 {
     public static function firebaseNotification($notificationData, $token)
     {
-        $SERVER_API_KEY = '';
+        $SERVER_API_KEY = 'AAAAU9DrP9s:APA91bHPZSjTIEgNGFTL28H-yMuNFdwe84zfe0zQ7m0epSK0y7UsmLkVVU-vP9jkkaOfPnRiS72OaCv0WscyDn85jiYGnHVd83AbYCENvGiKYFXXqPYzDTExc_-ZQkcLmbMMbJWYgXwA';
 
         $data = [
             'registration_ids' => [
