@@ -74,15 +74,7 @@ class FavoriteController extends Controller
                 'training_id'=>$request->training_id
             ]);
 
-            $joinsCount = Join::where('training_id', $fav->training_id)->count();
 
-            $training = Training::find($fav->training_id);
-
-            $slotsAvailable = $joinsCount - $training->max_players;
-
-            if ($slotsAvailable == -2) {
-                dd('test');
-            }
             DB::commit();
             return $this->apiResponse(200 ,trans('api.home.add favorite successfully'),null, $fav);
         }catch (\Exception $e){
