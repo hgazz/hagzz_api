@@ -4,38 +4,75 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Traits\apiResponse;
+use App\Models\CanceledBooking;
+use App\Models\Invoice;
 use App\Models\Join;
+use App\Notifications\CancelBookingNotifications;
+use App\Services\Booking\BookingService;
+use App\Services\SMSMISR\SmsMisrOtpSender;
+use App\Services\SMSMISR\SmsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class JoinController extends Controller
 {
     use apiResponse;
+
+    private BookingService $bookingService;
+
+    /**
+     * @param BookingService $bookingService
+     */
+    public function __construct(BookingService $bookingService)
+    {
+        $this->bookingService = $bookingService;
+    }
+
+
     public function addJoin(Request $request)
     {
         $validations = Validator::make($request->all(),[
            'invoice_id'=>'required|exists:invoices,id',
            'training_id'=>'required|exists:trainings,id',
-            'price'=>'required|numeric|min:0.01',
+           'price'=>'required|numeric|min:0.01',
         ]);
+
         if ($validations->fails()){
             return $this->apiResponse(400, trans('api.validation_error'), $validations->errors());
         }
+
         $joinsExist = Join::where([
             ['user_id',auth()->id()],
             ['training_id',$request->training_id],
         ])->exists();
+
         if ($joinsExist){
             return  $this->apiResponse(400 , null,trans('api.home.join training already exists'));
         }
-       $joins = Join::create([
-            'user_id'=> auth()->id(),
-            'invoice_id' => $request->invoice_id,
-            'training_id'=>$request->training_id,
-            'price'=>$request->price,
-        ]);
-        return $this->apiResponse(200,trans('api.home.joined as training successfully'),null , $joins);
+        try {
+            DB::beginTransaction();
+            $invoice = Invoice::create([
+                'user_id'=>auth()->id(),
+                'training_id'=>$request->training_id,
+                'order_number' => $request->invoice_id,
+                'status'=>'paid',
+                'amount'=>$request->price
+            ]);
+            $join = Join::create([
+                'user_id'=> auth()->id(),
+                'invoice_id' => $invoice->id,
+                'training_id'=>$request->training_id,
+                'price'=>$request->price,
+            ]);
+            DB::commit();
+            return $this->apiResponse(200,trans('api.home.joined as training successfully'),null , $join);
+        }catch (\Exception $e){
+            DB::rollBack();
+            return $this->apiResponse(400, trans('api.validation_error'), $e->getMessage());
+        }
+
     }
 
     public function join(Request $request)
@@ -100,5 +137,34 @@ class JoinController extends Controller
         ];
 
         return $this->apiResponse(200, trans('api.home.join by user'), null, $data);
+    }
+
+    public function cancelBooking(Request $request)
+    {
+        $validations = Validator::make($request->all(), [
+            'id' => ['required','exists:joins,id', $this->checkJoinDate($request)],
+            'reason' => 'required|min:3|max:255',
+        ]);
+
+        if ($validations->fails()) {
+            return $this->apiResponse(400, trans('api.validation_error'), $validations->errors());
+        }
+        try {
+            $this->bookingService->cancelBooking($request);
+            return $this->apiResponse(200, trans('api.home.cancel booking successfully'));
+        } catch (\Exception $e) {
+            return $this->apiResponse(400, trans('api.error'), $e->getMessage());
+        }
+
+    }
+
+    protected function checkJoinDate(Request $request)
+    {
+        $join = Join::find($request->id);
+        if ($join->created_at->gte(Carbon::now()->subDays(2))) {
+            return true; // The join date is within the last 2 days
+        } else {
+            return false; // The join date is more than 2 days ago
+        }
     }
 }
