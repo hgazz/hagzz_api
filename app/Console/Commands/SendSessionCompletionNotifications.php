@@ -4,7 +4,9 @@ namespace App\Console\Commands;
 
 use App\Models\Join;
 use App\Models\TClass;
+use App\Models\User;
 use App\Notifications\SessionCompletedNotification;
+use App\Services\Firebase\NotificationService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 
@@ -43,7 +45,8 @@ class SendSessionCompletionNotifications extends Command
             $joins = Join::where('training_id', $class->training_id)->get();
             foreach ($joins as $join) {
                 $user = $join->user;
-                $user->notify(new SessionCompletedNotification());
+                $body = "You completed today's session successfully. Keep up the great work!";
+                NotificationService::dbNotification($user->id, User::class, 'session_completed', 'Session Completed', $body);
             }
         }
 

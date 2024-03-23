@@ -4,7 +4,9 @@ namespace App\Console\Commands;
 
 use App\Models\Join;
 use App\Models\TClass;
+use App\Models\User;
 use App\Notifications\SessionReminderNotification;
+use App\Services\Firebase\NotificationService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 
@@ -38,7 +40,9 @@ class SendSessionReminder extends Command
 
             foreach ($joins as $join) {
                 $user = $join->user;
-                $user->notify(new SessionReminderNotification($join->training->academy->commercial_name, $class->start_time));
+                $title= 'Session Reminder';
+                $body = 'Get ready, your session with ' . $class->training->academy->commercial_name . ' will start at ' . $class->start_time;
+                NotificationService::dbNotification($user->id, User::class, $title, $title, $body);
             }
         }
         $this->info('Session reminders sent successfully.');

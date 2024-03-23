@@ -4,7 +4,9 @@ namespace App\Services\Booking;
 
 use App\Models\CanceledBooking;
 use App\Models\Join;
+use App\Models\User;
 use App\Notifications\CancelBookingNotifications;
+use App\Services\Firebase\NotificationService;
 use App\Services\SMSMISR\SmsService;
 use Illuminate\Support\Facades\DB;
 
@@ -35,7 +37,7 @@ class BookingService
         $title = "Booking Cancelled";
         $body = "Your booking with {$join->training->academy->commercial_name} is Cancelled. Please explore other trainings.";
         $this->smsService->sendMessage($join->user->phone, "{$title} - {$body}");
-
+        NotificationService::dbNotification($join->user_id, User::class, 'cancel_booking', $title, $body);
         $join->training->academy->notify(new CancelBookingNotifications($join->training, $join->user));
 
         DB::commit();
