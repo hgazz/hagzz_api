@@ -79,9 +79,11 @@ Route::group(['middleware' => ['auth:api', 'setLang']], function () {
         Route::post('follow/addFollow','addFollow');
         Route::post('follow/deleteFollow','deleteFollow');
     });
+
     Route::controller(JoinController::class)->group(function (){
         Route::post('addJoin','addJoin');
         Route::get('join','join');
+        Route::post('cancelBooking','cancelBooking');
     });
 
     Route::controller(FavoriteController::class)->group(function (){

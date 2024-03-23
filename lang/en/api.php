@@ -50,5 +50,6 @@ return [
         'coach_trainings' => 'Coach Trainings',
         'Academy List' => 'Academy List',
         'Training List' => 'Training List',
+        'cancel booking successfully' => 'cancel booking successfully',
     ]
 ];
