@@ -25,12 +25,14 @@ class JoinController extends Controller
     use apiResponse;
 
     private BookingService $bookingService;
+    protected $smsService;
 
     /**
      * @param BookingService $bookingService
      */
-    public function __construct(BookingService $bookingService)
+    public function __construct(BookingService $bookingService , SmsService $smsService)
     {
+        $this->smsService = $smsService;
         $this->bookingService = $bookingService;
     }
 
@@ -71,21 +73,22 @@ class JoinController extends Controller
                 'price'=>$request->price,
             ]);
             //notification to academy
+            $academyTitle = 'New Booking';
+            $academyDescription = $join->user->name.' booked '.$join->training->academy->commercial_name;
             Notification::create([
                 'id'=>Str::uuid(),
-                'type'=>'New Booking',
+                'type'=> $academyTitle,
                'notifiable_type'=> Academies::class,
                 'notifiable_id'=> $join->training->academy_id,
-                'data'=> auth()->user()->name.' booked '.$join->training->academy->commercial_name,
+                'data'=> $academyDescription,
             ]);
+
+            $this->smsService->sendMessage($join->training->academy->phone, "{$academyTitle} - {$academyDescription}");
+
             //notifications to user
-            Notification::create([
-                'id'=>Str::uuid(),
-                'type'=>'Booking Confirmed',
-                'notifiable_type'=> User::class,
-                'notifiable_id'=> auth()->id(),
-                'data'=>'  your booking with '.$join->training->academy->commercial_name.' is confirmed',
-            ]);
+            $title = 'Booking Confirmed';
+            $body = 'your booking with '.$join->training->academy->commercial_name.' is confirmed';
+            $this->smsService->sendMessage($join->user->phone, "{$title} - {$body}");
 
             DB::commit();
             return $this->apiResponse(200,trans('api.home.joined as training successfully'),null , $join);
