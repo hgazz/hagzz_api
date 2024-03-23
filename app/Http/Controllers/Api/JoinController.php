@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Traits\apiResponse;
+use App\Models\Academies;
+use App\Models\Join;
+use App\Models\Notification;
+use App\Models\User;
 use App\Models\CanceledBooking;
 use App\Models\Invoice;
-use App\Models\Join;
 use App\Notifications\CancelBookingNotifications;
 use App\Services\Booking\BookingService;
 use App\Services\SMSMISR\SmsMisrOtpSender;
@@ -15,18 +18,21 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class JoinController extends Controller
 {
     use apiResponse;
 
     private BookingService $bookingService;
+    protected $smsService;
 
     /**
      * @param BookingService $bookingService
      */
-    public function __construct(BookingService $bookingService)
+    public function __construct(BookingService $bookingService , SmsService $smsService)
     {
+        $this->smsService = $smsService;
         $this->bookingService = $bookingService;
     }
 
@@ -66,6 +72,24 @@ class JoinController extends Controller
                 'training_id'=>$request->training_id,
                 'price'=>$request->price,
             ]);
+            //notification to academy
+            $academyTitle = 'New Booking';
+            $academyDescription = $join->user->name.' booked '.$join->training->academy->commercial_name;
+            Notification::create([
+                'id'=>Str::uuid(),
+                'type'=> $academyTitle,
+               'notifiable_type'=> Academies::class,
+                'notifiable_id'=> $join->training->academy_id,
+                'data'=> $academyDescription,
+            ]);
+
+            $this->smsService->sendMessage($join->training->academy->phone, "{$academyTitle} - {$academyDescription}");
+
+            //notifications to user
+            $title = 'Booking Confirmed';
+            $body = 'your booking with '.$join->training->academy->commercial_name.' is confirmed';
+            $this->smsService->sendMessage($join->user->phone, "{$title} - {$body}");
+
             DB::commit();
             return $this->apiResponse(200,trans('api.home.joined as training successfully'),null , $join);
         }catch (\Exception $e){

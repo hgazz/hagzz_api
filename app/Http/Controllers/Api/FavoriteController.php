@@ -5,14 +5,26 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\apiResponse;
 use App\Models\Favorite;
+use App\Models\Join;
+use App\Models\Notification;
+use App\Models\Training;
+use App\Models\User;
+use App\Services\SMSMISR\SmsService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use function Laravel\Prompts\select;
 
 class FavoriteController extends Controller
 {
    use  apiResponse;
 
+   private $smsService;
+    public function __construct(SmsService $smsService)
+    {
+        $this->smsService = $smsService;
+    }
     public function favoriteList()
     {
         $pageSize = 10;
@@ -51,23 +63,51 @@ class FavoriteController extends Controller
    }
     public function addFavorite(Request $request)
     {
-        $validation = Validator::make($request->all() , [
-            'training_id' => 'required|exists:trainings,id',
-        ]);
+        try {
+            DB::beginTransaction();
+            $validation = Validator::make($request->all() , [
+                'training_id' => 'required|exists:trainings,id',
+            ]);
 
-        if ($validation->fails()){
-            return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
+            if ($validation->fails()){
+                return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
+            }
+
+            $favExist = Favorite::where(['user_id' =>auth()->id(), 'training_id' => $request->training_id])->exists();
+            if ($favExist){
+                return  $this->apiResponse(400 , null,trans('api.home.favorite already exists'));
+            }
+            $fav = Favorite::create([
+                'user_id'=>auth()->id(),
+                'training_id'=>$request->training_id
+            ]);
+
+            $joinsCount = Join::where('training_id', $fav->training_id)->count();
+
+            $training = Training::find($fav->training_id);
+
+            $slotsAvailable = $joinsCount - $training->max_players;
+
+            if ($slotsAvailable == -2) {
+
+                $title = "Don't miss out";
+                $body = "Only two slots are available in a training you saved";
+                Notification::create([
+                    'id'=>Str::uuid(),
+                    'type'=> $title,
+                    'notifiable_type'=> User::class,
+                    'notifiable_id'=> auth()->id(),
+                    'data'=> $body,
+                ]);
+                
+                $this->smsService->sendMessage($fav->user->phone, "{$title} - {$body}");
+            }
+            DB::commit();
+            return $this->apiResponse(200 ,trans('api.home.add favorite successfully'),null, $fav);
+        }catch (\Exception $e){
+            dd($e->getMessage());
         }
 
-        $favExist = Favorite::where(['user_id' =>auth()->id(), 'training_id' => $request->training_id])->exists();
-        if ($favExist){
-            return  $this->apiResponse(400 , null,trans('api.home.favorite already exists'));
-        }
-        $fav = Favorite::create([
-            'user_id'=>auth()->id(),
-            'training_id'=>$request->training_id
-        ]);
-        return $this->apiResponse(200 ,trans('api.home.add favorite successfully'),null, $fav);
     }
 
     public function deleteFavorite($id)
