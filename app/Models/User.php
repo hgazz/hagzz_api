@@ -29,7 +29,8 @@ class User extends Authenticatable implements JWTSubject
         'city_id',
         'area_id',
         'language',
-        'otp'
+        'otp',
+        'fcm_token'
     ];
 
     /**

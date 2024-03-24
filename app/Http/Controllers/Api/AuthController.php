@@ -100,13 +100,14 @@ class AuthController extends Controller
         $otp = rand(10000,99999);
         $validation = Validator::make($request->all(),[
             'phone'=> 'required|exists:users,phone',
+            'fcm_token' => 'required|string'
         ]);
         if ($validation->fails()){
             return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
         }
 
         $user = $this->userModel::where('phone',$request->phone)->first();
-        $user->update(['otp' => $otp]);
+        $user->update(['otp' => $otp, 'fcm_token' => $request->fcm_token]);
         $response = $this->smsOtp->sendOtp('+2'.$request->phone, $otp);
 
         auth()->loginUsingId($user->id);
