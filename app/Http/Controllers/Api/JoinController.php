@@ -84,6 +84,11 @@ class JoinController extends Controller
             $title = 'Booking Confirmed';
             $body = 'your booking with '.$join->training->academy->commercial_name.' is confirmed';
             $this->smsService->sendMessage($join->user->phone, "{$title} - {$body}");
+            $data = [
+                'title' => $title,
+                'body' => $body
+            ];
+            NotificationService::firebaseNotification($data, $join->user->fcm_token);
             NotificationService::dbNotification($join->user_id,User::class, $title, $title, $body);
             DB::commit();
             return $this->apiResponse(200,trans('api.home.joined as training successfully'),null , $join);

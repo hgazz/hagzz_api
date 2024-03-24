@@ -37,6 +37,8 @@ class BookingService
         $title = "Booking Cancelled";
         $body = "Your booking with {$join->training->academy->commercial_name} is Cancelled. Please explore other trainings.";
         $this->smsService->sendMessage($join->user->phone, "{$title} - {$body}");
+        $data = ['title' => $title, 'body' => $body];
+        NotificationService::firebaseNotification($data, $join->user->fcm_token);
         NotificationService::dbNotification($join->user_id, User::class, 'cancel_booking', $title, $body);
         $join->training->academy->notify(new CancelBookingNotifications($join->training, $join->user));
 
