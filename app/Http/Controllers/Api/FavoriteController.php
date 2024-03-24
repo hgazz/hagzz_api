@@ -93,7 +93,11 @@ class FavoriteController extends Controller
 
                 $title = "Don't miss out";
                 $body = "Only two slots are available in a training you saved";
-
+                $data = [
+                    'title' => $title,
+                    'body' => $body
+                ];
+                NotificationService::firebaseNotification($data,auth()->user()->fcm_token);
                 NotificationService::dbNotification(auth()->id(), User::class, 'Saved Training', $title, $body);
 
               $this->smsService->sendMessage($fav->user->phone, "{$title} - {$body}");
