@@ -88,8 +88,8 @@ class FavoriteController extends Controller
             $training = Training::find($fav->training_id);
 
             $slotsAvailable = $training->max_players - $joinsCount;
-            dd($slotsAvailable);
-            if ($slotsAvailable <= 2) {
+
+            if ($slotsAvailable <= 5) {
 
                 $title = "Don't miss out";
                 $body = "Only two slots are available in a training you saved";
