@@ -47,6 +47,7 @@ class AuthController extends Controller
             'sport_id.*' => 'exists:sports,id',
             'level' => 'required|array',
             'level.*' => 'in:beginner,intermediate,advanced',
+            'fcm_token' => 'required|string'
         ]);
 
         if($validation->fails())
@@ -68,7 +69,8 @@ class AuthController extends Controller
                 'country_id' => $request->country_id,
                 'city_id' => $request->city_id,
                 'area_id' => $request->area_id,
-                'otp' => $otp
+                'otp' => $otp,
+                'fcm_token' => $request->fcm_token
             ]);
 
             $sportsWithLevels = [];
