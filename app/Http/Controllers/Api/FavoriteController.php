@@ -88,7 +88,7 @@ class FavoriteController extends Controller
             $training = Training::find($fav->training_id);
 
             $slotsAvailable = $training->max_players - $joinsCount;
-
+            dd($slotsAvailable);
             if ($slotsAvailable <= 2) {
 
                 $title = "Don't miss out";
