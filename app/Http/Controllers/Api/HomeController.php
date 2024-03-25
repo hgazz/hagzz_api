@@ -93,7 +93,7 @@ class HomeController extends Controller
 
     public function terms()
     {
-        $terms = Setting::where('key', 'terms')->first();
+        $terms = Setting::where('key','terms')->first();
         return $this->apiResponse(200, trans('api.terms'), null, $terms);
     }
 
