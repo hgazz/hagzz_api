@@ -53,7 +53,6 @@ class FollowController extends Controller
                 ];
             }
 
-            // Return null for non-matching or non-existing followables (just in case)
             return null;
         })->filter();
 

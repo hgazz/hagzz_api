@@ -31,7 +31,17 @@ class SendSessionCompletionNotifications extends Command
      */
     public function handle()
     {
-
+        $bodyMessages = [
+            "You completed today's session successfully. Keep up the great work!",
+            "Well done! You're making progress every step of the way. Keep up the great work!",
+            "Session completed, another step closer to your goals. You're unstoppable!",
+            "Amazing job on completing today's session! Your commitment will pay off!",
+            "Pat yourself on the back for completing today's session. You're doing fantastic!",
+            "Great job finishing today's session! Your hard work is bringing you closer to success!",
+            "You're crushing it! Keep up the momentum as you progress on your journey!",
+            "Congratulations on completing the session! Your consistency is key to your success!",
+            "Well done on finishing today's session! Your determination is truly inspiring!"
+        ];
         $now = Carbon::now();
 
         $currentTime = $now->format('H:i:s');
@@ -45,8 +55,8 @@ class SendSessionCompletionNotifications extends Command
             $joins = Join::where('training_id', $class->training_id)->get();
             foreach ($joins as $join) {
                 $user = $join->user;
-                $body = "You completed today's session successfully. Keep up the great work!";
-                NotificationService::dbNotification($user->id, User::class, 'session_completed', 'Session Completed', $body);
+                $randomBodyMessage = $bodyMessages[array_rand($bodyMessages)];
+                NotificationService::dbNotification($user->id, User::class, 'session_completed', 'Session Completed', $randomBodyMessage);
             }
         }
 
