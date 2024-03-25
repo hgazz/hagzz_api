@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Traits\apiResponse;
 use App\Models\Academies;
 use App\Models\Banner;
+use App\Models\Setting;
 use App\Models\Sport;
 use App\Models\Training;
 use App\Models\User;
@@ -88,6 +89,12 @@ class HomeController extends Controller
         ]);
 
         return $this->apiResponse(200, trans('api.lang_changed'));
+    }
+
+    public function terms()
+    {
+        $terms = Setting::where('key', 'terms')->first();
+        return $this->apiResponse(200, trans('api.terms'), null, $terms);
     }
 
 }

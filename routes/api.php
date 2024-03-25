@@ -47,6 +47,7 @@ Route::controller(AddressController::class)->group(function () {
 });
 
 Route::get('home',[HomeController::class,'home']);
+Route::get('terms',[HomeController::class,'terms']);
 
 Route::controller(TrainingController::class)->group(function (){
     Route::get('trainings/list', 'getAllTrainings');

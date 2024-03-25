@@ -3,6 +3,7 @@
 return [
     'validation_error' => 'Invalid Data',
     'lang_changed' => 'Language Changed',
+    'terms' => 'Terms',
     'auth' => [
         'success_register' => 'User Registered successfully',
         'logout' => 'User Logout successfully',
