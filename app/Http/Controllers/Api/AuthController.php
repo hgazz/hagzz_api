@@ -99,6 +99,7 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+        dd($request->all());
         $otp = rand(10000,99999);
         $validation = Validator::make($request->all(),[
             'phone'=> 'required|exists:users,phone',
