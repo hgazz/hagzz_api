@@ -174,6 +174,10 @@ class AuthController extends Controller
             'country_id' => 'nullable|exists:countries,id',
             'city_id' => 'nullable|exists:cities,id',
             'area_id' => 'nullable|exists:areas,id',
+            'sport_id' => 'nullable|array',
+            'sport_id.*' => 'exists:sports,id',
+            'level' => 'nullable|array',
+            'level.*' => 'in:beginner,intermediate,advanced',
         ]);
 
         if($validation->fails())
@@ -181,20 +185,38 @@ class AuthController extends Controller
             return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
         }
 
-        $user = User::findOrFail(auth()->id());
-        $imageName = $this->getImageName($request, $user);
-        $user->update([
-            'name' => $request->name ?? $user->name,
-            'phone' => $request->phone ?? $user->phone,
-            'gender' => $request->gender ?? $user->gender,
-            'birth_date' => $request->birth_date ?? $user->birth_date,
-            'image' => $imageName,
-            'country_id' => $request->country_id ?? $user->country_id,
-            'city_id' => $request->city_id ?? $user->city_id,
-            'area_id' => $request->area_id ?? $user->area_id,
-        ]);
+        try {
+            DB::beginTransaction();
+            $user = User::findOrFail(auth()->id());
+            $imageName = $this->getImageName($request, $user);
+            $user->update([
+                'name' => $request->name ?? $user->name,
+                'phone' => $request->phone ?? $user->phone,
+                'gender' => $request->gender ?? $user->gender,
+                'birth_date' => $request->birth_date ?? $user->birth_date,
+                'image' => $imageName,
+                'country_id' => $request->country_id ?? $user->country_id,
+                'city_id' => $request->city_id ?? $user->city_id,
+                'area_id' => $request->area_id ?? $user->area_id,
+            ]);
 
-        return $this->apiResponse(200, trans('api.auth.profile_updated'), null, $user);
+            if (count($request->sport_id) > 0) {
+                $sportsWithLevels = [];
+                foreach ($request->sport_id as $index => $sportId) {
+                    if (isset($request->level[$index])) {
+                        $sportsWithLevels[$sportId] = ['level' => $request->level[$index]];
+                    }
+                }
+                $user->sports()->sync($sportsWithLevels);
+            }
+            DB::commit();
+            return $this->apiResponse(200, trans('api.auth.profile_updated'), null, $user);
+
+        }catch (\Exception $e) {
+            DB::rollback();
+            return $this->apiResponse(400, trans('api.validation_error'), $e->getMessage());
+        }
+
     }
 
     protected function getImageName(Request $request, User $user)
