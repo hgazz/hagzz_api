@@ -21,7 +21,7 @@ class SportController extends Controller
     {
         $userSports = auth('api')->user()->sports->pluck('id');
 
-        $sports = Sport::active()->whereNotIn('id', $userSports)->get();
+        $sports = Sport::active()->whereKeyNot($userSports)->get();
 
         return $this->apiResponse(200, trans('api.sports.sports'), $sports);
     }
