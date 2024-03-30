@@ -94,6 +94,8 @@ Route::group(['middleware' => ['auth:api', 'setLang']], function () {
     });
     Route::get('/profile/{id}', [ProfileController::class,'getProfile']);
 
+    Route::get('/user/sports', [SportController::class,'getSportsNotSelected']);
+
     Route::post('/logout',[AuthController::class,'logout']);
 
 });

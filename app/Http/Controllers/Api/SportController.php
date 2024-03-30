@@ -16,4 +16,13 @@ class SportController extends Controller
         $sports = Sport::active()->get();
         return $this->apiResponse(200, trans('api.sports.sports'), $sports);
     }
+
+    public function getSportsNotSelected()
+    {
+        $userSports = auth('api')->user()->sports->pluck('id');
+
+        $sports = Sport::active()->whereNotIn('id', $userSports)->get();
+
+        return $this->apiResponse(200, trans('api.sports.sports'), $sports);
+    }
 }
