@@ -89,7 +89,7 @@ class TrainingController extends Controller
 
             $request->whenHas('near_me', function () use($query){
                 $query->whereHas('address', function($query){
-                    return $query->where('city_id', auth()->user()->city_id);
+                    return $query->where('city_id', auth('api')->user()->city_id);
                 });
             });
 
