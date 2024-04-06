@@ -28,7 +28,7 @@ class HomeController extends Controller
             'sports related user authenticated'=> $sports,
             'academies and related sports'=> $academies,
             'training' => [
-                'trainings_count' => count($trainings),
+                'trainings_count' => Training::count(),
                 'trainings' => $trainings
             ],
         ]);
