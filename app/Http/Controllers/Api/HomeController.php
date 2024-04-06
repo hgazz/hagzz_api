@@ -27,7 +27,10 @@ class HomeController extends Controller
             'banners'=> $banners,
             'sports related user authenticated'=> $sports,
             'academies and related sports'=> $academies,
-            'training' => $trainings,
+            'training' => [
+                'trainings_count' => count($trainings),
+                'trainings' => $trainings
+            ],
         ]);
     }
     protected function getUserTraining()
