@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Invoice;
 use App\Models\Join;
+use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -14,10 +15,11 @@ class JoinSeeder extends Seeder
      */
     public function run(): void
     {
+
         $invoice = Invoice::create([
-            'user_id'=>18,
-            'training_id'=>2,
-            'order_number'=>23,
+            'user_id'=>40,
+            'training_id'=>12,
+            'order_number'=>283,
             'status'=>'paid',
             'amount'=>123
         ]);
