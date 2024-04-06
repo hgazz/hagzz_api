@@ -28,10 +28,12 @@ use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 Route::group(['middleware' => 'api'], function () {
     Route::controller(AuthController::class)->group(function () {
+        Route::post('/save/phone','saveUserPhone');
         Route::post('/register','register');
+        Route::post('/add/sports','addSports');
         Route::post('/login','login');
-        Route::post('/resendCode','resendCode');
-        Route::post('/verifyCode','verifyCode');
+//        Route::post('/resendCode','resendCode');
+//        Route::post('/verifyCode','verifyCode');
     });
 });
 

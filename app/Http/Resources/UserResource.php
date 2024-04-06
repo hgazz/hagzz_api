@@ -11,11 +11,10 @@ class UserResource extends JsonResource
     public $token;
     public $response;
 
-    public function __construct($resource, $token, $response)
+    public function __construct($resource, $token)
     {
         parent::__construct($resource);
         $this->token = $token;
-        $this->response = $response;
 
     }
     /**

@@ -32,21 +32,40 @@ class AuthController extends Controller
         $this->smsOtp = $smsOtp;
     }
 
+    public function saveUserPhone(Request $request)
+    {
+        $validation = Validator::make($request->all(),[
+            'phone' => 'required|unique:users,phone',
+        ]);
+
+        if($validation->fails())
+        {
+            return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
+        }
+
+        $otp = rand(10000,99999);
+
+        $this->smsOtp->sendOtp('+2'.$request->phone, $otp);
+
+        User::create([
+            'phone' => $request->phone,
+            'otp' => $otp
+        ]);
+
+        return $this->apiResponse(200, 'otp was sended');
+    }
+
     public function register(Request $request)
     {
         $validation = Validator::make($request->all(),[
             'name' => 'required',
-            'phone' => 'required|unique:users,phone',
+            'phone' => 'required|exists:users,phone',
             'gender' => 'required|in:male,female',
             'birth_date' => 'required',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'country_id' => 'required|exists:countries,id',
             'city_id' => 'required|exists:cities,id',
             'area_id' => 'required|exists:areas,id',
-            'sport_id' => 'required|array',
-            'sport_id.*' => 'exists:sports,id',
-            'level' => 'required|array',
-            'level.*' => 'in:beginner,intermediate,advanced',
             'fcm_token' => 'required|string'
         ]);
 
@@ -56,11 +75,10 @@ class AuthController extends Controller
         }
 
         try {
-            DB::beginTransaction();
-
             $imageName = $request->hasFile('image') ? $this->upload($request->file('image'), User::PATH) : null;
             $otp = rand(10000,99999);
-            $user = User::create([
+            $user = User::where('phone', $request->phone)->first();
+            $user->update([
                 'name' => $request->name,
                 'phone' => $request->phone,
                 'gender' => $request->gender,
@@ -72,29 +90,37 @@ class AuthController extends Controller
                 'otp' => $otp,
                 'fcm_token' => $request->fcm_token
             ]);
-
-            $sportsWithLevels = [];
-            foreach ($request->sport_id as $index => $sportId) {
-                if (isset($request->level[$index])) {
-                    $sportsWithLevels[$sportId] = ['level' => $request->level[$index]];
-                }
-            }
-            $user->sports()->attach($sportsWithLevels);
-
-            auth()->loginUsingId($user->id);
-
-            $token = JWTAuth::fromUser($user);
-            $response = $this->smsOtp->sendOtp('+2'.$request->phone, $otp);
-            DB::commit();
-
-            return $this->apiResponse(200, trans('api.auth.success_register'), null, new UserResource($user, $token, $response));
+            return $this->apiResponse(200, trans('api.auth.success_register'));
         } catch (\Exception $e) {
-            // An error occurred, rollback the transaction
-            DB::rollback();
-
-            // Handle the error, log it, or return an error response
             return $this->apiResponse(500, trans('api.auth.registration_failed'), $e->getMessage());
         }
+    }
+
+    public function addSports(Request $request)
+    {
+        $validation = Validator::make($request->all(),[
+            'sport_id' => 'required|array',
+            'sport_id.*' => 'exists:sports,id',
+            'level' => 'required|array',
+            'level.*' => 'in:beginner,intermediate,advanced',
+            'phone' => 'required|exists:users,phone',
+        ]);
+
+        if($validation->fails())
+        {
+            return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
+        }
+        $sportsWithLevels = [];
+        foreach ($request->sport_id as $index => $sportId) {
+            if (isset($request->level[$index])) {
+                $sportsWithLevels[$sportId] = ['level' => $request->level[$index]];
+            }
+        }
+        $user = User::where('phone', $request->phone)->first();
+        $user->sports()->attach($sportsWithLevels);
+        $token = JWTAuth::fromUser($user);
+
+        return $this->apiResponse(200, trans('api.auth.success_register'), null, new UserResource($user, $token));
     }
 
     public function login(Request $request)
@@ -108,9 +134,9 @@ class AuthController extends Controller
             return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
         }
 
-        $user = $this->userModel::where('phone',$request->phone)->first();
+        $user = $this->userModel::where('phone',$request->phone)->withCount('sports')->first();
         $user->update(['otp' => $otp, 'fcm_token' => $request->fcm_token]);
-        $response = $this->smsOtp->sendOtp('+2'.$request->phone, $otp);
+        $this->smsOtp->sendOtp('+2'.$request->phone, $otp);
 
         auth()->loginUsingId($user->id);
 
@@ -118,7 +144,6 @@ class AuthController extends Controller
         return $this->apiResponse(200, trans('api.auth.login success'), null, [
             'token'=>$token,
             'user'=> $user,
-            'otp_res' => $response
         ]);
 
     }
