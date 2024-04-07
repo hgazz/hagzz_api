@@ -45,7 +45,11 @@ class AuthController extends Controller
 
         $otp = rand(10000,99999);
 
-        $this->smsOtp->sendOtp('+2'.$request->phone, $otp);
+        $responseOtp = $this->smsOtp->sendOtp('+2'.$request->phone, $otp);
+        if($responseOtp['code'] == 'error')
+        {
+            return $this->apiResponse(400, 'sms error', $responseOtp['message']);
+        }
 
         User::create([
             'phone' => $request->phone,

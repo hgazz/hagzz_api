@@ -42,6 +42,12 @@ class SmsMisrOtpSender
             ]);
 
             $body = json_decode($response->getBody()->getContents(), true);
+           if(isset($body["code"])){
+               return [
+                   'code' => 'error',
+                   'message' => "The phone number can't send sms",
+               ];
+           }
             $body['message'] = $this->getMessageForCode($body['Code']);
 
             return [
