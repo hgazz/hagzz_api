@@ -98,7 +98,7 @@ class AcademyController extends Controller
     public function checkAcademyFollow(Model|Collection|Builder|array $academy)
     {
 
-        return auth('api')->check() ? Follow::whereBelongsTo(auth('api')->user(), 'user')
+        return auth('api')->check() ? Follow::where('user_id', auth('api')->id())
                 ->where('followable_id', $academy->id)->exists() : null;
 
     }
