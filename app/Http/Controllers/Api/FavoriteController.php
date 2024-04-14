@@ -44,7 +44,7 @@ class FavoriteController extends Controller
                 $query->select('id','address');
             },
             'training.academy.follows'
-        ])->where('user_id', auth()->id());
+        ])->where('user_id', auth('api')->id());
         $totalFavorites = $query->count();
         // Apply pagination to the query
         $favorites = $query->skip($page * $pageSize - $pageSize)->limit($pageSize)->get();

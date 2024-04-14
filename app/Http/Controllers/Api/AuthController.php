@@ -194,6 +194,7 @@ class AuthController extends Controller
 
     public function updateProfile(Request $request)
     {
+
         $validation = Validator::make($request->all(),[
             'name' => 'nullable',
             'phone' => 'nullable|unique:users,phone,'. auth()->id(),
@@ -229,7 +230,7 @@ class AuthController extends Controller
                 'area_id' => $request->area_id ?? $user->area_id,
             ]);
 
-            if (count($request->sport_id) > 0) {
+            if ($request->has('sport_id') && count($request->sport_id) > 0) {
                 $sportsWithLevels = [];
                 foreach ($request->sport_id as $index => $sportId) {
                     if (isset($request->level[$index])) {
