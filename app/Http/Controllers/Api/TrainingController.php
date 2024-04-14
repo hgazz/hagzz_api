@@ -26,7 +26,8 @@ class TrainingController extends Controller
             $query->withCount('follows');
 
         },
-            'address:id,address,area_id,city_id'])
+            'address:id,address,area_id,city_id',
+            'sport:id,name,icon'])
             ->withCount(['classes', 'joins'])->get();
         $data = [
             'trainings' => $trainings,
@@ -110,7 +111,8 @@ class TrainingController extends Controller
                 $query->select(['id', 'commercial_name', 'logo']);
                 $query->withCount('follows');
             },
-                'address:id,address,area_id,city_id'])
+                'address:id,address,area_id,city_id',
+                'sport:id,name,icon'])
                 ->withCount(['classes', 'joins'])->get();
             $data = [
                 'trainings' => $trainings,

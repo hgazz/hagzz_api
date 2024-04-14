@@ -45,7 +45,8 @@ class HomeController extends Controller
                 $query->withCount(['follows']);
             },
             'address:id,address',
-            'classes'
+            'classes',
+            'sport:id,name,icon'
         ])->whereIn('sport_id', $userSportsIds) // Filter trainings by user's sports
           ->withCount(['classes', 'joins'])
             ->inRandomOrder()
@@ -68,7 +69,8 @@ class HomeController extends Controller
                 $query->withCount(['follows']);
             },
             'address:id,address',
-            'classes'
+            'classes',
+            'sport:id,name,icon'
         ])->withCount(['classes', 'joins'])
             ->inRandomOrder()
             ->limit(4)

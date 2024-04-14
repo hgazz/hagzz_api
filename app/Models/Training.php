@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\HasTranslations;
 
 class Training extends Model
@@ -33,16 +35,16 @@ class Training extends Model
         'sport_id'
     ];
 
-    public function coach()
+    public function coach(): BelongsTo
     {
         return $this->belongsTo(Coach::class, 'coach_id');
     }
 
-    public function academy()
+    public function academy(): BelongsTo
     {
         return $this->belongsTo(Academies::class,'academy_id')->with('sports:id,name');
     }
-    public function getImageAttribute($value)
+    public function getImageAttribute($value): string
     {
         return config('services.s3.url') . DIRECTORY_SEPARATOR . self::PATH . DIRECTORY_SEPARATOR . $value;
     }
@@ -56,17 +58,17 @@ class Training extends Model
     }
 
 
-    public function classes()
+    public function classes(): HasMany
     {
         return $this->hasMany(TClass::class ,'training_id');
     }
 
-    public function joins()
+    public function joins(): HasMany
     {
         return $this->hasMany(Join::class, 'training_id');
     }
 
-    public function address()
+    public function address(): BelongsTo
     {
         return $this->belongsTo(Address::class, 'address_id')->with('area', 'city');
     }
@@ -85,5 +87,10 @@ class Training extends Model
     public function scopeIsActive($query)
     {
         return $query->where('active', 1);
+    }
+
+    public function sport(): BelongsTo
+    {
+        return $this->belongsTo(Sport::class, 'sport_id');
     }
 }

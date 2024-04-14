@@ -50,6 +50,7 @@ class CoachController extends Controller
                         ->withCount('follows');
                 },
                 'address:id,address,city_id,area_id,longitude,latitude',
+                'sport:id,name,icon'
             ])
             ->withCount(['joins', 'classes'])
             ->isActive()
