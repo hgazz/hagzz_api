@@ -42,8 +42,9 @@ class FavoriteController extends Controller
             },
             'training.address'=>function($query){
                 $query->select('id','address');
+            }, 'training.sport'=>function($query){
+                $query->select('id','name', 'icon');
             },
-            'sport:id,name,icon',
             'training.academy.follows'
         ])->where('user_id', auth('api')->id());
         $totalFavorites = $query->count();
