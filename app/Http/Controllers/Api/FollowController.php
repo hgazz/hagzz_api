@@ -49,7 +49,7 @@ class FollowController extends Controller
                 return [
                     'id' => $followable->id,
                     'type' => 'Academy',
-                    'data' => $followable, // Assuming $followable is already the Academies model instance
+                    'data' => $followable->load('sports:id,name,icon'), // Assuming $followable is already the Academies model instance
                 ];
             }
 
