@@ -42,7 +42,7 @@ class FollowController extends Controller
                 return [
                     'id' => $followable->id,
                     'type' => 'Coach',
-                    'data' => $followable->load('sport:id,name,icon'), // Assuming $followable is already the Coach model instance
+                    'data' => $followable->load('sports:id,name,icon'), // Assuming $followable is already the Coach model instance
                 ];
             } elseif ($followable instanceof Academies) {
                 // Customize the data for an Academy
