@@ -12,7 +12,7 @@ class Training extends Model
 {
     use HasFactory, HasTranslations;
 
-    protected $translatable = ['name', 'description'];
+    protected array $translatable = ['name', 'description'];
     protected $hidden = ['created_at', 'updated_at','academy_id','address_id','coach_id'];
 
     protected $appends = ['is_fav'];
@@ -54,7 +54,7 @@ class Training extends Model
         return $this->favorites()->where('user_id', auth('api')->id())->exists();
     }
 
-    public function favorites()
+    public function favorites(): HasMany
     {
         return $this->hasMany(Favorite::class, 'training_id');
     }
