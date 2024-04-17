@@ -32,4 +32,9 @@ class Coach extends Model
         return $this->morphMany(Follow::class, 'followable');
     }
 
+    public function sports()
+    {
+        return $this->belongsToMany(Sport::class, 'coach_sports', 'coach_id', 'sport_id');
+    }
+
 }
