@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\JoinController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\SportController;
 use App\Http\Controllers\Api\TrainingController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
@@ -50,7 +51,7 @@ Route::controller(AddressController::class)->group(function () {
 
 Route::get('home',[HomeController::class,'home']);
 Route::get('terms',[HomeController::class,'terms']);
-Route::get('faqs',[HomeController::class,'getFaqs']);
+
 
 Route::controller(TrainingController::class)->group(function (){
     Route::get('trainings/list', 'getAllTrainings');
@@ -74,6 +75,7 @@ Route::group(['middleware' => ['auth:api', 'setLang']], function () {
     Route::get('delete/account', [AuthController::class, 'deleteAccount']);
     Route::post('update/user-profile', [AuthController::class, 'updateProfile']);
 
+    Route::get('faqs',[HomeController::class,'getFaqs']);
     Route::controller(HomeController::class)->group(function (){
         Route::post('/language', 'changeLang');
     });
@@ -98,6 +100,7 @@ Route::group(['middleware' => ['auth:api', 'setLang']], function () {
     Route::get('/profile/{id}', [ProfileController::class,'getProfile']);
 
     Route::get('/user/sports', [SportController::class,'getSportsNotSelected']);
+    Route::get('coach/user/sports', [UserController::class, 'coachSportByUserFavSports']);
 
     Route::post('/logout',[AuthController::class,'logout']);
 
