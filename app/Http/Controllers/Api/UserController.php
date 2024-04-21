@@ -14,11 +14,7 @@ class UserController extends Controller
         // Get the sports IDs associated with the authenticated user
         $userSportsIds = auth('api')->user()->sports->pluck('id');
 
-// Retrieve unique coaches associated with the user's sports that belong to the same academy
         $coaches = CoachSport::whereIn('sport_id', $userSportsIds)
-            ->whereHas('coach', function ($query) {
-                $query->where('academy_id', auth('academy')->id()); // Filter by academy ID
-            })
             ->with(['coach' => function ($query) {
                 $query->select('id', 'name'); // Limit fields to ID and name
             }])
