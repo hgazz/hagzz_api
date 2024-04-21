@@ -16,7 +16,8 @@ class UserController extends Controller
 
         $coaches = CoachSport::whereIn('sport_id', $userSportsIds)
             ->with(['coach' => function ($query) {
-                $query->select('id', 'name'); // Limit fields to ID and name
+                $query->select('id', 'name', 'image')
+                      ->with('sports'); // Limit fields to ID and name
             }])
             ->distinct() // Ensure unique coaches
             ->get()
