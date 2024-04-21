@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Traits\apiResponse;
 use App\Models\Academies;
 use App\Models\Banner;
+use App\Models\Faq;
 use App\Models\Setting;
 use App\Models\Sport;
 use App\Models\Training;
@@ -100,6 +101,12 @@ class HomeController extends Controller
     {
         $terms = Setting::where('key','terms')->first();
         return $this->apiResponse(200, trans('api.terms'), null, $terms);
+    }
+
+    public function getFaqs()
+    {
+        $faqs = Faq::get();
+        return $this->apiResponse(200, trans('api.faqs'), null, $faqs);
     }
 
 }
