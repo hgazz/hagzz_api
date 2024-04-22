@@ -53,10 +53,15 @@ class SendSessionCompletionNotifications extends Command
 
         foreach ($completedClasses as $class) {
             $joins = Join::where('training_id', $class->training_id)->get();
+            $detail = [
+                'training_id' => $class->training_id,
+                'longitude' => $class->training->address->longitude,
+                'latitude' => $class->training->address->latitude
+            ];
             foreach ($joins as $join) {
                 $user = $join->user;
                 $randomBodyMessage = $bodyMessages[array_rand($bodyMessages)];
-                NotificationService::dbNotification($user->id, User::class, 'session_completed', 'Session Completed', $randomBodyMessage);
+                NotificationService::dbNotification($user->id, User::class, 3, 'Session Completed', $randomBodyMessage, $join->training->academy->image, $detail);
             }
         }
 

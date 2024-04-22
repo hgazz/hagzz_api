@@ -37,12 +37,16 @@ class SendSessionReminder extends Command
 
         foreach ($tomorrowClasses as $class) {
             $joins = Join::where('training_id', $class->training_id)->get();
-
+            $detail = [
+                'training_id' => $class->training_id,
+                'longitude' => $class->training->address->longitude,
+                'latitude' => $class->training->address->latitude
+            ];
             foreach ($joins as $join) {
                 $user = $join->user;
                 $title= 'Session Reminder';
                 $body = 'Get ready, your session with ' . $class->training->academy->commercial_name . ' will start at ' . $class->start_time;
-                NotificationService::dbNotification($user->id, User::class, $title, $title, $body);
+                NotificationService::dbNotification($user->id, User::class, 3, $title, $body, $join->training->academy->image);
             }
         }
         $this->info('Session reminders sent successfully.');

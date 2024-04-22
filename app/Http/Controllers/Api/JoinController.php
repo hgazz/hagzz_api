@@ -74,10 +74,15 @@ class JoinController extends Controller
                 'training_id'=>$request->training_id,
                 'price'=>$request->price,
             ]);
+            $details = [
+                'training_id' => $join->training_id,
+                'longitude' => $join->training->address->longitude,
+                'latitude' => $join->training->address->latitude
+            ];
             //notification to academy
             $academyTitle = 'New Booking';
             $academyDescription = $join->user->name.' booked '.$join->training->academy->commercial_name;
-            NotificationService::dbNotification($join->training->academy_id,Academies::class, $academyTitle, $academyTitle, $academyDescription);
+            NotificationService::dbNotification($join->training->academy_id,Academies::class, 2, $academyTitle, $academyDescription, $join->training->academy->image, $details);
             $this->smsService->sendMessage($join->training->academy->phone, "{$academyTitle} - {$academyDescription}");
 
             //notifications to user
@@ -86,10 +91,12 @@ class JoinController extends Controller
             $this->smsService->sendMessage($join->user->phone, "{$title} - {$body}");
             $data = [
                 'title' => $title,
-                'body' => $body
+                'body' => $body,
+                'image' => $join->training->academy->image,
+                'details' => $details
             ];
             NotificationService::firebaseNotification($data, $join->user->fcm_token);
-            NotificationService::dbNotification($join->user_id,User::class, $title, $title, $body);
+            NotificationService::dbNotification($join->user_id,User::class, 2, $title, $body, $join->training->academy->image, $details);
             DB::commit();
             return $this->apiResponse(200,trans('api.home.joined as training successfully'),null , $join);
         }catch (\Exception $e){

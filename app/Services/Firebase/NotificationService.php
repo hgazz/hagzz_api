@@ -38,7 +38,7 @@ class NotificationService
         return true;
     }
 
-    public static function dbNotification($sender, $senderType, $type, $title, $body)
+    public static function dbNotification($sender, $senderType, $type, $title, $body, $image = null, $details = null)
     {
 
         Notification::create([
@@ -48,6 +48,8 @@ class NotificationService
             'type' =>$type,
             'title' => $title,
             'data' => $body,
+            'image' => $image,
+            'details' => json_encode($details)
         ]);
 
     }

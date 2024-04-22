@@ -91,15 +91,22 @@ class FavoriteController extends Controller
             $slotsAvailable = $training->max_players - $joinsCount;
 
             if ($slotsAvailable <= 2) {
-
+                $detail = [
+                    'training_id' => $training->id,
+                    'longitude' => $training->address->longitude,
+                    'latitude' => $training->address->latitude
+                ];
                 $title = "Don't miss out";
                 $body = "Only two slots are available in a training you saved";
                 $data = [
                     'title' => $title,
-                    'body' => $body
+                    'body' => $body,
+                    'image' => $training->academy->image,
+                    'details'=>$detail
                 ];
+
                 NotificationService::firebaseNotification($data,auth()->user()->fcm_token);
-                NotificationService::dbNotification(auth()->id(), User::class, 'Saved Training', $title, $body);
+                NotificationService::dbNotification(auth()->id(), User::class, 2, $title, $body, $training->academy->logo, $detail);
 
               $this->smsService->sendMessage($fav->user->phone, "{$title} - {$body}");
             }
