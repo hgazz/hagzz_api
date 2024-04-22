@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\apiResponse;
 use App\Models\CoachSport;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
@@ -24,5 +25,19 @@ class UserController extends Controller
             ->pluck('coach');
 
         return $this->apiResponse(200, trans('api.coach_sports'), null, $coaches);
+    }
+
+    public function userNotifications(Request $request)
+    {
+        $pageSize = 10;
+        $page = $request->has('page') ? (int) $request->input('page') : 1;
+
+        $readNotifications = auth('api')->user()->readNotifications()->skip(($page - 1) * $pageSize)->take($pageSize)->get();
+        $unreadNotifications = auth('api')->user()->unreadNotifications()->skip(($page - 1) * $pageSize)->take($pageSize)->get();
+
+        return $this->apiResponse(200, trans('api.notifications'), null, [
+            'readNotifications' => $readNotifications,
+            'unreadNotifications' => $unreadNotifications,
+        ]);
     }
 }

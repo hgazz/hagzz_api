@@ -5,6 +5,8 @@ return [
     'lang_changed' => 'Language Changed',
     'terms' => 'Terms',
     'faqs' => 'Faqs',
+    'notifications' => 'Notifications',
+    'coach_sports' => 'Coach Sports',
     'auth' => [
         'success_register' => 'User Registered successfully',
         'logout' => 'User Logout successfully',
