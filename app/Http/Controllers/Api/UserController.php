@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\apiResponse;
 use App\Models\CoachSport;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -41,7 +42,7 @@ class UserController extends Controller
 //        $readNotificationsCount = auth('api')->user()->readNotifications()->count();
 //        $unReadNotificationsCount = auth('api')->user()->unreadNotifications()->count();
         return $this->apiResponse(200, trans('api.notifications'), null, [
-            'notifications' => auth('api')->user()->notifications()->get(),
+            'notifications' => Notification::get(),
 //            'read Notifications' => $readNotifications,
 //            'unRead Notifications' => $unReadNotifications,
 //            'total_read_notifications' => ceil($readNotificationsCount / $pageSize),
