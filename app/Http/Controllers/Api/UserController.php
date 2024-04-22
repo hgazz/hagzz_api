@@ -34,10 +34,13 @@ class UserController extends Controller
 
         $readNotifications = auth('api')->user()->readNotifications()->skip(($page - 1) * $pageSize)->take($pageSize)->get();
         $unreadNotifications = auth('api')->user()->unreadNotifications()->skip(($page - 1) * $pageSize)->take($pageSize)->get();
-
+        $readNotificationsCount = auth('api')->user()->readNotifications()->count();
+        $unreadNotificationsCount = auth('api')->user()->unreadNotifications()->count();
         return $this->apiResponse(200, trans('api.notifications'), null, [
             'readNotifications' => $readNotifications,
             'unreadNotifications' => $unreadNotifications,
+            'total_read_notifications' => ceil($readNotificationsCount / $pageSize),
+            'total_unread_notifications' => ceil($unreadNotificationsCount / $pageSize)
         ]);
     }
 }
