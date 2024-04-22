@@ -32,11 +32,19 @@ class UserController extends Controller
         $pageSize = 10;
         $page = $request->has('page') ? (int) $request->input('page') : 1;
 
-        $Notifications = auth('api')->user()->notifications()->skip(($page - 1) * $pageSize)->take($pageSize)->get();
-        $NotificationsCount = auth('api')->user()->Notifications()->count();
+        $readNotifications = auth('api')->user()->notifications()
+            ->whereNull('read_at')
+            ->skip(($page - 1) * $pageSize)->take($pageSize)->get();
+        $unReadNotifications = auth('api')->user()->notifications()
+            ->whereNotNull('read_at')
+            ->skip(($page - 1) * $pageSize)->take($pageSize)->get();
+        $readNotificationsCount = auth('api')->user()->readNotifications()->count();
+        $unReadNotificationsCount = auth('api')->user()->readNotifications()->count();
         return $this->apiResponse(200, trans('api.notifications'), null, [
-            'Notifications' => $Notifications,
-            'total_read_notifications' => ceil($NotificationsCount / $pageSize),
+            'read Notifications' => $readNotifications,
+            'unRead Notifications' => $unReadNotifications,
+            'total_read_notifications' => ceil($readNotificationsCount / $pageSize),
+            'total_unread_notifications' => ceil($unReadNotificationsCount / $pageSize),
         ]);
     }
 }
