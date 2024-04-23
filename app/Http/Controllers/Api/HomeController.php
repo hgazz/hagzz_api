@@ -22,7 +22,7 @@ class HomeController extends Controller
     {
         $banners = Banner::limit(6)->inRandomOrder()->get();
         $sports = auth('api')->check() ? $this->getUserSports() : Sport::limit(6)->inRandomOrder()->get(['id','name','icon']);
-        $academies = Academies::with('sports')->get(['id','commercial_name','logo']);
+        $academies = Academies::with('sports')->select(['id','commercial_name','logo'])->get();
         $trainings = auth('api')->check() ? $this->getUserTraining() : $this->getRandomTrainings();
         return $this->apiResponse(200,trans('api.home.All Data in Home Screen'),null,[
             'banners'=> $banners,
