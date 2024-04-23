@@ -17,8 +17,8 @@ class SetLocaleMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (auth('api')::check()) {
-            $userLang = Auth::user()->language; // Assuming 'lang' is the column name in the 'users' table
+        if (auth('api')->check()) {
+            $userLang = auth('api')->user()->language; // Assuming 'lang' is the column name in the 'users' table
             if ($userLang) {
                 App::setLocale($userLang);
             }
