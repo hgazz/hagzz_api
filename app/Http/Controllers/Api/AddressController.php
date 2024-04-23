@@ -16,7 +16,7 @@ class AddressController extends Controller
 
     public function getCountries()
     {
-        $countries = Country::first()->name;
+        $countries = Country::first();
         return $this->apiResponse(200, trans('api.countries.countries'), null, $countries);
     }
 
