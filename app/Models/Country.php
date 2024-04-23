@@ -25,6 +25,6 @@ class Country extends Model
 
     protected function getNameAttribute()
     {
-        return $this->getTranslations('name')[$this->getLocale()];
+        return $this->getTranslations('name')['ar'];
     }
 }
