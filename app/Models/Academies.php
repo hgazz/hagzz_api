@@ -73,7 +73,7 @@ class Academies extends Model
     public function getCommercialNameAttribute($value)
     {
         try {
-            return $value;
+            return json_decode($value);
             $lang = \App::getLocale();
             return (!empty($value)) ? json_decode($value)->{$lang} : '';
         }catch (\Exception $e)
