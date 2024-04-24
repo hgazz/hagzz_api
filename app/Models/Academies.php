@@ -70,7 +70,7 @@ class Academies extends Model
         return $this->hasMany(Gallery::class, 'academy_id');
     }
 
-    public function getCommercialNameAttribute()
+    public function getCommercialNameAttribute($value)
     {
         return (!empty($value)) ? json_decode($value)->{$this->getLocale()} : '';
 
