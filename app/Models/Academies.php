@@ -72,6 +72,7 @@ class Academies extends Model
 
     public function getCommercialNameAttribute($value)
     {
+        return son_decode($value);
         return (!empty($value)) ? json_decode($value)->{$this->getLocale()} : '';
 
 //        dump($this->getTranslations('commercial_name')[$this->getLocale()]);
