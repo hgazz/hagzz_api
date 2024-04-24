@@ -70,13 +70,13 @@ class Academies extends Model
         return $this->hasMany(Gallery::class, 'academy_id');
     }
 
-    public function getCommercialNameAttribute($value)
-    {
-        return json_decode($value);
-        return (!empty($value)) ? json_decode($value)->{$this->getLocale()} : '';
-
-//        dump($this->getTranslations('commercial_name')[$this->getLocale()]);
-//        return $this->getTranslations('commercial_name',['ar'])['ar'];
-        return $this->getTranslations('commercial_name')[$this->getLocale()];
-    }
+//    public function getCommercialNameAttribute($value)
+//    {
+//        return json_decode($value);
+//        return (!empty($value)) ? json_decode($value)->{$this->getLocale()} : '';
+//
+////        dump($this->getTranslations('commercial_name')[$this->getLocale()]);
+////        return $this->getTranslations('commercial_name',['ar'])['ar'];
+//        return $this->getTranslations('commercial_name')[$this->getLocale()];
+//    }
 }
