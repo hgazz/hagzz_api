@@ -70,16 +70,8 @@ class Academies extends Model
         return $this->hasMany(Gallery::class, 'academy_id');
     }
 
-    public function getCommercialNameAttribute($value)
+    public function getCommercialNameAttribute()
     {
-        try {
-            $lang = \App::getLocale();
-            return (!empty($value)) ? json_decode($value)->{$lang} : '';
-        }catch (\Exception $e)
-        {
-            dd($value);
-        }
-
-        return  json_decode($value)->$lang;
+        return  $this->getTranslations('commercial_name')[$this->getLocale()];
     }
 }
