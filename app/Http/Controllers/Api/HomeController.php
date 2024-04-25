@@ -20,6 +20,7 @@ class HomeController extends Controller
     use apiResponse;
     public function home()
     {
+        dd(app()->getLocale());
         $banners = Banner::limit(6)->inRandomOrder()->get();
         $sports = auth('api')->check() ? $this->getUserSports() : Sport::limit(6)->inRandomOrder()->get(['id','name','icon']);
         $academies = Academies::with('sports')->select(['id','commercial_name','logo'])->get();
