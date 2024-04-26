@@ -9,6 +9,7 @@ use App\Http\Traits\FileUploader;
 use App\Models\User;
 use App\Services\SMSMISR\SmsMisrOtpSender;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -35,7 +36,7 @@ class AuthController extends Controller
     public function saveUserPhone(Request $request)
     {
         $validation = Validator::make($request->all(),[
-            'phone' => 'required|unique:users,phone',
+            'phone_number' => 'required',
         ]);
 
         if($validation->fails())
@@ -43,34 +44,42 @@ class AuthController extends Controller
             return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
         }
 
-        $otp = rand(10000,99999);
+        $user = User::where([
+            'phone' => $request->phone_number
+        ])->first();
 
-        $responseOtp = $this->smsOtp->sendOtp('+2'.$request->phone, $otp);
+        $otp = rand(10000,99999);
+        $responseOtp = $this->smsOtp->sendOtp('+2'.$request->phone_number, $otp);
         if($responseOtp['code'] == 'error')
         {
             return $this->apiResponse(400, 'sms error', $responseOtp['message']);
         }
 
-        User::create([
-            'phone' => $request->phone,
-            'otp' => $otp
-        ]);
+        if(!$user)
+        {
+            User::create([
+                'phone' => $request->phone_number,
+                'otp' => $otp
+            ]);
+        }else{
+            $user->update([
+                'otp' => $otp
+            ]);
+        }
 
         return $this->apiResponse(200, 'otp was sended');
     }
 
-    public function register(Request $request)
+    public function updatePersonalData(Request $request)
     {
         $validation = Validator::make($request->all(),[
             'name' => 'required',
-            'phone' => 'required|exists:users,phone',
             'gender' => 'required|in:male,female',
-            'birth_date' => 'required',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'birthdate' => 'required',
+            'profile_avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'country_id' => 'required|exists:countries,id',
             'city_id' => 'required|exists:cities,id',
             'area_id' => 'required|exists:areas,id',
-            'fcm_token' => 'required|string'
         ]);
 
         if($validation->fails())
@@ -78,36 +87,36 @@ class AuthController extends Controller
             return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
         }
 
+
         try {
-            $imageName = $request->hasFile('image') ? $this->upload($request->file('image'), User::PATH) : null;
+            $imageName = $request->hasFile('profile_avatar') ? $this->upload($request->file('profile_avatar'), User::PATH) : null;
             $otp = rand(10000,99999);
-            $user = User::where('phone', $request->phone)->first();
+            $user = User::where('id', auth()->id())->first();
             $user->update([
                 'name' => $request->name,
-                'phone' => $request->phone,
                 'gender' => $request->gender,
-                'birth_date' => $request->birth_date,
+                'birth_date' => $request->birthdate,
                 'image' => $imageName,
                 'country_id' => $request->country_id,
                 'city_id' => $request->city_id,
                 'area_id' => $request->area_id,
                 'otp' => $otp,
-                'fcm_token' => $request->fcm_token
+//                'fcm_token' => $request->fcm_token
+                'fcm_token' => ''
             ]);
-            return $this->apiResponse(200, trans('api.auth.success_register'));
+            return $this->apiResponse(200, trans('api.auth.profile_updated'), null, $user);
         } catch (\Exception $e) {
             return $this->apiResponse(500, trans('api.auth.registration_failed'), $e->getMessage());
         }
     }
 
-    public function addSports(Request $request)
+    public function updateSportsData(Request $request)
     {
         $validation = Validator::make($request->all(),[
             'sport_id' => 'required|array',
             'sport_id.*' => 'exists:sports,id',
             'level' => 'required|array',
             'level.*' => 'in:beginner,intermediate,advanced',
-            'phone' => 'required|exists:users,phone',
         ]);
 
         if($validation->fails())
@@ -120,11 +129,10 @@ class AuthController extends Controller
                 $sportsWithLevels[$sportId] = ['level' => $request->level[$index]];
             }
         }
-        $user = User::where('phone', $request->phone)->first();
+        $user = User::where('id', auth()->id())->first();
         $user->sports()->attach($sportsWithLevels);
-        $token = JWTAuth::fromUser($user);
 
-        return $this->apiResponse(200, trans('api.auth.success_register'), null, new UserResource($user, $token));
+        return $this->apiResponse(200, trans('api.sports.add_sports'), null, $user);
     }
 
     public function login(Request $request)
@@ -171,13 +179,45 @@ class AuthController extends Controller
     {
         $validation = Validator::make($request->all(),[
             'otp'=>'required|numeric|min:5|exists:users,otp',
+            'phone_number'=>'required|exists:users,phone',
         ]);
 
         if ($validation->fails()){
             return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
         }
 
-        return  $this->apiResponse(200 ,trans('api.auth.the verify code successfully'));
+        $user = User::where([
+            ['phone', $request->phone_number],
+            ['otp', $request->otp]
+        ])->first();
+
+        $diff =  Carbon::now()->diff($user->updated_at);
+        $minutes = $diff->i;
+
+        if($minutes >= 10 )
+        {
+            return  $this->apiResponse(410 ,trans('api.auth.Otp Expired'));
+        }
+
+
+        if($user)
+        {
+            $user->update([
+                'otp' =>'',
+                'is_verify' => true
+            ]);
+            auth()->loginUsingId($user->id);
+
+            $token = JWTAuth::fromUser($user);
+            return $this->apiResponse(200, trans('api.auth.the verify code successfully'), null, [
+                'token'=>$token,
+                'user'=> $user,
+            ]);
+        }
+
+        return  $this->apiResponse(400 ,trans('api.auth.failed the otp'));
+
+
     }
     public function logout()
     {

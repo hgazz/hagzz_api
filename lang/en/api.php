@@ -20,9 +20,11 @@ return [
         'the verify code successfully'=>'the verify code successfully',
         'User Profile'=>'User Profile',
         'User Not Found'=>'User Not Found',
+        'Otp Expired' => 'OTP Expired'
     ],
     'sports' => [
         'sports' => 'Sports',
+        'add_sports' => 'Sports was added',
     ],
     'countries' => [
         'countries' => 'Countries',

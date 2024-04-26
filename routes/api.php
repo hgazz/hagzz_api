@@ -29,12 +29,10 @@ use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 Route::group(['middleware' => 'api'], function () {
     Route::controller(AuthController::class)->group(function () {
-        Route::post('/save/phone','saveUserPhone');
-        Route::post('/register','register');
-        Route::post('/add/sports','addSports');
+        Route::post('/auth/login-register','saveUserPhone');
         Route::post('/login','login');
 //        Route::post('/resendCode','resendCode');
-//        Route::post('/verifyCode','verifyCode');
+        Route::post('/verify-otp','verifyCode');
     });
 });
 
@@ -72,6 +70,9 @@ Route::controller(CoachController::class)->group(function (){
 
 
 Route::group(['middleware' => ['auth:api', 'setLang']], function () {
+    Route::post('/user/update_personal_data', [AuthController::class, 'updatePersonalData']);
+    Route::post('/user/update_sports_data',[AuthController::class, 'updateSportsData']);
+
     Route::get('delete/account', [AuthController::class, 'deleteAccount']);
     Route::post('update/user-profile', [AuthController::class, 'updateProfile']);
 

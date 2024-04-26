@@ -30,7 +30,8 @@ class User extends Authenticatable implements JWTSubject
         'area_id',
         'language',
         'otp',
-        'fcm_token'
+        'fcm_token',
+        'is_verify'
     ];
 
     /**
@@ -43,6 +44,9 @@ class User extends Authenticatable implements JWTSubject
         'remember_token',
         'created_at',
         'updated_at',
+        'fcm_token',
+        'otp',
+        'email_verified_at'
     ];
 
     /**
