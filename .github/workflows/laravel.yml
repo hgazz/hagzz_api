@@ -64,13 +64,13 @@ jobs:
             sudo php artisan migrate --force
         
       
-      - name:  Deploy Develop
+      # - name:  Deploy Develop
         
-        if: ( github.event_name == 'push' ||  github.event_name == 'pull_request' ) && github.ref == 'refs/heads/develop' 
-        uses: appleboy/ssh-action@master
-        with:
-           host: ${{ secrets.REMOTE_HOST_D }}
-           username: ${{ secrets.REMOTE_USERNAME }}
-           key: ${{ secrets.REMOTE_SSH_KEY_D }}
-           script: |
-            echo "DEVELOP"
+      #   if: ( github.event_name == 'push' ||  github.event_name == 'pull_request' ) && github.ref == 'refs/heads/develop' 
+      #   uses: appleboy/ssh-action@master
+      #   with:
+      #      host: ${{ secrets.REMOTE_HOST_D }}
+      #      username: ${{ secrets.REMOTE_USERNAME }}
+      #      key: ${{ secrets.REMOTE_SSH_KEY_D }}
+      #      script: |
+      #       echo "DEVELOP"
