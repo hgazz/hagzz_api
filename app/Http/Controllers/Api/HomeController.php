@@ -57,9 +57,12 @@ class HomeController extends Controller
 
     protected function getUserSports()
     {
-        return UserSport::with('sport:id,name,icon')
-            ->where('user_id',auth('api')->id())
+        $userSports = UserSport::with('sport:id,name,icon')
+            ->where('user_id', auth('api')->id())
             ->get();
+
+        // Return the collection of sports using SportResource
+        return SportResource::collection($userSports->pluck('sport'));
     }
 
     protected function getRandomTrainings()
