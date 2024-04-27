@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PartnerResource;
+use App\Http\Resources\SportResource;
 use App\Http\Resources\TrainingResource;
 use App\Http\Traits\apiResponse;
 use App\Models\Academies;
@@ -23,7 +24,7 @@ class HomeController extends Controller
     public function home()
     {
         $banners = Banner::limit(6)->inRandomOrder()->get();
-        $sports = auth('api')->check() ? $this->getUserSports() : Sport::limit(6)->inRandomOrder()->get(['id','name','icon']);
+        $sports = auth('api')->check() ? $this->getUserSports() : SportResource::collection(Sport::limit(6)->inRandomOrder()->get(['id','name','icon']));
         $academies = PartnerResource::collection(Academies::with('sports')->select(['id','commercial_name','logo'])->get());
         $trainings = auth('api')->check() ? $this->getUserTraining() : $this->getRandomTrainings();
         return $this->apiResponse(200,trans('api.home.All Data in Home Screen'),null,[
