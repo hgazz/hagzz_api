@@ -35,9 +35,9 @@ class TrainingResource extends JsonResource
             'joins_count' => $this->joins()->count(),
             'address' => [
                 'id' => $this->address->id,
-                'address' => $this->address->address,
-                'area' => $this->address->area,
-                'city' => $this->address->city,
+                'address' => $this->address->getTranslation('address', $locale) ?? $this->address->getTranslation('address', 'en'),
+                'area' => AreaResource::collection($this->address->area),
+                'city' => CityResource::collection($this->address->city),
             ],
             'academy' => [
                 'id' => $academy->id,

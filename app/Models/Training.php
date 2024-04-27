@@ -75,15 +75,15 @@ class Training extends Model
         return $this->belongsTo(Address::class, 'address_id')->with('area', 'city');
     }
 
-    protected function getNameAttribute()
-    {
-        return $this->getTranslations('name')[$this->getLocale()];
-    }
-
-    protected function getDescriptionAttribute()
-    {
-        return $this->getTranslations('description')[$this->getLocale()];
-    }
+//    protected function getNameAttribute()
+//    {
+//        return $this->getTranslations('name')[$this->getLocale()];
+//    }
+//
+//    protected function getDescriptionAttribute()
+//    {
+//        return $this->getTranslations('description')[$this->getLocale()];
+//    }
 
     //scope return only active
     public function scopeIsActive($query)

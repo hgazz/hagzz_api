@@ -23,8 +23,8 @@ class Country extends Model
         return $this->hasMany(City::class);
     }
 
-    protected function getNameAttribute()
-    {
-        return $this->getTranslations('name')[$this->getLocale()];
-    }
+//    protected function getNameAttribute()
+//    {
+//        return $this->getTranslations('name')[$this->getLocale()];
+//    }
 }

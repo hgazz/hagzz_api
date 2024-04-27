@@ -24,8 +24,8 @@ class Area extends Model
         return $this->belongsTo(City::class);
     }
 
-    protected function getNameAttribute()
-    {
-        return $this->getTranslations('name')[$this->getLocale()];
-    }
+//    protected function getNameAttribute()
+//    {
+//        return $this->getTranslations('name')[$this->getLocale()];
+//    }
 }
