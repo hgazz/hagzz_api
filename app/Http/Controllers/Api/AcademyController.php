@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PartnersResource;
+use App\Http\Resources\TrainingResource;
 use App\Http\Traits\apiResponse;
 use App\Models\Academies;
 use App\Models\Follow;
@@ -24,11 +26,10 @@ class AcademyController extends Controller
         $total = $query->count();
         $academies = $query->select(['id', 'commercial_name', 'logo'])
             ->with('sports')
-            ->withCount(['follows','coaches', 'trainings'])
             ->skip($page * $pageSize - $pageSize)->limit($pageSize)
         ->get();
         $data = [
-            'academies' => $academies,
+            'academies' => PartnersResource::collection($academies),
             'total' => $total,
             'page' => $page,
             'pageSize' => $pageSize,
@@ -50,7 +51,7 @@ class AcademyController extends Controller
         }
         $isFollowing = $this->checkAcademyFollow($academy);
         $data = [
-            'academy' => $academy,
+            'academy' => new PartnersResource($academy),
             'isFollowing' => $isFollowing,
         ];
         return $this->apiResponse(200,trans('api.home.Academy Details'),null, $data);
@@ -64,12 +65,9 @@ class AcademyController extends Controller
         // Start building the query with necessary relationships
         $query = Training::where('academy_id', $id)
             ->with([
-                'academy' => function ($model) {
-                    $model->select(['id', 'commercial_name', 'logo']);
-                    $model->withCount(['follows']);
-                },
-                'address:id,address,city_id,area_id,longitude,latitude',
-                'sport:id,name,icon'
+                'academy' ,
+                'address',
+                'sport'
             ])
             ->withCount(['joins', 'classes'])
             ->isActive();
@@ -82,7 +80,7 @@ class AcademyController extends Controller
 
         // Prepare and return the API response with the paginated data and other details
         $data = [
-            'trainings' => $trainings,
+            'trainings' => TrainingResource::collection($trainings),
             'total' => $total,
             'page' => $page,
             'pageSize' => $pageSize,

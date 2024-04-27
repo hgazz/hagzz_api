@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\FaqResource;
 use App\Http\Resources\PartnerResource;
 use App\Http\Resources\SportResource;
 use App\Http\Resources\TrainingResource;
@@ -105,7 +106,7 @@ class HomeController extends Controller
 
     public function getFaqs()
     {
-        $faqs = Faq::get();
+        $faqs = FaqResource::collection(Faq::get());
         return $this->apiResponse(200, trans('api.faqs'), null, $faqs);
     }
 

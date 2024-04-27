@@ -33,6 +33,7 @@ class TrainingResource extends JsonResource
             'discount_price' => $this->discount_price,
             'classes_count' => $this->classes()->count(),
             'joins_count' => $this->joins()->count(),
+            'is_fav' => $this->is_fav,
             'address' => [
                 'id' => $this->address->id,
                 'address' => $this->address->getTranslation('address', $locale) ?? $this->address->getTranslation('address', 'en'),
@@ -51,6 +52,7 @@ class TrainingResource extends JsonResource
                 'icon' => $this->sport->icon,
             ],
             'classes' => TClassResource::collection($this->classes),
+            'coach' => new CoachResource($this->whenLoaded('coach')),
         ];
     }
 }
