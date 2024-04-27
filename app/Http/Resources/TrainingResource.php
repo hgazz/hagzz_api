@@ -36,8 +36,8 @@ class TrainingResource extends JsonResource
             'address' => [
                 'id' => $this->address->id,
                 'address' => $this->address->getTranslation('address', $locale) ?? $this->address->getTranslation('address', 'en'),
-                'area' => AreaResource::collection($this->address->area),
-                'city' => CityResource::collection($this->address->city),
+                'area' => new AreaResource($this->address->area),  // Assuming area is an object that can be wrapped in a Resource
+                'city' => new CityResource($this->address->city),
             ],
             'academy' => [
                 'id' => $academy->id,
