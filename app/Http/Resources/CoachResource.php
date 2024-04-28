@@ -19,6 +19,7 @@ class CoachResource extends JsonResource
             'name' => $this->name,
             'image' => $this->image,
             'gender' => $this->gender,
+            'academy' => new PartnerResource($this->academy),
         ];
     }
 }
