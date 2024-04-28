@@ -19,7 +19,7 @@ class PartnersResource extends JsonResource
             'commercial_name' => $this->getTranslation('commercial_name', app()->getLocale()),
             'logo' => $this->logo,
             'sports' => SportResource::collection($this->sports),
-//            'trainings' => TrainingResource::collection($this->trainings),
+           // 'trainings' => TrainingResource::collection($this->trainings),
             'addresses' => AddressResource::collection($this->addresses),
             'galleries' => $this->galleries,
             'follows_count' => $this->follows()->count(),
