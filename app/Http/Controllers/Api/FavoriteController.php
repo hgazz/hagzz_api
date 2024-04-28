@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\FavoriteResource;
 use App\Http\Traits\apiResponse;
 use App\Models\Favorite;
 use App\Models\Join;
@@ -55,7 +56,7 @@ class FavoriteController extends Controller
 
         // Prepare the response data including total counts and pagination details
         $data = [
-            'favorites' => $favorites,
+            'favorites' => FavoriteResource::collection($favorites),
             'total' => $totalFavorites,
             'page' => $page,
             'pageSize' => $pageSize,

@@ -18,8 +18,16 @@ class CoachResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'image' => $this->image,
+            'license' => $this->license,
+            'academy_id' => $this->academy_id,
             'gender' => $this->gender,
+            'description' => $this->description,
+            'active' => $this->active,
             'academy' => new PartnerResource($this->academy),
+            'total_hours' => $this->total_hours,
+            'trainings_count' => $this->trainings()->count(),
+            'trainees_count' => $this->total_users_joined,
+            'sports' => SportResource::collection($this->whenLoaded('sports')),
         ];
     }
 }

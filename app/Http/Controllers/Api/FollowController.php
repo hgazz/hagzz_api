@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CoachResource;
+use App\Http\Resources\PartnerResource;
 use App\Http\Traits\apiResponse;
 use App\Models\Academies;
 use App\Models\Coach;
@@ -42,14 +44,14 @@ class FollowController extends Controller
                 return [
                     'id' => $followable->id,
                     'type' => 'Coach',
-                    'data' => $followable->load('sports:id,name,icon'), // Assuming $followable is already the Coach model instance
+                    'data' => new CoachResource($followable), // Assuming $followable is already the Coach model instance
                 ];
             } elseif ($followable instanceof Academies) {
                 // Customize the data for an Academy
                 return [
                     'id' => $followable->id,
                     'type' => 'Academy',
-                    'data' => $followable->load('sports:id,name,icon'), // Assuming $followable is already the Academies model instance
+                    'data' => new PartnerResource($followable), // Assuming $followable is already the Academies model instance
                 ];
             }
 

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CoachResource;
+use App\Http\Resources\NotificationResource;
 use App\Http\Traits\apiResponse;
 use App\Models\CoachSport;
 use Illuminate\Database\Eloquent\Collection;
@@ -26,7 +28,7 @@ class UserController extends Controller
             ->get()
             ->pluck('coach');
 
-        return $this->apiResponse(200, trans('api.coach_sports'), null, $coaches);
+        return $this->apiResponse(200, trans('api.coach_sports'), null, CoachResource::collection($coaches));
     }
 
     public function userNotifications(Request $request)
@@ -35,7 +37,7 @@ class UserController extends Controller
         $pageSize = 10;
         $page = $request->has('page') ? (int) $request->input('page') : 1;
 
-        $unReadNotifications = auth('api')->user()->notifications()
+        $unreadNotifications = auth('api')->user()->notifications()
             ->whereNull('read_at')
             ->skip(($page - 1) * $pageSize)->take($pageSize)->get();
         $readNotifications = auth('api')->user()->notifications()
@@ -43,13 +45,9 @@ class UserController extends Controller
             ->skip(($page - 1) * $pageSize)->take($pageSize)->get();
         $readNotificationsCount = auth('api')->user()->readNotifications()->count();
         $unReadNotificationsCount = auth('api')->user()->unreadNotifications()->count();
-        if ($unReadNotificationsCount)
-            $this->getUnReadNotification($unReadNotifications);
-        if ($readNotificationsCount > 0)
-            $this->getNotification($readNotifications);
         return $this->apiResponse(200, trans('api.notifications'), null, [
-            'read Notifications' => $readNotifications,
-            'unRead Notifications' => $unReadNotifications,
+            'read_notifications' => NotificationResource::collection($readNotifications),
+            'unread_notifications' => NotificationResource::collection($unreadNotifications),
             'total_read_notifications' => ceil($readNotificationsCount / $pageSize),
             'total_unread_notifications' => ceil($unReadNotificationsCount / $pageSize),
         ]);
