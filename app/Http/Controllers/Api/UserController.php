@@ -53,31 +53,10 @@ class UserController extends Controller
         ]);
     }
 
-    /**
-     * @param Collection|array|DatabaseNotificationCollection $unReadNotifications
-     * @return mixed
-     */
-    public function getUnReadNotification(Collection|array|DatabaseNotificationCollection $unReadNotifications): mixed
+    public function markAsRead($id)
     {
-        foreach ($unReadNotifications as &$notification) {
-            if ($notification->details !== null) {
-                $notification->details = json_decode($notification->details, true);
-            }
-        }
-        return $notification;
-    }
-
-    /**
-     * @param Collection|array|DatabaseNotificationCollection $readNotifications
-     * @return mixed
-     */
-    public function getNotification(Collection|array|DatabaseNotificationCollection $readNotifications): mixed
-    {
-        foreach ($readNotifications as &$notification) {
-            if ($notification->details !== null) {
-                $notification->details = json_decode($notification->details, true);
-            }
-        }
-        return $notification;
+        $notification = auth('api')->user()->notifications()->find($id);
+        $notification->markAsRead();
+        return $this->apiResponse(200, trans('api.notifications.mark_as_read'), null, $notification);
     }
 }

@@ -103,6 +103,7 @@ Route::group(['middleware' => ['auth:api', 'setLang']], function () {
     Route::get('/user/sports', [SportController::class,'getSportsNotSelected']);
     Route::get('coach/user/sports', [UserController::class, 'coachSportByUserFavSports']);
     Route::get('user/notifications', [UserController::class, 'userNotifications']);
+    Route::get('user/notification/{id}', [UserController::class, 'markAsRead']);
 
     Route::post('/logout',[AuthController::class,'logout']);
 
