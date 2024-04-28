@@ -41,17 +41,18 @@ class UserController extends Controller
 
         $readNotifications = $notificationsQuery
             ->whereNotNull('read_at')
-            ->paginate($pageSize, ['*'], 'page', $page);
+            ->skip(($page - 1) * $pageSize)->take($pageSize)->get();
 
         $unReadNotifications = $notificationsQuery
             ->whereNull('read_at')
-            ->paginate($pageSize, ['*'], 'page', $page);
-
+            ->skip(($page - 1) * $pageSize)->take($pageSize)->get();
+        $readNotificationsCount = auth('api')->user()->readNotifications()->count();
+        $unReadNotificationsCount = auth('api')->user()->unreadNotifications()->count();
         return $this->apiResponse(200, trans('api.notifications'), null, [
             'read_notifications' => NotificationResource::collection($readNotifications),
             'unread_notifications' => NotificationResource::collection($unReadNotifications),
-            'total_read_notifications' => $readNotifications->total(),
-            'total_unread_notifications' => $unReadNotifications->total(),
+            'total_read_notifications' => ceil($readNotificationsCount / $pageSize),
+            'total_unread_notifications' => ceil($unReadNotificationsCount / $pageSize),
         ]);
     }
 
