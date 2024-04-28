@@ -54,11 +54,6 @@ class FollowController extends Controller
                     'data' => new PartnerResource($followable), // Assuming $followable is already the Academies model instance
                 ];
             }
-//            if ($followable instanceof Coach) {
-//                return new CoachResource($followable);
-//            } elseif ($followable instanceof Academies) {
-//                return new PartnerResource($followable);
-//            }
 
             return null;
         })->filter();

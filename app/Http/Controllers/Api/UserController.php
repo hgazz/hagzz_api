@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CoachResource;
 use App\Http\Traits\apiResponse;
 use App\Models\CoachSport;
 use Illuminate\Database\Eloquent\Collection;
@@ -26,7 +27,7 @@ class UserController extends Controller
             ->get()
             ->pluck('coach');
 
-        return $this->apiResponse(200, trans('api.coach_sports'), null, $coaches);
+        return $this->apiResponse(200, trans('api.coach_sports'), null, CoachResource::collection($coaches));
     }
 
     public function userNotifications(Request $request)
