@@ -19,11 +19,7 @@ class CoachController extends Controller
     {
 
         $coach = Coach::with([
-            'academy' => function ($query) {
-                $query->select('id', 'phone', 'commercial_name', 'logo', 'address', 'facebook', 'instagram')
-                    ->withCount('follows');
-            },
-        ])->find($id);
+            'academy'])->find($id);
         if(!$coach)
         {
             return $this->apiResponse(400, trans('api.validation_error'), trans('api.home.coach_not_found'),);
