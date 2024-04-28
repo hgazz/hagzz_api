@@ -34,24 +34,10 @@ class TrainingResource extends JsonResource
             'classes_count' => $this->classes()->count(),
             'joins_count' => $this->joins()->count(),
             'is_fav' => $this->is_fav,
-            'address' => [
-                'id' => $this->address->id,
-                'address' => $this->address->getTranslation('address', $locale) ?? $this->address->getTranslation('address', 'en'),
-                'area' => new AreaResource($this->address->area),  // Assuming area is an object that can be wrapped in a Resource
-                'city' => new CityResource($this->address->city),
-            ],
-            'academy' => [
-                'id' => $academy->id,
-                'commercial_name' => $localizedCommercialName,
-                'logo' => $academy->logo,
-                'follows_count' => $academy->follows()->count(),
-            ],
-            'sport' =>[
-                'id' => $this->sport->id,
-                'name' => $this->sport->getTranslation('name', $locale) ?? $this->sport->getTranslation('name', 'en'),
-                'icon' => $this->sport->icon,
-            ],
-         //   'classes' => TClassResource::collection($this->whenLoaded('classes')),
+            'address' => new AddressResource($this->whenLoaded('address')),
+            'academy' => new PartnerResource($this->whenLoaded('academy')),
+            'sport' => new SportResource($this->whenLoaded('sport')),
+            'classes' => TClassResource::collection($this->whenLoaded('classes')),
             'coach' => new CoachResource($this->whenLoaded('coach')),
         ];
     }
