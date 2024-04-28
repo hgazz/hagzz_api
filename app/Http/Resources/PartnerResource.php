@@ -19,6 +19,7 @@ class PartnerResource extends JsonResource
             'commercial_name' => $this->getTranslation('commercial_name', app()->getLocale()),
             'logo' => $this->logo,
             'sports' => SportResource::collection($this->sports),
+            'follows_count' => $this->follows()->count(),
         ];
     }
 }
