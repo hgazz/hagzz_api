@@ -45,4 +45,11 @@ class Coach extends Model
         return $this->trainings()->count() > 0 !== null ? ceil($class?->duration_in_hours) : 0;
     }
 
+    protected function getTotalUsersJoined()
+    {
+       return $this->trainings() > 0 ? Join::whereHas('training', function ($query) {
+            $query->where('coach_id', $this->id);
+        })->count() : 0;
+    }
+
 }
