@@ -16,7 +16,7 @@ class ProfileController extends Controller
         $user = User::with(['country', 'city', 'area'])->find($id)->makeHidden(['country_id', 'city_id', 'area_id']);
         return $this->apiResponse(200 , trans('api.auth.User Profile'),null,[
             'profile'=> new ProfileResource($user),
-            'sports'=> new SportResource($user->sports),
+            'sports'=> SportResource::collection($user->sports),
         ]);
     }
 }
