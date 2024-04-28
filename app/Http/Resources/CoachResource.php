@@ -26,7 +26,8 @@ class CoachResource extends JsonResource
             'academy' => new PartnerResource($this->academy),
             'total_hours' => $this->total_hours,
             'trainings_count' => $this->trainings()->count(),
-            'trainees_count' => $this->total_users_joined
+            'trainees_count' => $this->total_users_joined,
+            'sports' => SportResource::collection($this->whenLoaded('sports')),
         ];
     }
 }
