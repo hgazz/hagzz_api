@@ -39,26 +39,26 @@ class FollowController extends Controller
         $customFollows = $follows->map(function ($follow) {
             $followable = $follow->followable;
 
-//            if ($followable instanceof Coach) {
-//                // Customize the data for a Coach
-//                return [
-//                    'id' => $followable->id,
-//                    'type' => 'Coach',
-//                    'data' => $followable->load('sports:id,name,icon'), // Assuming $followable is already the Coach model instance
-//                ];
-//            } elseif ($followable instanceof Academies) {
-//                // Customize the data for an Academy
-//                return [
-//                    'id' => $followable->id,
-//                    'type' => 'Academy',
-//                    'data' => $followable->load('sports:id,name,icon'), // Assuming $followable is already the Academies model instance
-//                ];
-//            }
             if ($followable instanceof Coach) {
-                return new CoachResource($followable);
+                // Customize the data for a Coach
+                return [
+                    'id' => $followable->id,
+                    'type' => 'Coach',
+                    'data' => new CoachResource($followable), // Assuming $followable is already the Coach model instance
+                ];
             } elseif ($followable instanceof Academies) {
-                return new PartnerResource($followable);
+                // Customize the data for an Academy
+                return [
+                    'id' => $followable->id,
+                    'type' => 'Academy',
+                    'data' => new PartnerResource($followable), // Assuming $followable is already the Academies model instance
+                ];
             }
+//            if ($followable instanceof Coach) {
+//                return new CoachResource($followable);
+//            } elseif ($followable instanceof Academies) {
+//                return new PartnerResource($followable);
+//            }
 
             return null;
         })->filter();
