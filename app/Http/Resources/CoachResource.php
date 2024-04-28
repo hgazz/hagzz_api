@@ -18,8 +18,13 @@ class CoachResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'image' => $this->image,
+            'license' => $this->license,
+            'academy_id' => $this->academy_id,
             'gender' => $this->gender,
+            'description' => $this->description,
+            'active' => $this->active,
             'academy' => new PartnerResource($this->academy),
+            'total_hours' => $this->getTotalHours(),
         ];
     }
 }

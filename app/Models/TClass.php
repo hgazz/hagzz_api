@@ -56,4 +56,11 @@ class TClass extends Model
         return json_decode($value);
     }
 
+    public function getDurationInHoursAttribute()
+    {
+        $startTime = \Carbon\Carbon::parse($this->start_time);
+        $endTime = \Carbon\Carbon::parse($this->end_time);
+        return $startTime->diffInMinutes($endTime) / 60; // convert minutes to hours
+    }
+
 }
