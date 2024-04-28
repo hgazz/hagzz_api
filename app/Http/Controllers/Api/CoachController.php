@@ -42,12 +42,9 @@ class CoachController extends Controller
 
         $trainings = Training::where('coach_id', $id)
             ->with([
-                'academy' => function ($query){
-                    $query->select('id', 'phone', 'commercial_name', 'logo', 'address', 'facebook', 'instagram')
-                        ->withCount('follows');
-                },
-                'address:id,address,city_id,area_id,longitude,latitude',
-                'sport:id,name,icon'
+                'academy',
+                'address',
+                'sport'
             ])
             ->withCount(['joins', 'classes'])
             ->isActive()
@@ -69,8 +66,8 @@ class CoachController extends Controller
         $total = $trainings->count();
 
         $data = [
-            'upcoming_trainings' => array_values($upcomingTrainings), // Ensure sequential indexing
-            'past_trainings' => array_values($pastTrainings),
+            'upcoming_trainings' => $upcomingTrainings, // Ensure sequential indexing
+            'past_trainings' => $pastTrainings,
             'total' => $total,
             'page' => $page,
             'pageSize' => $pageSize,
