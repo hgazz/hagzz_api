@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Http\Traits\apiResponse;
 use App\Http\Traits\FileUploader;
+use App\Models\Sport;
 use App\Models\User;
+use App\Models\UserSport;
 use App\Services\SMSMISR\SmsMisrOtpSender;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -91,7 +93,7 @@ class AuthController extends Controller
         try {
             $imageName = $request->hasFile('profile_avatar') ? $this->upload($request->file('profile_avatar'), User::PATH) : null;
             $otp = rand(10000,99999);
-            $user = User::where('id', auth()->id())->first();
+            $user = User::where('id', auth()->id())->with('sports')->first();
             $user->update([
                 'name' => $request->name,
                 'gender' => $request->gender,
@@ -123,14 +125,20 @@ class AuthController extends Controller
         {
             return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
         }
+
         $sportsWithLevels = [];
         foreach ($request->sport_id as $index => $sportId) {
             if (isset($request->level[$index])) {
+                UserSport::updateOrCreate([
+                    'user_id' => auth()->id(),
+                    'sport_id' => $sportId,
+                ],[
+                    'level' =>  $request->level[$index]
+                ]);
                 $sportsWithLevels[$sportId] = ['level' => $request->level[$index]];
             }
         }
-        $user = User::where('id', auth()->id())->first();
-        $user->sports()->attach($sportsWithLevels);
+        $user = User::where('id', auth()->id())->with('sports')->first();
 
         return $this->apiResponse(200, trans('api.sports.add_sports'), null, $user);
     }
@@ -216,8 +224,6 @@ class AuthController extends Controller
         }
 
         return  $this->apiResponse(400 ,trans('api.auth.failed the otp'));
-
-
     }
     public function logout()
     {
