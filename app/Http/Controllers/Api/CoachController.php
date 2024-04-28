@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CoachResource;
 use App\Http\Traits\apiResponse;
 use App\Models\Coach;
 use App\Models\Follow;
@@ -29,7 +30,7 @@ class CoachController extends Controller
 
         $data =  [
             'is_follow' => $isFollow,
-            'coach' => $coach,
+            'coach' => new CoachResource($coach),
         ];
        return $this->apiResponse(200,trans('api.home.coach profile'),null, $data);
     }
