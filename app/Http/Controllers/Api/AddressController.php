@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\AreaResource;
+use App\Http\Resources\CityResource;
+use App\Http\Resources\CountryResource;
 use App\Http\Traits\apiResponse;
 use App\Models\Area;
 use App\Models\City;
@@ -16,7 +19,7 @@ class AddressController extends Controller
 
     public function getCountries()
     {
-        $countries = Country::get();
+        $countries = CountryResource::collection(Country::get(['id', 'name']));
         return $this->apiResponse(200, trans('api.countries.countries'), null, $countries);
     }
 
@@ -33,7 +36,7 @@ class AddressController extends Controller
             return $this->apiResponse(400, trans('api.validation_error'), $validator->errors());
         }
 
-        $cities = City::where('country_id', $request->country_id)->get(['id', 'name']);
+        $cities = CityResource::collection(City::where('country_id', $request->country_id)->get(['id', 'name']));
         return $this->apiResponse(200, trans('api.countries.cities'), null, $cities);
     }
 
@@ -47,13 +50,13 @@ class AddressController extends Controller
         {
             return $this->apiResponse(400, trans('api.validation_error'), $validator->errors());
         }
-        $areas = Area::where('city_id', $request->city_id)->get(['id', 'name']);
+        $areas = AreaResource::collection(Area::where('city_id', $request->city_id)->get(['id', 'name']));
         return $this->apiResponse(200, trans('api.countries.areas'), null, $areas);
     }
 
     public function getAreas(Request $request)
     {
-        $areas = Area::get(['id', 'name']);
+        $areas = AreaResource::collection( Area::get(['id', 'name']));
         return $this->apiResponse(200, trans('api.countries.areas'), null, $areas);
     }
 }

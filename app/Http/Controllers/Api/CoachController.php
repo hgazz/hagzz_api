@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CoachResource;
+use App\Http\Resources\TrainingResource;
 use App\Http\Traits\apiResponse;
 use App\Models\Coach;
 use App\Models\Follow;
@@ -19,11 +21,7 @@ class CoachController extends Controller
     {
 
         $coach = Coach::with([
-            'academy' => function ($query) {
-                $query->select('id', 'phone', 'commercial_name', 'logo', 'address', 'facebook', 'instagram')
-                    ->withCount('follows');
-            },
-        ])->find($id);
+            'academy'])->find($id);
         if(!$coach)
         {
             return $this->apiResponse(400, trans('api.validation_error'), trans('api.home.coach_not_found'),);
@@ -33,7 +31,7 @@ class CoachController extends Controller
 
         $data =  [
             'is_follow' => $isFollow,
-            'coach' => $coach,
+            'coach' => new CoachResource($coach),
         ];
        return $this->apiResponse(200,trans('api.home.coach profile'),null, $data);
     }
@@ -45,12 +43,9 @@ class CoachController extends Controller
 
         $trainings = Training::where('coach_id', $id)
             ->with([
-                'academy' => function ($query){
-                    $query->select('id', 'phone', 'commercial_name', 'logo', 'address', 'facebook', 'instagram')
-                        ->withCount('follows');
-                },
-                'address:id,address,city_id,area_id,longitude,latitude',
-                'sport:id,name,icon'
+                'academy',
+                'address',
+                'sport'
             ])
             ->withCount(['joins', 'classes'])
             ->isActive()
@@ -72,8 +67,8 @@ class CoachController extends Controller
         $total = $trainings->count();
 
         $data = [
-            'upcoming_trainings' => array_values($upcomingTrainings), // Ensure sequential indexing
-            'past_trainings' => array_values($pastTrainings),
+            'upcoming_trainings' => TrainingResource::collection($upcomingTrainings), // Ensure sequential indexing
+            'past_trainings' => TrainingResource::collection($pastTrainings),
             'total' => $total,
             'page' => $page,
             'pageSize' => $pageSize,

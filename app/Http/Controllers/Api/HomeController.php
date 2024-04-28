@@ -3,6 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\FaqResource;
+use App\Http\Resources\PartnerResource;
+use App\Http\Resources\SportResource;
+use App\Http\Resources\TrainingResource;
 use App\Http\Traits\apiResponse;
 use App\Models\Academies;
 use App\Models\Banner;
@@ -21,8 +25,8 @@ class HomeController extends Controller
     public function home()
     {
         $banners = Banner::limit(6)->inRandomOrder()->get();
-        $sports = auth('api')->check() ? $this->getUserSports() : Sport::limit(6)->inRandomOrder()->get(['id','name','icon']);
-        $academies = Academies::with('sports')->select(['id','commercial_name','logo'])->get();
+        $sports = auth('api')->check() ? $this->getUserSports() : SportResource::collection(Sport::limit(6)->inRandomOrder()->get(['id','name','icon']));
+        $academies = PartnerResource::collection(Academies::with('sports')->select(['id','commercial_name','logo'])->get());
         $trainings = auth('api')->check() ? $this->getUserTraining() : $this->getRandomTrainings();
         return $this->apiResponse(200,trans('api.home.All Data in Home Screen'),null,[
             'banners'=> $banners,
@@ -36,46 +40,43 @@ class HomeController extends Controller
     }
     protected function getUserTraining()
     {
-        // Assuming `auth()->user()->sports` returns Sport models
         $userSportsIds = auth('api')->user()->sports->pluck('id')->toArray();
 
-        // Retrieve trainings related to those sports
-        return Training::with([
-            'academy' => function ($query) {
-                $query->select(['id', 'commercial_name', 'logo']);
-                $query->withCount(['follows']);
-            },
+        $trainings = Training::with([
+            'academy',
             'address:id,address',
             'classes',
-            'sport:id,name,icon'
-        ])->whereIn('sport_id', $userSportsIds) // Filter trainings by user's sports
-          ->withCount(['classes', 'joins'])
+            'sport'
+        ])->whereIn('sport_id', $userSportsIds)
+            ->withCount(['classes', 'joins'])
             ->inRandomOrder()
             ->limit(4)
-          ->get();
+            ->get();
+
+        return TrainingResource::collection($trainings);
     }
 
     protected function getUserSports()
     {
-        return UserSport::with('sport:id,name,icon')
-            ->where('user_id',auth('api')->id())
+        $userSports = UserSport::with('sport:id,name,icon')
+            ->where('user_id', auth('api')->id())
             ->get();
+
+        // Return the collection of sports using SportResource
+        return SportResource::collection($userSports->pluck('sport'));
     }
 
     protected function getRandomTrainings()
     {
-        return Training::with([
-            'academy' => function ($query) {
-                $query->select(['id', 'commercial_name', 'logo']);
-                $query->withCount(['follows']);
-            },
-            'address:id,address',
+        $trainings = Training::with([
+            'academy',
+            'address',
             'classes',
-            'sport:id,name,icon'
-        ])->withCount(['classes', 'joins'])
-            ->inRandomOrder()
+            'sport'
+        ])->inRandomOrder()
             ->limit(4)
             ->get();
+        return TrainingResource::collection($trainings);
     }
 
     public function changeLang(Request $request)
@@ -105,7 +106,7 @@ class HomeController extends Controller
 
     public function getFaqs()
     {
-        $faqs = Faq::get();
+        $faqs = FaqResource::collection(Faq::get());
         return $this->apiResponse(200, trans('api.faqs'), null, $faqs);
     }
 

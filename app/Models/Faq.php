@@ -13,14 +13,14 @@ class Faq extends Model
     protected  $fillable = ['question','answer'];
     protected array $translatable = ['question','answer'];
     protected $hidden = ['created_at', 'updated_at'];
-    protected function getQuestionAttribute()
-    {
-        return $this->getTranslations('question')[$this->getLocale()];
-    }
-
-    protected function getAnswerAttribute()
-    {
-        return $this->getTranslations('answer')[$this->getLocale()];
-    }
+//    protected function getQuestionAttribute()
+//    {
+//        return $this->getTranslations('question')[$this->getLocale()];
+//    }
+//
+//    protected function getAnswerAttribute()
+//    {
+//        return $this->getTranslations('answer')[$this->getLocale()];
+//    }
 
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\JoinResource;
 use App\Http\Traits\apiResponse;
 use App\Models\Academies;
 use App\Models\Join;
@@ -160,8 +161,8 @@ class JoinController extends Controller
         $pastJoins = $pastQuery->skip(($page - 1) * $pageSize)->take($pageSize)->get();
 
         $data = [
-            'upcoming_joins' => $upcomingJoins,
-            'past_joins' => $pastJoins,
+            'upcoming_joins' => JoinResource::collection($upcomingJoins),
+            'past_joins' => JoinResource::collection($pastJoins),
             'total_upcoming' => $upcomingTotal,
             'total_past' => $pastTotal,
             'page' => $page,

@@ -37,8 +37,8 @@ class Sport extends Model
         return $query->whereStatus('active');
     }
 
-    public function getNameAttribute()
-    {
-        return $this->getTranslations('name')[$this->getLocale()];
-    }
+//    public function getNameAttribute()
+//    {
+//        return $this->getTranslations('name')[$this->getLocale()];
+//    }
 }

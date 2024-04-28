@@ -44,9 +44,9 @@ class Address extends Model
         return $this->belongsTo(Country::class, 'country_id');
     }
 
-    protected function getAddressAttribute()
-    {
-        return $this->getTranslations('address')[$this->getLocale()];
-    }
+//    protected function getAddressAttribute()
+//    {
+//        return $this->getTranslations('address')[$this->getLocale()];
+//    }
 
 }

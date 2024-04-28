@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\TrainingResource;
 use App\Http\Traits\apiResponse;
 use App\Models\Join;
 use App\Models\Training;
@@ -30,7 +31,7 @@ class TrainingController extends Controller
             'sport:id,name,icon'])
             ->withCount(['classes', 'joins'])->get();
         $data = [
-            'trainings' => $trainings,
+            'trainings' => TrainingResource::collection($trainings),
             'total' => $total,
             'page' => $page,
             'pageSize' => $pageSize,
@@ -115,7 +116,7 @@ class TrainingController extends Controller
                 'sport:id,name,icon'])
                 ->withCount(['classes', 'joins'])->get();
             $data = [
-                'trainings' => $trainings,
+                'trainings' => TrainingResource::collection($trainings),
                 'total' => $total,
                 'page' => $page,
                 'pageSize' => $pageSize,
@@ -133,7 +134,7 @@ class TrainingController extends Controller
         $pageSize = 10;
         $page = (request()->has('page')) ? request('page') : 1;
         $training = Training::with([
-            'coach:id,name,image',
+            'coach:id,name,image,gender',
             'academy' => function ($query) {
                 $query->select(['id', 'commercial_name', 'logo']);
                 $query->withCount('follows');
@@ -152,7 +153,7 @@ class TrainingController extends Controller
         }
         $is_joined = auth('api')->check() ? Join::whereUserId(auth()->id())->whereTrainingId($training)->exists() : null;
         $data = [
-            'training' => $training,
+            'training' => new TrainingResource($training),
             'is_joined' => $is_joined
         ];
         return $this->apiResponse(200, trans('api.home.Training Detail'), null, $data);
