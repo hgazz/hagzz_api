@@ -51,7 +51,7 @@ class TrainingResource extends JsonResource
                 'name' => $this->sport->getTranslation('name', $locale) ?? $this->sport->getTranslation('name', 'en'),
                 'icon' => $this->sport->icon,
             ],
-            'classes' => TClassResource::collection($this->whenLoaded('classes')),
+         //   'classes' => TClassResource::collection($this->whenLoaded('classes')),
             'coach' => new CoachResource($this->whenLoaded('coach')),
         ];
     }
