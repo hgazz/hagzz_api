@@ -189,7 +189,7 @@ class AuthController extends Controller
         $user = User::where([
             ['phone', $request->phone_number],
             ['otp', $request->otp]
-        ])->first();
+        ])->with('sports')->first();
 
         $diff =  Carbon::now()->diff($user->updated_at);
         $minutes = $diff->i;
