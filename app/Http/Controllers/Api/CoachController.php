@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CoachResource;
+use App\Http\Resources\TrainingResource;
 use App\Http\Traits\apiResponse;
 use App\Models\Coach;
 use App\Models\Follow;
@@ -66,8 +67,8 @@ class CoachController extends Controller
         $total = $trainings->count();
 
         $data = [
-            'upcoming_trainings' => $upcomingTrainings, // Ensure sequential indexing
-            'past_trainings' => $pastTrainings,
+            'upcoming_trainings' => TrainingResource::collection($upcomingTrainings), // Ensure sequential indexing
+            'past_trainings' => TrainingResource::collection($pastTrainings),
             'total' => $total,
             'page' => $page,
             'pageSize' => $pageSize,
