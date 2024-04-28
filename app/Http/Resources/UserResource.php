@@ -35,7 +35,12 @@ class UserResource extends JsonResource
             'city_id' => $this->city_id,
             'area_id' => $this->area_id,
             'token' => $this->token,
-            'otp_status' => $this->response
+            'otp_status' => $this->response,
+            'is_verify' => $this->is_verify,
+            'language' => $this->language,
+            'country' => new CountryResource($this->whenLoaded('country')),
+            'city' => new CityResource($this->whenLoaded('city')),
+            'area' => new AreaResource($this->whenLoaded('area'))
         ];
     }
 }

@@ -37,7 +37,7 @@ class Coach extends Model
         return $this->belongsToMany(Sport::class, 'coach_sports', 'coach_id', 'sport_id');
     }
 
-    public function getTotalHours()
+    public function getTotalHours(): float|int
     {
        $class = TClass::whereHas('training', function($query)  {
             $query->where('coach_id', $this->id);
