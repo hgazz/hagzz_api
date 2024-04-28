@@ -20,7 +20,13 @@ class NotificationResource extends JsonResource
             'data' => $this->data,
             'read_at' => $this->read_at,
             'created_at' => $this->created_at->toDateTimeString(), // Format date
-            'details' => $this->details ? json_decode($this->details, true) : null,
+            'details' => $this->decodeDetails($this->details),
         ];
+    }
+
+    protected function decodeDetails($details)
+    {
+        $decoded = json_decode($details, true);
+        return $decoded === null ? null : $decoded;
     }
 }
