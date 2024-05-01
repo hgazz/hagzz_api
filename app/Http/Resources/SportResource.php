@@ -17,7 +17,9 @@ class SportResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->getTranslation('name', app()->getLocale()),
-            'icon' => $this->icon
+            'icon' => $this->icon,
+            'status' => $this->status,
+            'level' => $this->level
         ];
     }
 }
