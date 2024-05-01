@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class SportResource extends JsonResource
+class UserSportsResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -19,6 +19,7 @@ class SportResource extends JsonResource
             'name' => $this->getTranslation('name', app()->getLocale()),
             'icon' => $this->icon,
             'status' => $this->status,
+            'level' => $this->pivot->level
         ];
     }
 }
