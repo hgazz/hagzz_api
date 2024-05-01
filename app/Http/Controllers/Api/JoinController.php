@@ -46,6 +46,8 @@ class JoinController extends Controller
            'invoice_id'=>'required|exists:invoices,id',
            'training_id'=>'required|exists:trainings,id',
            'price'=>'required|numeric|min:0.01',
+            'payment_status' => 'required|in:Pending,Paid',
+            'payment_order_id' => 'required'
         ]);
 
         if ($validations->fails()){
@@ -67,7 +69,9 @@ class JoinController extends Controller
                 'training_id'=>$request->training_id,
                 'order_number' => $request->invoice_id,
                 'status'=>'paid',
-                'amount'=>$request->price
+                'amount'=>$request->price,
+                'payment_status' => $request->payment_status,
+                'payment_order_id' => $request->payment_order_id
             ]);
             $join = Join::create([
                 'user_id'=> auth()->id(),
