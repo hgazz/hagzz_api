@@ -47,7 +47,7 @@ class NotificationService
             'notifiable_type' => $senderType,
             'type' =>$type,
             'title' => $title,
-            'data' => $body,
+            'description' => $body,
             'image' => $image,
             'details' => json_encode($details)
         ]);
