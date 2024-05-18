@@ -75,11 +75,7 @@ class AuthController extends Controller
                 return $this->apiResponse(400, 'sms error', $responseOtp['message']);
             }
 
-            auth()->loginUsingId($user->id);
-
-            $token = JWTAuth::fromUser($user);
             return $this->apiResponse(200, trans('api.auth.the verify code successfully'), null, [
-                'token'=>$token,
                 'user'=> $user,
             ]);
 
