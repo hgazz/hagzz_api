@@ -108,46 +108,6 @@ class AuthController extends Controller
 
     }
 
-    public function updatePersonalData(Request $request)
-    {
-        $validation = Validator::make($request->all(),[
-            'name' => 'required',
-            'gender' => 'required|in:male,female',
-            'birthdate' => 'required',
-            'profile_avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'country_id' => 'required|exists:countries,id',
-            'city_id' => 'required|exists:cities,id',
-            'area_id' => 'required|exists:areas,id',
-        ]);
-
-        if($validation->fails())
-        {
-            return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
-        }
-
-
-        try {
-            $imageName = $request->hasFile('profile_avatar') ? $this->upload($request->file('profile_avatar'), User::PATH) : null;
-            $otp = rand(10000,99999);
-            $user = User::where('id', auth()->id())->with('sports')->first();
-            $user->update([
-                'name' => $request->name,
-                'gender' => $request->gender,
-                'birth_date' => $request->birthdate,
-                'image' => $imageName,
-                'country_id' => $request->country_id,
-                'city_id' => $request->city_id,
-                'area_id' => $request->area_id,
-                'otp' => $otp,
-//                'fcm_token' => $request->fcm_token
-                'fcm_token' => ''
-            ]);
-            return $this->apiResponse(200, trans('api.auth.profile_updated'), null, new UserSportResource($user));
-        } catch (\Exception $e) {
-            return $this->apiResponse(500, trans('api.auth.registration_failed'), $e->getMessage());
-        }
-    }
-
     public function updateSportsData(Request $request)
     {
         $validation = Validator::make($request->all(),[
@@ -174,8 +134,6 @@ class AuthController extends Controller
                 $sportsWithLevels[$sportId] = ['level' => $request->level[$index]];
             }
         }
-        $user = User::where('id', auth()->id())->with('sports')->first();
-
         return $this->apiResponse(200, trans('api.sports.add_sports'));
 //        return $this->apiResponse(200, trans('api.sports.add_sports'), null, new UserSportResource($user));
     }
@@ -189,7 +147,8 @@ class AuthController extends Controller
             return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
         }
         $user = $this->userModel::where('phone',$request->phone)->first();
-        $response = $this->smsOtp->sendOtp('+2'.$request->phone, $user->otp);
+        $response = $this->smsOtp->sendOtp($user->country_code.$request->phone, $user->otp);
+        $user->update(['otp' => $user->otp]);
         return $this->apiResponse(200, trans('api.auth.resend code'), null, [
             "status" => $response
         ]);
