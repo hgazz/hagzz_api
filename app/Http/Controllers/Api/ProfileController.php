@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProfileResource;
-use App\Http\Resources\SportResource;
 use App\Http\Resources\UserSportsResource;
 use App\Http\Traits\apiResponse;
 use App\Models\User;

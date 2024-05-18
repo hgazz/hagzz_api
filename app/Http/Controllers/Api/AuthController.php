@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
+use App\Http\Resources\UserSportResource;
 use App\Http\Traits\apiResponse;
 use App\Http\Traits\FileUploader;
 use App\Models\Sport;
@@ -144,7 +145,7 @@ class AuthController extends Controller
 //                'fcm_token' => $request->fcm_token
                 'fcm_token' => ''
             ]);
-            return $this->apiResponse(200, trans('api.auth.profile_updated'), null, $user);
+            return $this->apiResponse(200, trans('api.auth.profile_updated'), null, new UserSportResource($user));
         } catch (\Exception $e) {
             return $this->apiResponse(500, trans('api.auth.registration_failed'), $e->getMessage());
         }
@@ -179,6 +180,7 @@ class AuthController extends Controller
         $user = User::where('id', auth()->id())->with('sports')->first();
 
         return $this->apiResponse(200, trans('api.sports.add_sports'));
+//        return $this->apiResponse(200, trans('api.sports.add_sports'), null, new UserSportResource($user));
     }
 
     public function resendCode(Request $request)
@@ -232,7 +234,7 @@ class AuthController extends Controller
             $token = JWTAuth::fromUser($user);
             return $this->apiResponse(200, trans('api.auth.the verify code successfully'), null, [
                 'token'=>$token,
-                'user'=> $user,
+                'user'=> new UserSportResource($user),
             ]);
         }
 
@@ -311,7 +313,7 @@ class AuthController extends Controller
     protected function getImageName(Request $request, User $user)
     {
         if ($request->hasFile('image')){
-          return !is_null($user->getRawOriginal('image')) ? $this->upload($request->image, User::PATH, User::PATH . DIRECTORY_SEPARATOR . $user->getRawOriginal('image')) : $this->upload($request->image, User::PATH);
+            return !is_null($user->getRawOriginal('image')) ? $this->upload($request->image, User::PATH, User::PATH . DIRECTORY_SEPARATOR . $user->getRawOriginal('image')) : $this->upload($request->image, User::PATH);
         }
     }
 }
