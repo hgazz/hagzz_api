@@ -35,10 +35,17 @@ class AuthController extends Controller
         $this->smsOtp = $smsOtp;
     }
 
-    public function saveUserPhone(Request $request)
+    public function register(Request $request)
     {
         $validation = Validator::make($request->all(),[
-            'phone_number' => 'required',
+            'phone' => 'required',
+            'name' => 'required',
+            'gender' => 'required|in:male,female',
+            'birthdate' => 'required',
+            'country_id' => 'required|exists:countries,id',
+            'city_id' => 'required|exists:cities,id',
+            'area_id' => 'required|exists:areas,id',
+            'country_code' => 'required'
         ]);
 
         if($validation->fails())
@@ -46,30 +53,61 @@ class AuthController extends Controller
             return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
         }
 
-        $user = User::where([
-            'phone' => $request->phone_number
-        ])->first();
-
-        $otp = rand(10000,99999);
-        $responseOtp = $this->smsOtp->sendOtp('+2'.$request->phone_number, $otp);
-        if($responseOtp['code'] == 'error')
-        {
-            return $this->apiResponse(400, 'sms error', $responseOtp['message']);
-        }
-
-        if(!$user)
-        {
-            User::create([
-                'phone' => $request->phone_number,
-                'otp' => $otp
-            ]);
-        }else{
+        try {
+            $otp = rand(10000,99999);
+            $user = User::where('id', auth()->id())->with('sports')->first();
             $user->update([
-                'otp' => $otp
+                'name' => $request->name,
+                'phone' => $request->phone,
+                'country_code' => $request->country_code,
+                'gender' => $request->gender,
+                'birth_date' => $request->birthdate,
+                'country_id' => $request->country_id,
+                'city_id' => $request->city_id,
+                'area_id' => $request->area_id,
+                'otp' => $otp,
+                'fcm_token' => $request->fcm_token
             ]);
+
+            $responseOtp = $this->smsOtp->sendOtp($request->country_code .$request->phone_number, $otp);
+            if($responseOtp['code'] == 'error')
+            {
+                return $this->apiResponse(400, 'sms error', $responseOtp['message']);
+            }
+
+            auth()->loginUsingId($user->id);
+
+            $token = JWTAuth::fromUser($user);
+            return $this->apiResponse(200, trans('api.auth.the verify code successfully'), null, [
+                'token'=>$token,
+                'user'=> $user,
+            ]);
+
+        } catch (\Exception $e) {
+            return $this->apiResponse(500, trans('api.auth.registration_failed'), $e->getMessage());
+        }
+    }
+
+    public function login(Request $request)
+    {
+        $otp = rand(10000,99999);
+        $validation = Validator::make($request->all(),[
+            'phone'=> 'required|exists:users,phone',
+            'country_code' => 'required'
+        ]);
+        if ($validation->fails()){
+            return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
         }
 
-        return $this->apiResponse(200, 'otp was sended');
+        $user = $this->userModel::where('phone',$request->phone)->withCount('sports')->first();
+        $user->update(['otp' => $otp, 'fcm_token' => $request->fcm_token]);
+        $this->smsOtp->sendOtp($request->country_code .$request->phone, $otp);
+
+
+        return $this->apiResponse(200, trans('api.auth.login success'), null, [
+            'user'=> $user,
+        ]);
+
     }
 
     public function updatePersonalData(Request $request)
@@ -140,32 +178,7 @@ class AuthController extends Controller
         }
         $user = User::where('id', auth()->id())->with('sports')->first();
 
-        return $this->apiResponse(200, trans('api.sports.add_sports'), null, $user);
-    }
-
-    public function login(Request $request)
-    {
-        $otp = rand(10000,99999);
-        $validation = Validator::make($request->all(),[
-            'phone'=> 'required|exists:users,phone',
-            'fcm_token' => 'required|string'
-        ]);
-        if ($validation->fails()){
-            return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
-        }
-
-        $user = $this->userModel::where('phone',$request->phone)->withCount('sports')->first();
-        $user->update(['otp' => $otp, 'fcm_token' => $request->fcm_token]);
-        $this->smsOtp->sendOtp('+2'.$request->phone, $otp);
-
-        auth()->loginUsingId($user->id);
-
-        $token = JWTAuth::fromUser($user);
-        return $this->apiResponse(200, trans('api.auth.login success'), null, [
-            'token'=>$token,
-            'user'=> $user,
-        ]);
-
+        return $this->apiResponse(200, trans('api.sports.add_sports'));
     }
 
     public function resendCode(Request $request)

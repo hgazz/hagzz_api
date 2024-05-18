@@ -29,9 +29,9 @@ use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 Route::group(['middleware' => 'api'], function () {
     Route::controller(AuthController::class)->group(function () {
-        Route::post('/auth/login-register','saveUserPhone');
+        Route::post('/register','register');
         Route::post('/login','login');
-//        Route::post('/resendCode','resendCode');
+        Route::post('/resendCode','resendCode');
         Route::post('/verify-otp','verifyCode');
     });
 });
