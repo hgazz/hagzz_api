@@ -56,8 +56,7 @@ class AuthController extends Controller
 
         try {
             $otp = rand(10000,99999);
-            $user = User::where('id', auth()->id())->with('sports')->first();
-            $user->update([
+            $user = User::create([
                 'name' => $request->name,
                 'phone' => $request->phone,
                 'country_code' => $request->country_code,
@@ -70,7 +69,7 @@ class AuthController extends Controller
                 'fcm_token' => $request->fcm_token
             ]);
 
-            $responseOtp = $this->smsOtp->sendOtp($request->country_code .$request->phone_number, $otp);
+            $responseOtp = $this->smsOtp->sendOtp($request->country_code .$request->phone, $otp);
             if($responseOtp['code'] == 'error')
             {
                 return $this->apiResponse(400, 'sms error', $responseOtp['message']);
@@ -105,9 +104,7 @@ class AuthController extends Controller
         $this->smsOtp->sendOtp($request->country_code .$request->phone, $otp);
 
 
-        return $this->apiResponse(200, trans('api.auth.login success'), null, [
-            'user'=> $user,
-        ]);
+        return $this->apiResponse(200, trans('api.auth.login success'), null, 'otp was send');
 
     }
 
