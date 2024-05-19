@@ -210,7 +210,8 @@ class AuthController extends Controller
 
         $validation = Validator::make($request->all(),[
             'name' => 'nullable',
-            'phone' => 'nullable|unique:users,phone,'. auth()->id(),
+            'country_code' => 'required|unique:users,phone,',
+            'phone' => 'required|unique:users,phone,'. auth()->id(),
             'gender' => 'nullable|in:male,female',
             'birth_date' => 'nullable|date',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -234,6 +235,7 @@ class AuthController extends Controller
             $imageName = $this->getImageName($request, $user);
             $user->update([
                 'name' => $request->name ?? $user->name,
+                'country_code' => $request->country_code ?? $user->country_code,
                 'phone' => $request->phone ?? $user->phone,
                 'gender' => $request->gender ?? $user->gender,
                 'birth_date' => $request->birth_date ?? $user->birth_date,
