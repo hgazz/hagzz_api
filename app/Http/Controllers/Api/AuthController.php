@@ -200,7 +200,7 @@ class AuthController extends Controller
 
     public function deleteAccount()
     {
-        $user = User::where('id', auth()->id())->first();
+        $user = User::find(auth('api')->id());
         $user->delete();
         return $this->apiResponse(200, trans('api.auth.account_was_deleted'));
     }
