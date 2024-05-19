@@ -118,17 +118,15 @@ class AuthController extends Controller
             return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
         }
 
-        $sportsWithLevels = [];
-        foreach ($request->sport_id as $index => $sportId) {
-            if (isset($request->level[$index])) {
-                UserSport::updateOrCreate([
-                    'user_id' => auth()->id(),
-                    'sport_id' => $sportId,
-                ],[
-                    'level' =>  $request->level[$index]
-                ]);
-                $sportsWithLevels[$sportId] = ['level' => $request->level[$index]];
+
+        if ($request->has('sport_id') && count($request->sport_id) > 0) {
+            $sportsWithLevels = [];
+            foreach ($request->sport_id as $index => $sportId) {
+                if (isset($request->level[$index])) {
+                    $sportsWithLevels[$sportId] = ['level' => $request->level[$index]];
+                }
             }
+            \auth()->user()->sports()->sync($sportsWithLevels);
         }
         return $this->apiResponse(200, trans('api.sports.add_sports'));
 //        return $this->apiResponse(200, trans('api.sports.add_sports'), null, new UserSportResource($user));
