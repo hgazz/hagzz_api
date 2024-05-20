@@ -36,75 +36,78 @@ Route::group(['middleware' => 'api'], function () {
     });
 });
 
-Route::controller(SportController::class)->group(function () {
-    Route::get('/sports', 'getSports');
-});
-
-Route::controller(AddressController::class)->group(function () {
-    Route::get('/countries', 'getCountries');
-    Route::post('/cities', 'getCitiesByCountry');
-    Route::post('/areas', 'getAreasByCity');
-    Route::get('/all-area', 'getAreas');
-});
-
-Route::get('home',[HomeController::class,'home']);
-Route::get('terms',[HomeController::class,'terms']);
-
-
-Route::controller(TrainingController::class)->group(function (){
-    Route::get('trainings/list', 'getAllTrainings');
-    Route::get('trainingDetails/{id}', 'trainingDetails');
-    Route::post('explore','index');
-});
-
-Route::controller(AcademyController::class)->group(function (){
-    Route::get('academies','getAllAcademies');
-    Route::get('academyDetails/{id}','academyDetails');
-    Route::get('academyTrainings/{id}','getTrainingsByAcademy');
-});
-
-Route::controller(CoachController::class)->group(function (){
-    Route::get('coach/trainings/{id}','getTrainingsByCoach');
-    Route::get('coachProfile/{id}','coachProfile');
-});
-
-
-Route::group(['middleware' => ['auth:api', 'setLang']], function () {
-    Route::post('/user/update_personal_data', [AuthController::class, 'updatePersonalData']);
-    Route::post('/user/update_sports_data',[AuthController::class, 'updateSportsData']);
-
-    Route::get('delete/account', [AuthController::class, 'deleteAccount']);
-    Route::post('update/user-profile', [AuthController::class, 'updateProfile']);
-
-    Route::get('faqs',[HomeController::class,'getFaqs']);
-    Route::controller(HomeController::class)->group(function (){
-        Route::post('/language', 'changeLang');
+Route::group(['middleware' => 'setLang'], function () {
+    Route::controller(SportController::class)->group(function () {
+        Route::get('/sports', 'getSports');
     });
 
-    Route::controller(FollowController::class)->group(function (){
-        Route::get('follows','followList');
-        Route::post('follow/addFollow','addFollow');
-        Route::post('follow/deleteFollow','deleteFollow');
+    Route::controller(AddressController::class)->group(function () {
+        Route::get('/countries', 'getCountries');
+        Route::post('/cities', 'getCitiesByCountry');
+        Route::post('/areas', 'getAreasByCity');
+        Route::get('/all-area', 'getAreas');
     });
 
-    Route::controller(JoinController::class)->group(function (){
-        Route::post('addJoin','addJoin');
-        Route::get('join','join');
-        Route::post('cancelBooking','cancelBooking');
+    Route::get('home',[HomeController::class,'home']);
+    Route::get('terms',[HomeController::class,'terms']);
+
+
+    Route::controller(TrainingController::class)->group(function (){
+        Route::get('trainings/list', 'getAllTrainings');
+        Route::get('trainingDetails/{id}', 'trainingDetails');
+        Route::post('explore','index');
     });
 
-    Route::controller(FavoriteController::class)->group(function (){
-        Route::get('favorites','favoriteList');
-        Route::post('addFavorite','addFavorite');
-        Route::post('deleteFavorite/{id}','deleteFavorite');
+    Route::controller(AcademyController::class)->group(function (){
+        Route::get('academies','getAllAcademies');
+        Route::get('academyDetails/{id}','academyDetails');
+        Route::get('academyTrainings/{id}','getTrainingsByAcademy');
     });
-    Route::get('/profile', [ProfileController::class,'getProfile']);
 
-    Route::get('/user/sports', [SportController::class,'getSportsNotSelected']);
-    Route::get('coach/user/sports', [UserController::class, 'coachSportByUserFavSports']);
-    Route::get('user/notifications', [UserController::class, 'userNotifications']);
-    Route::get('user/notification/{id}', [UserController::class, 'markAsRead']);
+    Route::controller(CoachController::class)->group(function (){
+        Route::get('coach/trainings/{id}','getTrainingsByCoach');
+        Route::get('coachProfile/{id}','coachProfile');
+    });
 
-    Route::post('/logout',[AuthController::class,'logout']);
+
+    Route::group(['middleware' => ['auth:api']], function () {
+        Route::post('/user/update_personal_data', [AuthController::class, 'updatePersonalData']);
+        Route::post('/user/update_sports_data',[AuthController::class, 'updateSportsData']);
+
+        Route::get('delete/account', [AuthController::class, 'deleteAccount']);
+        Route::post('update/user-profile', [AuthController::class, 'updateProfile']);
+
+        Route::get('faqs',[HomeController::class,'getFaqs']);
+        Route::controller(HomeController::class)->group(function (){
+            Route::post('/language', 'changeLang');
+        });
+
+        Route::controller(FollowController::class)->group(function (){
+            Route::get('follows','followList');
+            Route::post('follow/addFollow','addFollow');
+            Route::post('follow/deleteFollow','deleteFollow');
+        });
+
+        Route::controller(JoinController::class)->group(function (){
+            Route::post('addJoin','addJoin');
+            Route::get('join','join');
+            Route::post('cancelBooking','cancelBooking');
+        });
+
+        Route::controller(FavoriteController::class)->group(function (){
+            Route::get('favorites','favoriteList');
+            Route::post('addFavorite','addFavorite');
+            Route::post('deleteFavorite/{id}','deleteFavorite');
+        });
+        Route::get('/profile', [ProfileController::class,'getProfile']);
+
+        Route::get('/user/sports', [SportController::class,'getSportsNotSelected']);
+        Route::get('coach/user/sports', [UserController::class, 'coachSportByUserFavSports']);
+        Route::get('user/notifications', [UserController::class, 'userNotifications']);
+        Route::get('user/notification/{id}', [UserController::class, 'markAsRead']);
+
+        Route::post('/logout',[AuthController::class,'logout']);
+});
+
 
 });
