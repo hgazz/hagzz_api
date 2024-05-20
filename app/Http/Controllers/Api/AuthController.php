@@ -39,7 +39,7 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validation = Validator::make($request->all(),[
-            'phone' => 'required',
+            'phone' => 'required|unique:users,phone',
             'name' => 'required',
             'gender' => 'required|in:male,female',
             'birthdate' => 'required',
@@ -140,17 +140,15 @@ class AuthController extends Controller
             return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
         }
 
-        $sportsWithLevels = [];
-        foreach ($request->sport_id as $index => $sportId) {
-            if (isset($request->level[$index])) {
-                UserSport::updateOrCreate([
-                    'user_id' => auth()->id(),
-                    'sport_id' => $sportId,
-                ],[
-                    'level' =>  $request->level[$index]
-                ]);
-                $sportsWithLevels[$sportId] = ['level' => $request->level[$index]];
+
+        if ($request->has('sport_id') && count($request->sport_id) > 0) {
+            $sportsWithLevels = [];
+            foreach ($request->sport_id as $index => $sportId) {
+                if (isset($request->level[$index])) {
+                    $sportsWithLevels[$sportId] = ['level' => $request->level[$index]];
+                }
             }
+            \auth()->user()->sports()->sync($sportsWithLevels);
         }
         return $this->apiResponse(200, trans('api.sports.add_sports'));
 //        return $this->apiResponse(200, trans('api.sports.add_sports'), null, new UserSportResource($user));
@@ -222,7 +220,7 @@ class AuthController extends Controller
 
     public function deleteAccount()
     {
-        $user = User::where('id', auth()->id())->first();
+        $user = User::find(auth('api')->id());
         $user->delete();
         return $this->apiResponse(200, trans('api.auth.account_was_deleted'));
     }
@@ -232,7 +230,8 @@ class AuthController extends Controller
 
         $validation = Validator::make($request->all(),[
             'name' => 'nullable',
-            'phone' => 'nullable|unique:users,phone,'. auth()->id(),
+            'country_code' => 'required|unique:users,phone,',
+            'phone' => 'required|unique:users,phone,'. auth()->id(),
             'gender' => 'nullable|in:male,female',
             'birth_date' => 'nullable|date',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -256,6 +255,7 @@ class AuthController extends Controller
             $imageName = $this->getImageName($request, $user);
             $user->update([
                 'name' => $request->name ?? $user->name,
+                'country_code' => $request->country_code ?? $user->country_code,
                 'phone' => $request->phone ?? $user->phone,
                 'gender' => $request->gender ?? $user->gender,
                 'birth_date' => $request->birth_date ?? $user->birth_date,
