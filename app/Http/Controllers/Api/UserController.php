@@ -26,7 +26,7 @@ class UserController extends Controller
             }])
             ->distinct() // Ensure unique coaches
             ->get()
-            ->unique('sport_id')
+            ->unique('coach_id')
             ->pluck('coach');
 
         return $this->apiResponse(200, trans('api.coach_sports'), null, CoachResource::collection($coaches));
