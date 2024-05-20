@@ -31,6 +31,11 @@ class Sport extends Model
         return $this->belongsToMany(User::class, 'user_sport', 'user_id', 'sport_id');
     }
 
+    public function userSport()
+    {
+        return $this->hasOne(UserSport::class,'sport_id','id');
+    }
+
     // scope return status active sport
     public function scopeActive($query)
     {

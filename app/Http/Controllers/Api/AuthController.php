@@ -56,18 +56,40 @@ class AuthController extends Controller
 
         try {
             $otp = rand(10000,99999);
-            $user = User::create([
-                'name' => $request->name,
-                'phone' => $request->phone,
-                'country_code' => $request->country_code,
-                'gender' => $request->gender,
-                'birth_date' => $request->birthdate,
-                'country_id' => $request->country_id,
-                'city_id' => $request->city_id,
-                'area_id' => $request->area_id,
-                'otp' => $otp,
-                'fcm_token' => $request->fcm_token
-            ]);
+            if($request->has('old_phone'))
+            {
+                $user = User::where('phone', $request->old_phone)->first();
+                if($user)
+                {
+                    $user->update([
+                        'name' => $request->name,
+                        'phone' => $request->phone,
+                        'country_code' => $request->country_code,
+                        'gender' => $request->gender,
+                        'birth_date' => $request->birthdate,
+                        'country_id' => $request->country_id,
+                        'city_id' => $request->city_id,
+                        'area_id' => $request->area_id,
+                        'otp' => $otp,
+                        'fcm_token' => $request->fcm_token
+                    ]);
+                }else{
+                    return $this->apiResponse(401, 'the user not exists');
+                }
+            }else{
+                $user = User::create([
+                    'name' => $request->name,
+                    'phone' => $request->phone,
+                    'country_code' => $request->country_code,
+                    'gender' => $request->gender,
+                    'birth_date' => $request->birthdate,
+                    'country_id' => $request->country_id,
+                    'city_id' => $request->city_id,
+                    'area_id' => $request->area_id,
+                    'otp' => $otp,
+                    'fcm_token' => $request->fcm_token
+                ]);
+            }
 
             $responseOtp = $this->smsOtp->sendOtp($request->country_code .$request->phone, $otp);
             if($responseOtp['code'] == 'error')
@@ -94,6 +116,7 @@ class AuthController extends Controller
         if ($validation->fails()){
             return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
         }
+
 
         $user = $this->userModel::where('phone',$request->phone)->withCount('sports')->first();
         $user->update(['otp' => $otp, 'fcm_token' => $request->fcm_token]);
