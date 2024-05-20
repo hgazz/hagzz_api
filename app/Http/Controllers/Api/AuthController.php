@@ -88,7 +88,7 @@ class AuthController extends Controller
                     'area_id' => $request->area_id,
                     'otp' => $otp,
                     'fcm_token' => $request->fcm_token,
-                    'language' => $request->lang
+                    'language' => $request->lang ?? 'ar'
                 ]);
             }
 
