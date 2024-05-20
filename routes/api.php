@@ -47,7 +47,7 @@ Route::controller(AddressController::class)->group(function () {
     Route::get('/all-area', 'getAreas');
 });
 
-Route::get('home',[HomeController::class,'home']);
+Route::get('home',[HomeController::class,'home'])->middleware('setLang');
 Route::get('terms',[HomeController::class,'terms']);
 
 
