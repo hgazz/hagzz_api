@@ -98,7 +98,7 @@ Route::group(['middleware' => ['auth:api', 'setLang']], function () {
         Route::post('addFavorite','addFavorite');
         Route::post('deleteFavorite/{id}','deleteFavorite');
     });
-    Route::get('/profile/{id}', [ProfileController::class,'getProfile']);
+    Route::get('/profile', [ProfileController::class,'getProfile']);
 
     Route::get('/user/sports', [SportController::class,'getSportsNotSelected']);
     Route::get('coach/user/sports', [UserController::class, 'coachSportByUserFavSports']);

@@ -117,6 +117,7 @@ class AuthController extends Controller
             return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
         }
 
+
         $user = $this->userModel::where('phone',$request->phone)->withCount('sports')->first();
         $user->update(['otp' => $otp, 'fcm_token' => $request->fcm_token]);
         $this->smsOtp->sendOtp($request->country_code .$request->phone, $otp);

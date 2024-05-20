@@ -6,17 +6,21 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ProfileResource;
 use App\Http\Resources\UserSportsResource;
 use App\Http\Traits\apiResponse;
+use App\Models\Sport;
 use App\Models\User;
 
 class ProfileController extends Controller
 {
     use apiResponse;
-    public function getProfile($id)
+    public function getProfile()
     {
-        $user = User::with(['country', 'city', 'area'])->find($id)->makeHidden(['country_id', 'city_id', 'area_id']);
+        $user = User::with(['country', 'city', 'area'])->find(auth()->id())->makeHidden(['country_id', 'city_id', 'area_id']);
+        $sports = Sport::with(['userSport' => function ($q) {
+            $q->where('user_id', auth()->id());
+        }])->get();
         return $this->apiResponse(200 , trans('api.auth.User Profile'),null,[
             'profile'=> new ProfileResource($user),
-            'sports'=> UserSportsResource::collection($user->sports),
+            'sports'=> UserSportsResource::collection($sports),
         ]);
     }
 }
