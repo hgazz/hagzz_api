@@ -17,9 +17,9 @@ class JoinSeeder extends Seeder
     {
 
         $invoice = Invoice::create([
-            'user_id'=>40,
-            'training_id'=>15,
-            'order_number'=>283,
+            'user_id'=>152,
+            'training_id'=>10,
+            'order_number'=>28567,
             'status'=>'paid',
             'amount'=>123
         ]);
@@ -29,6 +29,21 @@ class JoinSeeder extends Seeder
            'invoice_id'=>$invoice->id,
            'training_id'=>$invoice->training_id,
            'price' => $invoice->amount
+        ]);
+
+        $invoice = Invoice::create([
+            'user_id'=>152,
+            'training_id'=>16,
+            'order_number'=>28567,
+            'status'=>'paid',
+            'amount'=>123
+        ]);
+
+        Join::create([
+            'user_id'=>$invoice->user_id,
+            'invoice_id'=>$invoice->id,
+            'training_id'=>$invoice->training_id,
+            'price' => $invoice->amount
         ]);
     }
 }
