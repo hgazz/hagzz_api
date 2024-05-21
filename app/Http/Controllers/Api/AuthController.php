@@ -39,7 +39,7 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validation = Validator::make($request->all(),[
-            'phone' => 'required|unique:users,phone',
+            'phone' => 'required',
             'name' => 'required',
             'gender' => 'required|in:male,female',
             'birthdate' => 'required',
@@ -77,6 +77,15 @@ class AuthController extends Controller
                     return $this->apiResponse(401, 'the user not exists');
                 }
             }else{
+                $validation = Validator::make($request->all(),[
+                    'phone' => 'unique:users,phone',
+                ]);
+
+                if($validation->fails())
+                {
+                    return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
+                }
+
                 $user = User::create([
                     'name' => $request->name,
                     'phone' => $request->phone,
@@ -87,7 +96,8 @@ class AuthController extends Controller
                     'city_id' => $request->city_id,
                     'area_id' => $request->area_id,
                     'otp' => $otp,
-                    'fcm_token' => $request->fcm_token
+                    'fcm_token' => $request->fcm_token,
+                    'language' => $request->lang ?? 'ar'
                 ]);
             }
 
