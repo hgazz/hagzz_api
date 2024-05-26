@@ -3,20 +3,16 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\UserResource;
 use App\Http\Resources\UserSportResource;
 use App\Http\Traits\apiResponse;
 use App\Http\Traits\FileUploader;
-use App\Models\Sport;
 use App\Models\User;
-use App\Models\UserSport;
 use App\Services\SMSMISR\SmsMisrOtpSender;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
