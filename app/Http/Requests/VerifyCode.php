@@ -39,12 +39,12 @@ class VerifyCode extends FormRequest
     public function messages()
     {
         return [
-            'otp.required' => 'The otp field is required.',
-            'otp.numeric' => 'The otp must be a number.',
-            'otp.min' => 'The otp must be at least 5 characters.',
-            'otp.exists' => 'The otp is not correct.',
-            'phone_number.required' => 'The phone number field is required.',
-            'phone_number.exists' => 'The phone number is not correct.',
+            'otp.required' => __('validation.otp_required'),
+            'otp.numeric' => __('validation.otp_numeric'),
+            'otp.min' => __('validation.otp_min'),
+            'otp.exists' => __('validation.otp_exists'),
+            'phone_number.required' => __('validation.phone_number_required'),
+            'phone_number.exists' => __('validation.phone_number_exists'),
         ];
     }
 }
