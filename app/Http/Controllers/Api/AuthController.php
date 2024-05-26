@@ -104,7 +104,7 @@ class AuthController extends Controller
                 return $this->apiResponse(400, 'sms error', $responseOtp['message']);
             }
 
-            return $this->apiResponse(200, trans('api.auth.the verify code successfully'), null, [
+            return $this->apiResponse(200, trans('api.auth.the_verify_code_successfully'), null, [
                 'user'=> $user,
             ]);
 

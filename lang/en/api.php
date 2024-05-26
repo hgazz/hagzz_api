@@ -17,7 +17,7 @@ return [
         'login success'=>'Login success',
         'resend code'=>'Resend code',
         'failed the otp'=>'Failed the otp',
-        'the verify code successfully'=>'the verify code successfully',
+        'the_verify_code_successfully'=>'the verify code successfully',
         'User Profile'=>'User Profile',
         'User Not Found'=>'User Not Found',
         'Otp Expired' => 'OTP Expired'

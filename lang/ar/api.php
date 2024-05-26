@@ -17,7 +17,7 @@ return [
         'login success' => 'تم تسجيل الدخول بنجاح',
         'resend code' => 'إعادة إرسال الرمز',
         'failed the otp' => 'فشل في رمز التحقق',
-        'the verify code successfully' => 'تم التحقق من الرمز بنجاح',
+        'the_verify_code_successfully' => 'تم التحقق من الرمز بنجاح',
         'User Profile' => 'ملف المستخدم',
         'User Not Found' => 'المستخدم غير موجود',
         'Otp Expired' => 'انتهت صلاحية رمز التحقق',
