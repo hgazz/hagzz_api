@@ -157,6 +157,12 @@ return [
     'url' => 'يجب أن يكون حقل :attribute عنوان URL صالحًا.',
     'ulid' => 'يجب أن يكون حقل :attribute ULID صالحًا.',
     'uuid' => 'يجب أن يكون حقل :attribute UUID صالحًا.',
+    'otp_required' => 'حقل otp مطلوب.',
+    'otp_numeric' => 'يجب أن يكون otp رقمًا.',
+    'otp_min' => 'يجب أن يكون otp على الأقل 5 أحرف.',
+    'otp_exists' => 'otp غير صحيح.',
+    'phone_number_required' => 'حقل رقم الهاتف مطلوب.',
+    'phone_number_exists' => 'رقم الهاتف غير صحيح.',
 
 
     /*

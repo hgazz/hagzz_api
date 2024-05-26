@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\VerifyCode;
 use App\Http\Resources\UserSportResource;
 use App\Http\Traits\apiResponse;
 use App\Http\Traits\FileUploader;
@@ -177,16 +178,8 @@ class AuthController extends Controller
         ]);
     }
 
-    public function verifyCode(Request $request)
+    public function verifyCode(VerifyCode $request)
     {
-        $validation = Validator::make($request->all(),[
-            'otp'=>'required|numeric|min:5|exists:users,otp',
-            'phone_number'=>'required|exists:users,phone',
-        ]);
-
-        if ($validation->fails()){
-            return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
-        }
 
         $user = User::where([
             ['phone', $request->phone_number],

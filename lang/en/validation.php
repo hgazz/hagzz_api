@@ -157,6 +157,12 @@ return [
     'url' => 'The :attribute field must be a valid URL.',
     'ulid' => 'The :attribute field must be a valid ULID.',
     'uuid' => 'The :attribute field must be a valid UUID.',
+    'otp_required' => 'The otp field is required.',
+    'otp_numeric' => 'The otp must be a number.',
+    'otp_min' => 'The otp must be at least 5 characters.',
+    'otp_exists' => 'The otp is not correct.',
+    'phone_number_required' => 'The phone number field is required.',
+    'phone_number_exists' => 'The phone number is not correct.',
 
     /*
     |--------------------------------------------------------------------------
