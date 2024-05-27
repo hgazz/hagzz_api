@@ -25,6 +25,7 @@ class PartnersResource extends JsonResource
             'follows_count' => $this->follows()->count(),
             'coaches_count' => $this->coaches()->count(),
             'trainings_count' => $this->trainings()->count(),
+            'addresses_count' => $this->addresses()->count(),
         ];
     }
 }
