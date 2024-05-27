@@ -35,15 +35,15 @@ class TClass extends Model
     }
 
 
-    protected function getTitleAttribute()
-    {
-        return $this->getTranslations('title')[$this->getLocale()];
-    }
-
-    protected function getSubTitleAttribute()
-    {
-        return $this->getTranslations('subtitle')[$this->getLocale()];
-    }
+//    protected function getTitleAttribute()
+//    {
+//        return $this->getTranslations('title')[$this->getLocale()];
+//    }
+//
+//    protected function getSubTitleAttribute()
+//    {
+//        return $this->getTranslations('subtitle')[$this->getLocale()];
+//    }
 
     public function getOutComesAttribute($value)
     {
