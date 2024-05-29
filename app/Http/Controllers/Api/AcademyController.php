@@ -27,7 +27,9 @@ class AcademyController extends Controller
         $academies = $query->select(['id', 'commercial_name', 'logo'])
             ->with('sports')
             ->skip($page * $pageSize - $pageSize)->limit($pageSize)
-        ->get();
+        ->whereHas('addresses', function (Builder $query){
+            $query->where('country_id', auth('api')->user()->country_id);
+        })->get();
         $data = [
             'academies' => PartnersResource::collection($academies),
             'total' => $total,
