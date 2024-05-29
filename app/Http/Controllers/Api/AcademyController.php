@@ -75,9 +75,6 @@ class AcademyController extends Controller
         return Academies::with(['addresses', 'galleries', 'sports'])
             ->select(['id', 'phone', 'commercial_name', 'logo', 'address', 'facebook', 'instagram'])
             ->withCount(['follows', 'coaches', 'trainings', 'addresses'])
-            ->whereHas('addresses.country', function (Builder $query) {
-                $query->where('id', auth('api')->user()->country_id);
-            })
             ->find($id);
     }
 
