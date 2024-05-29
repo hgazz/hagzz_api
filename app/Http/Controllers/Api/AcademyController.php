@@ -27,7 +27,7 @@ class AcademyController extends Controller
         $academies = $query->select(['id', 'commercial_name', 'logo'])
             ->with('sports')
             ->skip($page * $pageSize - $pageSize)->limit($pageSize)
-        ->whereHas('addresses', function (Builder $query){
+        ->whereHas('addresses.country', function (Builder $query){
             $query->where('country_id', auth('api')->user()->country_id);
         })->get();
         $data = [
@@ -45,7 +45,9 @@ class AcademyController extends Controller
         $academy = Academies::with(['addresses','galleries', 'sports'])
             ->select(['id', 'phone', 'commercial_name', 'logo', 'address', 'facebook', 'instagram'])
             ->withCount(['follows','coaches', 'trainings', 'addresses'])
-            ->find($id);
+            ->whereHas('addresses.country', function (Builder $query){
+                $query->where('country_id', auth('api')->user()->country_id);
+            })->find($id);
 
         if(!$academy)
         {
