@@ -111,16 +111,7 @@ class TrainingController extends Controller
             $query = $query->skip($page * $pageSize - $pageSize)->limit($pageSize);
             // Calculate the total number of pages
             $totalPages = ceil($total / $pageSize);
-            $trainings = $query->with(['academy'=> function ($query) {
-                $query->select(['id', 'commercial_name', 'logo']);
-                $query->withCount('follows');
-            },
-                'address:id,address,area_id,city_id',
-                'sport:id,name,icon'])
-                ->whereHas('address', function ($query) {
-                    return $query->where('country_id', auth('api')->user()->country_id);
-                })
-                ->withCount(['classes', 'joins'])->get();
+            $trainings = $this->filterHome($query);
             $data = [
                 'trainings' => TrainingResource::collection($trainings),
                 'total' => $total,
@@ -166,6 +157,25 @@ class TrainingController extends Controller
     }
 
 
-
+    private function filterHome($query)
+    {
+        return auth('api')->check() ? $query->with(['academy'=> function ($query) {
+            $query->select(['id', 'commercial_name', 'logo']);
+            $query->withCount('follows');
+        },
+            'address:id,address,area_id,city_id',
+            'sport:id,name,icon'])
+            ->whereHas('address', function ($query) {
+                return $query->where('country_id', auth('api')->user()->country_id);
+            })
+            ->withCount(['classes', 'joins'])->get() :
+            $query->with(['academy'=> function ($query) {
+                $query->select(['id', 'commercial_name', 'logo']);
+                $query->withCount('follows');
+            },
+                'address:id,address,area_id,city_id',
+                'sport:id,name,icon'])
+                ->withCount(['classes', 'joins'])->get();
+    }
 
 }
