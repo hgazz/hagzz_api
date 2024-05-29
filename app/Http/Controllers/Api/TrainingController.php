@@ -29,7 +29,7 @@ class TrainingController extends Controller
         },
             'address:id,address,area_id,city_id',
             'sport:id,name,icon'])
-            ->whereHas('address.country', function ($q) {
+            ->whereHas('address', function ($q) {
                 $q->where('country_id', auth('api')->user()->country_id);
             })
             ->withCount(['classes', 'joins'])->get();
@@ -117,7 +117,7 @@ class TrainingController extends Controller
             },
                 'address:id,address,area_id,city_id',
                 'sport:id,name,icon'])
-                ->whereHas('address.country', function ($query) {
+                ->whereHas('address', function ($query) {
                     return $query->where('country_id', auth('api')->user()->country_id);
                 })
                 ->withCount(['classes', 'joins'])->get();
