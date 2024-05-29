@@ -56,7 +56,7 @@ class AddressController extends Controller
 
     public function getAreas(Request $request)
     {
-        $areas = auth()->check() ? AreaResource::collection(Area::where('city_id', auth()->user()->city_id)->get(['id', 'name'])) : AreaResource::collection(Area::get(['id', 'name']));
+        $areas = auth('api')->check() ? AreaResource::collection(Area::where('city_id', auth()->user()->city_id)->get(['id', 'name'])) : AreaResource::collection(Area::get(['id', 'name']));
         return $this->apiResponse(200, trans('api.countries.areas'), null, $areas);
     }
 }
