@@ -47,13 +47,12 @@ class HomeController extends Controller
             'address:id,address',
             'classes',
             'sport'
-        ])->whereIn('sport_id', $userSportsIds)
+        ])->whereHas('address', function ($query){
+            $query->where('country_id', auth('api')->user()->country_id);
+        })->whereIn('sport_id', $userSportsIds)
             ->withCount(['classes', 'joins'])
             ->inRandomOrder()
             ->limit(4)
-            ->whereHas('address', function ($query){
-                $query->where('country_id', auth('api')->user()->country_id);
-            })
             ->get();
 
         return TrainingResource::collection($trainings);
