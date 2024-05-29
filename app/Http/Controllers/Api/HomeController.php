@@ -51,6 +51,7 @@ class HomeController extends Controller
             $query->where('country_id', auth('api')->user()->country_id);
         })->whereIn('sport_id', $userSportsIds)
             ->withCount(['classes', 'joins'])
+            ->isActive()
             ->inRandomOrder()
             ->limit(4)
             ->get();
@@ -77,6 +78,7 @@ class HomeController extends Controller
             'sport'
         ])->inRandomOrder()
             ->limit(4)
+            ->isActive()
             ->get();
         return TrainingResource::collection($trainings);
     }

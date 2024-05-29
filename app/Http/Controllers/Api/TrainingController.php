@@ -141,9 +141,7 @@ class TrainingController extends Controller
             'classes'=>function ($q) use ($pageSize , $page) {
                 $q->skip($page * $pageSize - $pageSize)->limit($pageSize);
             }
-        ])
-            ->where('active', true)
-            ->find($id);
+        ])->find($id);
         if(!$training)
         {
             return $this->apiResponse(400, trans('api.validation_error'), trans('api.home.training_not_found'),);
@@ -168,14 +166,14 @@ class TrainingController extends Controller
             ->whereHas('address', function ($query) {
                 return $query->where('country_id', auth('api')->user()->country_id);
             })
-            ->withCount(['classes', 'joins'])->get() :
+            ->withCount(['classes', 'joins'])->isActive()->get() :
             $query->with(['academy'=> function ($query) {
                 $query->select(['id', 'commercial_name', 'logo']);
                 $query->withCount('follows');
             },
                 'address:id,address,area_id,city_id',
                 'sport:id,name,icon'])
-                ->withCount(['classes', 'joins'])->get();
+                ->withCount(['classes', 'joins'])->isActive()->get();
     }
 
 }
