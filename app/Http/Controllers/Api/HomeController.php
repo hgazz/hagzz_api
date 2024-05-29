@@ -51,6 +51,9 @@ class HomeController extends Controller
             ->withCount(['classes', 'joins'])
             ->inRandomOrder()
             ->limit(4)
+            ->whereHas('address', function ($query){
+                $query->where('country_id', auth('api')->user()->country_id);
+            })
             ->get();
 
         return TrainingResource::collection($trainings);
