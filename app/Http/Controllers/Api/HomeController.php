@@ -33,7 +33,7 @@ class HomeController extends Controller
             'sports related user authenticated'=> $sports,
             'academies and related sports'=> $academies,
             'training' => [
-                'trainings_count' => auth('api')->check() ? Training::whereHas('address',function($q){$q->where('country_id',auth('api')->user()->country_id);})->count()   : Training::count(),
+                'trainings_count' => auth('api')->check() ? Training::whereHas('address',function($q){$q->where('country_id',auth('api')->user()->country_id);})->isActive()->count()   : Training::isActive()->count(),
                 'trainings' => $trainings
             ],
         ]);
