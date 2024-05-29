@@ -26,7 +26,7 @@ class HomeController extends Controller
     {
         $banners = Banner::limit(6)->inRandomOrder()->get();
         $sports = auth('api')->check() ? $this->getUserSports() : SportResource::collection(Sport::limit(6)->inRandomOrder()->get(['id','name','icon']));
-        $academies = PartnerResource::collection(Academies::with('sports')->select(['id','commercial_name','logo'])->get());
+        $academies = $this->getAcademies();
         $trainings = auth('api')->check() ? $this->getUserTraining() : $this->getRandomTrainings();
         return $this->apiResponse(200,trans('api.home.All Data in Home Screen'),null,[
             'banners'=> $banners,
@@ -109,5 +109,27 @@ class HomeController extends Controller
         $faqs = FaqResource::collection(Faq::get());
         return $this->apiResponse(200, trans('api.faqs'), null, $faqs);
     }
+
+    protected function getAcademies()
+    {
+        try {
+            $query = Academies::with('sports')
+                ->select(['id', 'commercial_name', 'logo']);
+
+            if (auth()->check()) {
+                $query->whereHas('addresses.country', function ($q) {
+                    $q->where('country_id', auth('api')->user()->country_id);
+                })->inRandomOrder()->limit(6);
+            }
+
+            $academies = PartnerResource::collection($query->get());
+
+            return $this->apiResponse(200, trans('api.home.Academy List'), null, ['academies' => $academies]);
+        } catch (\Exception $e) {
+            \Log::error('Error fetching academies: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return $this->apiResponse(500, trans('api.something_went_wrong'), ['error' => $e->getMessage()]);
+        }
+    }
+
 
 }
