@@ -26,7 +26,7 @@ class HomeController extends Controller
     {
         $banners = Banner::limit(6)->inRandomOrder()->get();
         $sports = auth('api')->check() ? $this->getUserSports() : SportResource::collection(Sport::limit(6)->inRandomOrder()->get(['id','name','icon']));
-        $academies = auth()->check() ? PartnerResource::collection(Academies::with('sports')->select(['id','commercial_name','logo'])->whereHas('addresses.country',function($q){$q->where('country_id',auth('api')->user()->country_id);})->limit(6)->inRandomOrder()->get(['id','commercial_name','logo'])) : PartnerResource::collection(Academies::with('sports')->select(['id','commercial_name','logo'])->get())  ;
+        $academies = auth()->check() ? PartnerResource::collection(Academies::with('sports')->select(['id','commercial_name','logo'])->whereHas('addresses.country',function($q){$q->where('id',auth('api')->user()->country_id);})->limit(6)->inRandomOrder()->get(['id','commercial_name','logo'])) : PartnerResource::collection(Academies::with('sports')->select(['id','commercial_name','logo'])->get())  ;
         $trainings = auth('api')->check() ? $this->getUserTraining() : $this->getRandomTrainings();
         return $this->apiResponse(200,trans('api.home.All Data in Home Screen'),null,[
             'banners'=> $banners,
