@@ -21,78 +21,101 @@ class AcademyController extends Controller
     public function getAllAcademies(Request $request)
     {
         $pageSize = 10;
-        $page = $request->has('page') ? (int) $request->input('page') : 1;
-        $query = Academies::query();
-        $total = $query->count();
-        $academies = $query->select(['id', 'commercial_name', 'logo'])
+        $page = $request->input('page', 1);
+
+        $academiesQuery = Academies::select(['id', 'commercial_name', 'logo'])
             ->with('sports')
-            ->skip($page * $pageSize - $pageSize)->limit($pageSize)
-        ->whereHas('addresses.country', function (Builder $query){
-            $query->where('country_id', auth('api')->user()->country_id);
-        })->get();
+            ->whereHas('addresses.country', function (Builder $query) {
+                $query->where('country_id', auth('api')->user()->country_id);
+            });
+
+        $total = $academiesQuery->count();
+        $academies = $academiesQuery->paginate($pageSize, ['*'], 'page', $page);
+
         $data = [
-            'academies' => PartnersResource::collection($academies),
+            'academies' => PartnersResource::collection($academies->items()),
             'total' => $total,
             'page' => $page,
             'pageSize' => $pageSize,
-            'totalPages' => ceil($total / $pageSize)
+            'totalPages' => $academies->lastPage()
         ];
+
         return $this->apiResponse(200, trans('api.home.Academy List'), null, $data);
     }
 
+
     public function academyDetails($id)
     {
-        $academy = Academies::with(['addresses','galleries', 'sports'])
-            ->select(['id', 'phone', 'commercial_name', 'logo', 'address', 'facebook', 'instagram'])
-            ->withCount(['follows','coaches', 'trainings', 'addresses'])
-            ->whereHas('addresses.country', function (Builder $query){
-                $query->where('country_id', auth('api')->user()->country_id);
-            })->find($id);
+        try {
+            $academy = $this->getAcademyById($id);
 
-        if(!$academy)
-        {
-            return $this->apiResponse(400, trans('api.validation_error'), trans('api.home.academy_not_found'));
+            if (!$academy) {
+                return $this->apiResponse(400, trans('api.validation_error'), trans('api.home.academy_not_found'));
+            }
+
+            $isFollowing = $this->checkAcademyFollow($academy);
+
+            $data = [
+                'academy' => new PartnersResource($academy),
+                'isFollowing' => $isFollowing,
+            ];
+
+            return $this->apiResponse(200, trans('api.home.Academy Details'), null, $data);
+
+        } catch (\Exception $e) {
+            // Log the exception for debugging purposes
+            \Log::error('Error fetching academy details: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+
+            return $this->apiResponse(500, trans('api.something_went_wrong'), ['error' => $e->getMessage()]);
         }
-        $isFollowing = $this->checkAcademyFollow($academy);
-        $data = [
-            'academy' => new PartnersResource($academy),
-            'isFollowing' => $isFollowing,
-        ];
-        return $this->apiResponse(200,trans('api.home.Academy Details'),null, $data);
     }
+
+    private function getAcademyById($id)
+    {
+        return Academies::with(['addresses', 'galleries', 'sports'])
+            ->select(['id', 'phone', 'commercial_name', 'logo', 'address', 'facebook', 'instagram'])
+            ->withCount(['follows', 'coaches', 'trainings', 'addresses'])
+            ->whereHas('addresses.country', function (Builder $query) {
+                $query->where('country_id', auth('api')->user()->country_id);
+            })
+            ->find($id);
+    }
+
 
     public function getTrainingsByAcademy($id, Request $request)
     {
-        $pageSize = 10;
-        $page = $request->has('page') ? (int) $request->input('page') : 1;
+        try {
+            $pageSize = 10;
+            $page = $request->input('page', 1);
 
-        // Start building the query with necessary relationships
-        $query = Training::where('academy_id', $id)
-            ->with([
-                'academy' ,
-                'address',
-                'sport'
-            ])
+            $query = $this->buildTrainingsQuery($id);
+
+            // Get paginated results
+            $trainings = $query->paginate($pageSize, ['*'], 'page', $page);
+
+            $data = [
+                'trainings' => TrainingResource::collection($trainings->items()),
+                'total' => $trainings->total(),
+                'page' => $trainings->currentPage(),
+                'pageSize' => $trainings->perPage(),
+                'totalPages' => $trainings->lastPage(),
+            ];
+
+            return $this->apiResponse(200, trans('api.home.All Training'), null, $data);
+        } catch (\Exception $e) {
+            \Log::error('Error fetching trainings: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return $this->apiResponse(500, trans('api.something_went_wrong'), ['error' => $e->getMessage()]);
+        }
+    }
+
+    private function buildTrainingsQuery($academyId)
+    {
+        return Training::where('academy_id', $academyId)
+            ->with(['academy', 'address', 'sport'])
             ->withCount(['joins', 'classes'])
             ->isActive();
-
-        // Get the total count of records that match the query criteria before applying pagination
-        $total = $query->count();
-
-        // Apply pagination to the query
-        $trainings = $query->skip(($page - 1) * $pageSize)->take($pageSize)->get();
-
-        // Prepare and return the API response with the paginated data and other details
-        $data = [
-            'trainings' => TrainingResource::collection($trainings),
-            'total' => $total,
-            'page' => $page,
-            'pageSize' => $pageSize,
-            'totalPages' => ceil($total / $pageSize)
-        ];
-
-        return $this->apiResponse(200, trans('api.home.All Training'), null, $data);
     }
+
 
     /**
      * @param Model|Collection|Builder|array $academy
