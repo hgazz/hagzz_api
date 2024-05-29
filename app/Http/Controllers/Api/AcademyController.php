@@ -25,8 +25,8 @@ class AcademyController extends Controller
 
         $academiesQuery = Academies::select(['id', 'commercial_name', 'logo'])
             ->with('sports')
-            ->whereHas('addresses.country', function (Builder $query) {
-                $query->where('id', auth('api')->user()->country_id);
+            ->whereHas('addresses', function (Builder $query) {
+                $query->where('country_id', auth('api')->user()->country_id);
             });
 
         $total = $academiesQuery->count();
