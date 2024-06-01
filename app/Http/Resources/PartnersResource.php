@@ -21,6 +21,8 @@ class PartnersResource extends JsonResource
             'sports' => SportResource::collection($this->sports),
            // 'trainings' => TrainingResource::collection($this->trainings),
             'addresses' => AddressResource::collection($this->addresses),
+            'facebook' => $this->facebook,
+            'instagram' => $this->instagram,
             'galleries' => $this->galleries,
             'follows_count' => $this->follows()->count(),
             'coaches_count' => $this->coaches()->count(),
