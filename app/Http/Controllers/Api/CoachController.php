@@ -13,6 +13,7 @@ use App\Models\Training;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class CoachController extends Controller
 {
@@ -38,7 +39,7 @@ class CoachController extends Controller
 
     public function getTrainingsByCoach($id, Request $request)
     {
-
+        dd($id);
         try {
             $pageSize = 10;
             $page = $request->has('page') ? (int) $request->input('page') : 1;
