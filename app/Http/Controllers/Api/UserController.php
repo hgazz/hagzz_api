@@ -26,8 +26,7 @@ class UserController extends Controller
                         $query->whereHas('addresses', function ($query) {
                             $query->where('country_id', auth('api')->user()->country_id);
                         });
-                    })
-                      ->with('sports'); // Limit fields to ID and name
+                    })->with('sports'); // Limit fields to ID and name
             }])
             ->distinct() // Ensure unique coaches
             ->get()
