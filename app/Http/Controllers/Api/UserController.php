@@ -18,7 +18,7 @@ class UserController extends Controller
     {
         // Get the sports IDs associated with the authenticated user
         $userSportsIds = auth('api')->user()->sports->pluck('sport_id');
-
+        dd($userSportsIds);
         $coaches = CoachSport::whereIn('sport_id', $userSportsIds)
             ->with(['coach' => function ($query) {
                 $query->select('id', 'name', 'image')
