@@ -39,7 +39,7 @@ class CoachController extends Controller
 
     public function getTrainingsByCoach($id, Request $request)
     {
-        dd($id);
+
         try {
             $pageSize = 10;
             $page = $request->has('page') ? (int) $request->input('page') : 1;
