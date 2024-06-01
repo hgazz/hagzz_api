@@ -18,12 +18,14 @@ class UserController extends Controller
     {
         // Get the sports IDs associated with the authenticated user
         $userSportsIds = auth('api')->user()->sports->pluck('id');
-        dd($userSportsIds);
+
         $coaches = CoachSport::whereIn('sport_id', $userSportsIds)
             ->with(['coach' => function ($query) {
                 $query->select('id', 'name', 'image')
-                    ->whereHas('academy.addresses', function ($query) {
-                        $query->where('country_id', auth('api')->user()->country_id);
+                    ->whereHas('academy', function ($query) {
+                        $query->whereHas('addresses', function ($query) {
+                            $query->where('country_id', auth('api')->user()->country_id);
+                        });
                     })
                       ->with('sports'); // Limit fields to ID and name
             }])
