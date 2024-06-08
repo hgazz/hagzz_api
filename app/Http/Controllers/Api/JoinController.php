@@ -8,6 +8,7 @@ use App\Http\Traits\apiResponse;
 use App\Models\Academies;
 use App\Models\Join;
 use App\Models\Notification;
+use App\Models\Training;
 use App\Models\User;
 use App\Models\CanceledBooking;
 use App\Models\Invoice;
@@ -64,6 +65,8 @@ class JoinController extends Controller
         }
         try {
             DB::beginTransaction();
+            $training = Training::find($request->training_id);
+            $netAmount = $request->price - (($training->academy->percentage / 100) * $request->price);
             $invoice = Invoice::create([
                 'user_id'=>auth()->id(),
                 'training_id'=>$request->training_id,
@@ -71,13 +74,15 @@ class JoinController extends Controller
                 'status'=>'paid',
                 'amount'=>$request->price,
                 'payment_status' => $request->payment_status,
-                'payment_order_id' => $request->payment_order_id
+                'payment_order_id' => $request->payment_order_id,
+                'net_amount' => $netAmount
             ]);
             $join = Join::create([
                 'user_id'=> auth()->id(),
                 'invoice_id' => $invoice->id,
                 'training_id'=>$request->training_id,
                 'price'=>$request->price,
+                'net_amount' => $netAmount
             ]);
             $details = [
                 'training_id' => $join->training_id,

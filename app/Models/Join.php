@@ -12,7 +12,8 @@ class Join extends Model
         'user_id',
         'training_id',
         'invoice_id',
-        'price'
+        'price',
+        'net_amount'
     ];
 
     protected $hidden = ['updated_at','training_id'];
