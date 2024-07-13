@@ -115,7 +115,8 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $otp = $request->phone == '01070809633' ? '12345' : rand(10000,99999);
+//        $otp = $request->phone == '01070809633' ? '12345' : rand(10000,99999);
+        $otp =  rand(10000,99999);
         $validation = Validator::make($request->all(),[
             'phone'=> 'required|exists:users,phone',
             'country_code' => 'required'
