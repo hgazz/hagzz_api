@@ -26,8 +26,10 @@ class AcademyController extends Controller
         $academiesQuery = auth('api')->check() ? Academies::select(['id', 'commercial_name', 'logo'])
             ->with('sports')->whereHas('addresses', function (Builder $query) {
                 $query->where('country_id', auth('api')->user()->country_id);
-            }) : Academies::select(['id', 'commercial_name', 'logo'])
-            ->with('sports');
+            }) : Academies::select(['id', 'commercial_name', 'logo'])->with('sports')
+        ->whereHas('trainings', function (Builder $query) {
+            $query->isActive();
+        });
 
         $total = $academiesQuery->count();
         $academies = $academiesQuery->paginate($pageSize, ['*'], 'page', $page);
