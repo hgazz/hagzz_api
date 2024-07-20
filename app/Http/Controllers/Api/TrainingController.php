@@ -65,7 +65,7 @@ class TrainingController extends Controller
 
             $request->whenHas('start_soon', function () use ($query) {
                 $today = Carbon::now()->toDateString();
-                $tenDaysFromNow = Carbon::now()->addDays(10)->toDateString();
+                $tenDaysFromNow = Carbon::now()->addDays(15)->toDateString();
 
                 // Update the query to filter between today and 10 days from now
                 $query->whereDate('start_date', '>=', $today)
