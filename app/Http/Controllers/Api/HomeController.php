@@ -16,6 +16,8 @@ use App\Models\Sport;
 use App\Models\Training;
 use App\Models\User;
 use App\Models\UserSport;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -26,7 +28,7 @@ class HomeController extends Controller
     {
         $banners = Banner::limit(6)->inRandomOrder()->get();
         $sports = auth('api')->check() ? $this->getUserSports() : SportResource::collection(Sport::limit(6)->inRandomOrder()->get(['id','name','icon']));
-        $academies = auth('api')->check() ? PartnerResource::collection(Academies::with('sports')->select(['id','commercial_name','logo'])->whereHas('addresses',function($q){$q->where('country_id',auth('api')->user()->country_id);})->limit(6)->inRandomOrder()->get(['id','commercial_name','logo'])) : PartnerResource::collection(Academies::with('sports')->select(['id','commercial_name','logo'])->get())  ;
+        $academies = auth('api')->check() ? PartnerResource::collection(Academies::with('sports')->select(['id','commercial_name','logo'])->whereHas('addresses',function($q){$q->where('country_id',auth('api')->user()->country_id);})->limit(6)->inRandomOrder()->get(['id','commercial_name','logo'])) : PartnerResource::collection($this->getPartnersGuest())  ;
         $trainings = auth('api')->check() ? $this->getUserTraining() : $this->getRandomTrainings();
         return $this->apiResponse(200,trans('api.home.All Data in Home Screen'),null,[
             'banners'=> $banners,
@@ -112,6 +114,16 @@ class HomeController extends Controller
     {
         $faqs = FaqResource::collection(Faq::get());
         return $this->apiResponse(200, trans('api.faqs'), null, $faqs);
+    }
+
+    /**
+     * @return Builder[]|Collection
+     */
+    public function getPartnersGuest(): array|Collection
+    {
+        return Academies::whereHas('trainings', function ($query) {
+                $query->where('active', 1);
+            })->with('sports')->inRandomOrder()->limit(4)->get(['id', 'commercial_name', 'logo']);
     }
 
     protected function getAcademies()
