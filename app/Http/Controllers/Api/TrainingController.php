@@ -132,6 +132,7 @@ class TrainingController extends Controller
         $page = (request()->has('page')) ? request('page') : 1;
         $training = Training::with([
             'coach:id,name,image,gender',
+            'sport',
             'academy' => function ($query) {
                 $query->select(['id', 'commercial_name', 'logo']);
                 $query->withCount('follows');
