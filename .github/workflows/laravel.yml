@@ -56,21 +56,16 @@ jobs:
             cd ${{ secrets.REMOTE_PATH }}
             echo "Pull"
             sudo git pull origin master
-            echo "Update Composer"
-            yes | sudo composer update
-            echo "Optimize Cach"
-            sudo php artisan optimize:clear
             echo "Migrate DB"
             sudo php artisan migrate --force
+            echo "Update Composer"
+            if git diff --name-only HEAD^ composer.json | grep composer.json; then
+              echo "Composer.json modified, running composer update"
+              yes | sudo composer update
+            else
+              echo "No changes in composer.json, skipping composer update"
+            fi
+            echo "Optimize Cach"
+            sudo php artisan optimize:clear
         
-      
-      # - name:  Deploy Develop
-        
-      #   if: ( github.event_name == 'push' ||  github.event_name == 'pull_request' ) && github.ref == 'refs/heads/develop' 
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #      host: ${{ secrets.REMOTE_HOST_D }}
-      #      username: ${{ secrets.REMOTE_USERNAME }}
-      #      key: ${{ secrets.REMOTE_SSH_KEY_D }}
-      #      script: |
-      #       echo "DEVELOP"
+ 
