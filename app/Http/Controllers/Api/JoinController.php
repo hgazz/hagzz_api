@@ -44,9 +44,8 @@ class JoinController extends Controller
     public function addJoin(Request $request)
     {
         $validations = Validator::make($request->all(),[
-           'invoice_id'=>'required|exists:invoices,id',
-           'training_id'=>'required|exists:trainings,id',
-           'price'=>'required|numeric|min:0.01',
+            'training_id'=>'required|exists:trainings,id',
+            'price'=>'required|numeric|min:0.01',
             'payment_status' => 'required|in:Pending,Paid',
             'payment_order_id' => 'required'
         ]);
