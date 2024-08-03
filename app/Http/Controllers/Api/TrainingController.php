@@ -25,14 +25,13 @@ class TrainingController extends Controller
         $trainings = $query->with(['academy'=> function ($query) {
             $query->select(['id', 'commercial_name', 'logo']);
             $query->withCount('follows');
-
         },
             'address:id,address,area_id,city_id',
             'sport:id,name,icon'])
             ->whereHas('address', function ($q) {
                 $q->where('country_id', auth('api')->user()->country_id);
             })
-            ->withCount(['classes', 'joins'])->get();
+            ->withCount(['classes', 'joins'])->where('end_date' , '>=', Carbon::today())->get();
         $data = [
             'trainings' => TrainingResource::collection($trainings),
             'total' => $total,
