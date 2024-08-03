@@ -136,7 +136,10 @@ class JoinController extends Controller
             },
             'training.address' => function ($query) {
                 $query->select(['id', 'address']);
-            }
+            },
+            'training.sport' => function ($query) {
+                $query->select(['id', 'name', 'icon']);
+            },
         ])->where('user_id', auth()->id());
 
         // Query for past trainings
