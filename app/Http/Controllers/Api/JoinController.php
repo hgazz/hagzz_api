@@ -148,7 +148,7 @@ class JoinController extends Controller
         })->with([
             'training' => function ($query) {
                 $query->where('active', true);
-                $query->select(['id', 'name', 'price', 'start_date', 'end_date', 'max_players', 'level', 'gender', 'age_group', 'address_id', 'academy_id', 'active', 'discount_price']);
+                $query->select(['id', 'name', 'price', 'start_date', 'end_date', 'max_players', 'level', 'gender', 'age_group', 'address_id', 'academy_id', 'active', 'discount_price', 'sport_id']);
                 $query->withCount(['joins', 'classes']);
             },
             'training.academy' => function ($query) {
