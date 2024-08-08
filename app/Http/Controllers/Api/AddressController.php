@@ -58,7 +58,7 @@ class AddressController extends Controller
     {
         $areas = auth('api')->check() ? AreaResource::collection(Area::whereHas('city', function ($q){
             $q->where('country_id', auth('api')->user()->country_id);
-        })->get(['id', 'name'])) : AreaResource::collection(Area::get(['id', 'name']));
+        })->get()) : AreaResource::collection(Area::get(['id', 'name']));
         return $this->apiResponse(200, trans('api.countries.areas'), null, $areas);
     }
 }
