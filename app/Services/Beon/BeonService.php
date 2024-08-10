@@ -21,7 +21,7 @@ class BeonService
     public function sendOtp($phoneNumber, $name)
     {
         $headers = [
-            'beon_token' => $this->token,
+            'beon-token' => $this->token,
         ];
 
         $options = [
