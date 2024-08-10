@@ -143,6 +143,7 @@ class AuthController extends Controller
         if ($request->send_type == 'whatsapp'){
             $data = $this->beonService->sendOtp($request->country_code .$request->phone, $otp);
             $otp = json_decode($data, true);
+            dd($otp);
             $user->update(['otp' => $otp->data, 'fcm_token' => $request->fcm_token]);
         }else{
             $this->smsOtp->sendOtp($request->country_code .$request->phone, $otp);
