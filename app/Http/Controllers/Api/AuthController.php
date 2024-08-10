@@ -8,6 +8,7 @@ use App\Http\Resources\UserSportResource;
 use App\Http\Traits\apiResponse;
 use App\Http\Traits\FileUploader;
 use App\Models\User;
+use App\Services\Beon\BeonService;
 use App\Services\SMSMISR\SmsMisrOtpSender;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -23,14 +24,17 @@ class AuthController extends Controller
     private $userModel;
     private $smsOtp;
 
+    private $beonService;
+
     /**
      * @param User $user
      * @param SmsMisrOtpSender $smsOtp
      */
-    public function __construct(User $user, SmsMisrOtpSender $smsOtp)
+    public function __construct(User $user, SmsMisrOtpSender $smsOtp, BeonService $beonService)
     {
         $this->userModel = $user;
         $this->smsOtp = $smsOtp;
+        $this->beonService = $beonService;
     }
 
     public function register(Request $request)
@@ -119,17 +123,21 @@ class AuthController extends Controller
 //        $otp =  rand(10000,99999);
         $validation = Validator::make($request->all(),[
             'phone'=> 'required|exists:users,phone',
-            'country_code' => 'required'
+            'country_code' => 'required',
+            'send_type' => 'required|in:sms,whatsapp',
         ]);
+
         if ($validation->fails()){
             return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
         }
 
-
         $user = $this->userModel::where('phone',$request->phone)->withCount('sports')->first();
         $user->update(['otp' => $otp, 'fcm_token' => $request->fcm_token]);
-        $this->smsOtp->sendOtp($request->country_code .$request->phone, $otp);
-
+        if ($request->send_type == 'whatsapp'){
+            $this->beonService->sendOtp($request->country_code .$request->phone, $otp);
+        }else{
+            $this->smsOtp->sendOtp($request->country_code .$request->phone, $otp);
+        }
 
         return $this->apiResponse(200, trans('api.auth.login success'), null, 'otp was send');
 
