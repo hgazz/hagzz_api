@@ -29,6 +29,7 @@ class AuthController extends Controller
     /**
      * @param User $user
      * @param SmsMisrOtpSender $smsOtp
+     * @param BeonService $beonService
      */
     public function __construct(User $user, SmsMisrOtpSender $smsOtp, BeonService $beonService)
     {
@@ -47,7 +48,8 @@ class AuthController extends Controller
             'country_id' => 'required|exists:countries,id',
             'city_id' => 'required|exists:cities,id',
             'area_id' => 'required|exists:areas,id',
-            'country_code' => 'required'
+            'country_code' => 'required',
+            'send_type' => 'required|in:sms,whatsapp',
         ]);
 
         if($validation->fails())
@@ -101,12 +103,17 @@ class AuthController extends Controller
                     'language' => $request->lang ?? 'ar'
                 ]);
             }
-
-            $responseOtp = $this->smsOtp->sendOtp($request->country_code .$request->phone, $otp);
-            if($responseOtp['code'] == 'error')
-            {
-                return $this->apiResponse(400, 'sms error', $responseOtp['message']);
+            if ($request->send_type == 'whatsapp') {
+                $responseOtp = $this->beonService->sendOtp($request->country_code . $request->phone, $otp);
+                $user->update(['otp' => $responseOtp->data, 'fcm_token' => $request->fcm_token]);
+            }else{
+                $responseOtp = $this->smsOtp->sendOtp($request->country_code .$request->phone, $otp);
+                if($responseOtp['code'] == 'error')
+                {
+                    return $this->apiResponse(400, 'sms error', $responseOtp['message']);
+                }
             }
+
 
             return $this->apiResponse(200, trans('api.auth.the_verify_code_successfully', [],$request->lang), null, [
                 'user'=> $user,
@@ -135,7 +142,7 @@ class AuthController extends Controller
         $user->update(['otp' => $otp, 'fcm_token' => $request->fcm_token]);
         if ($request->send_type == 'whatsapp'){
             $data = $this->beonService->sendOtp($request->country_code .$request->phone, $otp);
-            $user->update(['otp' => $data, 'fcm_token' => $request->fcm_token]);
+            $user->update(['otp' => $data->data, 'fcm_token' => $request->fcm_token]);
         }else{
             $this->smsOtp->sendOtp($request->country_code .$request->phone, $otp);
         }

@@ -34,6 +34,10 @@ class BeonService
                     'name' => 'name',
                     'contents' => $name,
                 ],
+                [
+                    'name' => 'otp_length',
+                    'contents' => 5,
+                ],
             ],
         ];
 
