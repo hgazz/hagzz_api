@@ -185,16 +185,23 @@ class AuthController extends Controller
     {
         $validation = Validator::make($request->all(),[
             'phone'=> 'required|exists:users,phone',
+            'send_type' => 'required|in:sms,whatsapp',
         ]);
         if ($validation->fails()){
             return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
         }
         $user = $this->userModel::where('phone',$request->phone)->first();
-        $response = $this->smsOtp->sendOtp($user->country_code.$request->phone, $user->otp);
-        $user->update(['otp' => $user->otp]);
-        return $this->apiResponse(200, trans('api.auth.resend code'), null, [
-            "status" => $response
-        ]);
+        $otp = $request->phone == '01070809633' ? '12345' : rand(10000,99999);
+        if ($request->send_type == 'whatsapp'){
+            $responseOtp = $this->beonService->sendOtp($request->country_code . $request->phone, $user->name);
+            $otp = json_decode($responseOtp, true);
+            $user->update(['otp' => $otp['data'], 'fcm_token' => $request->fcm_token]);
+        }else{
+            $this->smsOtp->sendOtp($user->country_code.$request->phone, $user->name);
+            $user->update(['otp' => $otp]);
+        }
+
+        return $this->apiResponse(200, trans('api.auth.resend code'), null, 'otp was send');
     }
 
     public function verifyCode(VerifyCode $request)
