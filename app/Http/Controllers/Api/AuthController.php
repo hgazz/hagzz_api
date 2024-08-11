@@ -113,7 +113,7 @@ class AuthController extends Controller
                 {
                     return $this->apiResponse(400, 'sms error', $responseOtp['message']);
                 }
-            
+
 
 
             return $this->apiResponse(200, trans('api.auth.the_verify_code_successfully', [],$request->lang), null, [
@@ -145,10 +145,12 @@ class AuthController extends Controller
             $data = $this->beonService->sendOtp($request->country_code .$request->phone, $otp);
             $otp = json_decode($data, true);
             $user->update(['otp' => $otp['data'], 'fcm_token' => $request->fcm_token]);
+        }else{
+            $this->smsOtp->sendOtp($request->country_code .$request->phone, $otp);
         }
-        
-         $this->smsOtp->sendOtp($request->country_code .$request->phone, $otp);
-        
+
+
+
 
         return $this->apiResponse(200, trans('api.auth.login success'), null, 'otp was send');
 
@@ -197,11 +199,13 @@ class AuthController extends Controller
             $responseOtp = $this->beonService->sendOtp($request->country_code . $request->phone, $user->name);
             $otp = json_decode($responseOtp, true);
             $user->update(['otp' => $otp['data'], 'fcm_token' => $request->fcm_token]);
-        }
-        
+        }else{
             $this->smsOtp->sendOtp($user->country_code.$request->phone, $user->name);
             $user->update(['otp' => $otp]);
-        
+        }
+
+
+
 
         return $this->apiResponse(200, trans('api.auth.resend code'), null, 'otp was send');
     }
