@@ -107,14 +107,13 @@ class AuthController extends Controller
                 $responseOtp = $this->beonService->sendOtp($request->country_code . $request->phone, $otp);
                 $otp = json_decode($responseOtp, true);
                 $user->update(['otp' => $otp['data'], 'fcm_token' => $request->fcm_token]);
-            }
+                }else{
                 $responseOtp = $this->smsOtp->sendOtp($request->country_code .$request->phone, $otp);
                 if($responseOtp['code'] == 'error')
                 {
                     return $this->apiResponse(400, 'sms error', $responseOtp['message']);
                 }
-
-
+            }
 
             return $this->apiResponse(200, trans('api.auth.the_verify_code_successfully', [],$request->lang), null, [
                 'user'=> $user,
