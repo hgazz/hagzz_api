@@ -79,8 +79,8 @@ class JoinController extends Controller
             $join = Join::create([
                 'user_id'=> auth()->id(),
                 'invoice_id' => $invoice->id,
-                'training_id'=>$request->training_id,
-                'price'=>$request->price,
+                'training_id'=> $request->training_id,
+                'price'=> $request->price,
                 'net_amount' => $netAmount
             ]);
             $details = [
@@ -104,7 +104,7 @@ class JoinController extends Controller
                 'image' => $join->training->academy->image,
                 'details' => $details
             ];
-            NotificationService::firebaseNotification($data, $join->user->fcm_token);
+            NotificationService::firebaseNotification($data, auth('api')->user()->fcm_token);
             NotificationService::dbNotification($join->user_id,User::class, 2, $title, $body, $join->training->academy->image, $details);
             DB::commit();
             return $this->apiResponse(200,trans('api.home.joined as training successfully'),null , $join);
