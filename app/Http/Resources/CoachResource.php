@@ -16,12 +16,12 @@ class CoachResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'name' => $this->getTranslation('name', app()->getLocale()) ?? $this->getTranslation('name', 'en'),
             'image' => $this->image,
-            'license' => $this->license,
+            'license' => $this->getTranslation('license', app()->getLocale()) ?? $this->getTranslation('license', 'en'),
             'academy_id' => $this->academy_id,
             'gender' => $this->gender,
-            'description' => $this->description,
+            'description' => $this->getTranslation('description', app()->getLocale()) ?? $this->getTranslation('description', 'en'),
             'active' => $this->active,
             'academy' => new PartnerResource($this->academy),
             'total_hours' => $this->total_hours,
