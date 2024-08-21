@@ -10,7 +10,7 @@ class Coach extends Model
 {
     use HasFactory, HasTranslations;
 
-    public $translatable = ['name', 'description', 'license'];
+    public array $translatable = ['name', 'description', 'license'];
     const PATH = 'images/coaches';
     public function getImageAttribute($value)
     {
