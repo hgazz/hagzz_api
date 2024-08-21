@@ -7,21 +7,16 @@ use App\Http\Resources\JoinResource;
 use App\Http\Traits\apiResponse;
 use App\Models\Academies;
 use App\Models\Join;
-use App\Models\Notification;
 use App\Models\Training;
 use App\Models\User;
-use App\Models\CanceledBooking;
 use App\Models\Invoice;
-use App\Notifications\CancelBookingNotifications;
 use App\Services\Booking\BookingService;
 use App\Services\Firebase\NotificationService;
-use App\Services\SMSMISR\SmsMisrOtpSender;
 use App\Services\SMSMISR\SmsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 
 class JoinController extends Controller
 {
@@ -189,17 +184,19 @@ class JoinController extends Controller
     public function cancelBooking(Request $request)
     {
         $validations = Validator::make($request->all(), [
-            'id' => ['required','exists:joins,id', $this->checkJoinDate($request)],
+            'id' => ['required','exists:joins,id'],
             'reason' => 'required|min:3|max:255',
         ]);
 
         if ($validations->fails()) {
             return $this->apiResponse(400, trans('api.validation_error'), $validations->errors());
         }
+
         try {
             $this->bookingService->cancelBooking($request);
             return $this->apiResponse(200, trans('api.home.cancel booking successfully'));
         } catch (\Exception $e) {
+
             return $this->apiResponse(400, trans('api.error'), $e->getMessage());
         }
 
