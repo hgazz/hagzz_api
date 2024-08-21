@@ -49,7 +49,7 @@ class BookingService
             'details' => $details
         ];
         NotificationService::firebaseNotification($data, $join->user->fcm_token);
-        NotificationService::dbNotification($join->user_id, User::class, 'cancel_booking', $title, $details);
+        NotificationService::dbNotification($join->user_id, User::class, 'cancel_booking', $title, $body, $join->training->academy->image, $details);
 //        $join->training->academy->notify(new CancelBookingNotifications($join->training, $join->user));
 
         DB::commit();
