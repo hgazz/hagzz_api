@@ -10,7 +10,7 @@ class CanceledBooking extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['invoice_id', 'user_id', 'reason'];
+    protected $guarded = [];
 
     public function invoice():BelongsTo
     {
