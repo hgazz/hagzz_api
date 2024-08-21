@@ -23,7 +23,7 @@ class BookingService
     {
         DB::beginTransaction();
 
-        $join = Join::findOrFail($request->id);
+        $join = Join::where(['training_id' => $request->id, 'user_id' => auth('api')->id()])->first();
         $join->invoice()->update(['is_canceled' => true]);
 
         CanceledBooking::create([

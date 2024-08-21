@@ -184,7 +184,7 @@ class JoinController extends Controller
     public function cancelBooking(Request $request)
     {
         $validations = Validator::make($request->all(), [
-            'id' => ['required','exists:joins,id'],
+            'id' => ['required','exists:trainings,id'],
             'reason' => 'required|min:3|max:255',
         ]);
 
