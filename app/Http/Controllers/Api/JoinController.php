@@ -86,7 +86,8 @@ class JoinController extends Controller
             $details = [
                 'training_id' => $join->training_id,
                 'longitude' => $join->training->address->longitude,
-                'latitude' => $join->training->address->latitude
+                'latitude' => $join->training->address->latitude,
+                'academy_name' => $join->training->academy->commercial_name,
             ];
             //notification to academy
             $academyTitle = 'New Booking';

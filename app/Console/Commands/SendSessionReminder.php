@@ -40,7 +40,8 @@ class SendSessionReminder extends Command
             $detail = [
                 'training_id' => $class->training_id,
                 'longitude' => $class->training->address->longitude,
-                'latitude' => $class->training->address->latitude
+                'latitude' => $class->training->address->latitude,
+                'academy_name' => $class->training->academy->commercial_name,
             ];
             foreach ($joins as $join) {
                 $user = $join->user;

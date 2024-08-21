@@ -95,7 +95,8 @@ class FavoriteController extends Controller
                 $detail = [
                     'training_id' => $training->id,
                     'longitude' => $training->address->longitude,
-                    'latitude' => $training->address->latitude
+                    'latitude' => $training->address->latitude,
+                    'academy_name' => $training->academy->commercial_name,
                 ];
                 $title = "Don't miss out";
                 $body = "Only two slots are available in a training you saved";
