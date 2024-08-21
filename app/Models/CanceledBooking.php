@@ -10,6 +10,7 @@ class CanceledBooking extends Model
 {
     use HasFactory;
 
+    protected $table = 'canceled_bookings';
     protected $guarded = [];
 
     public function invoice():BelongsTo
