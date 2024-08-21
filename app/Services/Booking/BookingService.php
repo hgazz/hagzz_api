@@ -33,14 +33,24 @@ class BookingService
         ]);
 
         $join->delete();
-
+        $details = [
+            'training_id' => $join->training_id,
+            'longitude' => $join->training->address->longitude,
+            'latitude' => $join->training->address->latitude,
+            'academy_name' => $join->training->academy->commercial_name,
+        ];
         $title = "Booking Cancelled";
         $body = "Your booking with {$join->training->academy->commercial_name} is Cancelled. Please explore other trainings.";
         $this->smsService->sendMessage($join->user->phone, "{$title} - {$body}");
-        $data = ['title' => $title, 'body' => $body];
+        $data = [
+            'title' => $title,
+            'body' => $body,
+            'image' => $join->training->academy->image,
+            'details' => $details
+        ];
         NotificationService::firebaseNotification($data, $join->user->fcm_token);
-        NotificationService::dbNotification($join->user_id, User::class, 'cancel_booking', $title, $body);
-        $join->training->academy->notify(new CancelBookingNotifications($join->training, $join->user));
+        NotificationService::dbNotification($join->user_id, User::class, 'cancel_booking', $title, $details);
+//        $join->training->academy->notify(new CancelBookingNotifications($join->training, $join->user));
 
         DB::commit();
     }
