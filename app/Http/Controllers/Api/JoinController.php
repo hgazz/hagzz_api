@@ -92,7 +92,7 @@ class JoinController extends Controller
 
             //notifications to user
             $title = 'Booking Confirmed';
-            $body = 'your booking with '.$join->training->academy->commercial_name.' is confirmed';
+            $body = 'your booking with '.$join->training->name.' is confirmed';
             $this->smsService->sendMessage($join->user->phone, "{$title} - {$body}");
             $data = [
                 'title' => $title,
