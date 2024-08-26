@@ -82,7 +82,7 @@ class JoinController extends Controller
                 'training_id' => $join->training_id,
                 'longitude' => $join->training->address->longitude,
                 'latitude' => $join->training->address->latitude,
-                'academy_name' => $join->training->academy->commercial_name,
+                'training_name' => $join->training->name,
             ];
             //notification to academy
             $academyTitle = 'New Booking';
@@ -92,7 +92,7 @@ class JoinController extends Controller
 
             //notifications to user
             $title = 'Booking Confirmed';
-            $body = 'your booking with '.$join->training->name.' is confirmed';
+            $body = 'your booking with '.$join->training->academy->commercial_name.' is confirmed';
             $this->smsService->sendMessage($join->user->phone, "{$title} - {$body}");
             $data = [
                 'title' => $title,
