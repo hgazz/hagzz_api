@@ -11,7 +11,7 @@ use Spatie\Translatable\HasTranslations;
 
 class Training extends Model
 {
-    use HasFactory, HasTranslations;
+    use HasTranslations;
 
     protected array $translatable = ['name', 'description'];
     protected $hidden = ['created_at', 'updated_at','academy_id','address_id','coach_id'];
