@@ -7,6 +7,7 @@ use App\Http\Resources\TrainingResource;
 use App\Http\Traits\apiResponse;
 use App\Models\Join;
 use App\Models\Training;
+use App\Models\User;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -137,19 +138,25 @@ class TrainingController extends Controller
                 $query->withCount('follows');
             },
             'address:id,address,longitude,latitude',
-            'joins.user:id,image',
             'classes'=>function ($q) use ($pageSize , $page) {
                 $q->skip($page * $pageSize - $pageSize)->limit($pageSize);
             }
         ])->find($id);
+
         if(!$training)
         {
             return $this->apiResponse(400, trans('api.validation_error'), trans('api.home.training_not_found'),);
         }
+
+        $joins = User::whereHas('joins', function($query) use($training){
+            return $query->where('training_id',$training->id);
+        })->select(['id','image'])->get();
+
         $is_joined = auth('api')->check() ? Join::whereUserId(auth('api')->id())->whereTrainingId($id)->exists() : null;
         $data = [
             'training' => new TrainingResource($training),
-            'is_joined' => $is_joined
+            'is_joined' => $is_joined,
+            'joins' => $joins
         ];
         return $this->apiResponse(200, trans('api.home.Training Detail'), null, $data);
     }
