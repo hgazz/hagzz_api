@@ -100,7 +100,7 @@ class JoinController extends Controller
                 'image' => $join->training->academy->image,
                 'details' => $details
             ];
-            NotificationService::firebaseNotification($data, 'eqhTRu_F3U6AmtjkZeoOGH:APA91bHYTEUNbF1U6spWoScLw5n61GPnXudnMbOvlZqnEeAy0hJ_PK4BqxMk76OZ24y6DZ8iUitMDY1uI4kc7QwqyoCSVlC1avyml7GHBcLFpJdGWMbf0wO7aC5ivbkUZfRb3n1uj_mj');
+            NotificationService::firebaseNotification($data, $join->user->fcm_token);
             NotificationService::dbNotification($join->user_id,User::class, 2, $title, $body, $join->training->academy->image, $details);
             DB::commit();
             return $this->apiResponse(200,trans('api.home.joined as training successfully'),null , $join);
