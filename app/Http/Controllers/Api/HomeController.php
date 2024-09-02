@@ -19,6 +19,7 @@ use App\Models\UserSport;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
 
 class HomeController extends Controller
@@ -51,8 +52,7 @@ class HomeController extends Controller
             'sport'
         ])->whereHas('address', function ($query){
             $query->where('country_id', auth('api')->user()->country_id);
-        })  ->where('start_date', '>' , now()->toDateString())
-            ->where('active', 1)
+        })->where('active', 1)
             ->whereIn('sport_id', $userSportsIds)
             ->withCount(['classes', 'joins'])
             ->inRandomOrder()
@@ -80,7 +80,7 @@ class HomeController extends Controller
             'classes',
             'sport'
         ])->inRandomOrder()
-            ->where('start_date', '>' , now()->toDateString())
+            ->where('start_date', '>=' , now()->toDateString())
             ->limit(4)
             ->isActive()
             ->get();
@@ -124,7 +124,8 @@ class HomeController extends Controller
     public function getPartnersGuest(): array|Collection
     {
         return Academies::whereHas('trainings', function ($query) {
-                $query->where('active', 1);
+                $query->where('active', 1)
+                ->whereDate('date', '>', Carbon::today()->toDateString());
             })->with('sports')->inRandomOrder()->limit(4)->get(['id', 'commercial_name', 'logo']);
     }
 
