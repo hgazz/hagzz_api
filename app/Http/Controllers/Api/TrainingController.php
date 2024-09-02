@@ -32,7 +32,7 @@ class TrainingController extends Controller
             ->whereHas('address', function ($q) {
                 $q->where('country_id', auth('api')->user()->country_id);
             })
-            ->withCount(['classes', 'joins'])->where('end_date' , '>=', Carbon::today())->get();
+            ->withCount(['classes', 'joins'])->where('start_date' , '>=', Carbon::today())->get();
         $data = [
             'trainings' => TrainingResource::collection($trainings),
             'total' => $total,
@@ -180,7 +180,8 @@ class TrainingController extends Controller
             },
                 'address:id,address,area_id,city_id',
                 'sport:id,name,icon'])
-                ->withCount(['classes', 'joins'])->isActive()->get();
+                ->withCount(['classes', 'joins'])
+                ->isActive()->get();
     }
 
 }
