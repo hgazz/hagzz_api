@@ -36,7 +36,7 @@ Route::group(['middleware' => 'api'], function () {
     });
 });
 
-Route::group(['middleware' => 'setLang'], function () {
+Route::group(['middleware' => ['setLang', 'fcm_token']], function () {
     Route::controller(SportController::class)->group(function () {
         Route::get('/sports', 'getSports');
     });

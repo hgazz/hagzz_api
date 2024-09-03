@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\FcmToken;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -70,5 +71,6 @@ class Kernel extends HttpKernel
         'localeCookieRedirect'    => \Mcamara\LaravelLocalization\Middleware\LocaleCookieRedirect::class,
         'localeViewPath'          => \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationViewPath::class,
         'setLang' => \App\Http\Middleware\SetLocaleMiddleware::class,
+        'fcm_token' => FcmToken::class
     ];
 }
