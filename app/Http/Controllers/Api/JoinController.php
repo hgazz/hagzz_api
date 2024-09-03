@@ -58,17 +58,6 @@ class JoinController extends Controller
             return  $this->apiResponse(400 , null,trans('api.home.join training already exists'));
         }
         try {
-            $title = 'Booking Confirmed gouda';
-            $body = 'your booking with  is confirmed Training - ';
-            $data = [
-                'title' => $title,
-                'body' => $body,
-                'image' => 'i.ph',
-                'details' => '$details'
-            ];
-
-            $x = NotificationService::firebaseNotification($data, auth()->user()->fcm_token);
-
             DB::beginTransaction();
             $training = Training::find($request->training_id);
             $netAmount = $request->price - (($training->academy->percentage / 100) * $request->price);
