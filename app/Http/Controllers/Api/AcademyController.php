@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class AcademyController extends Controller
 {
@@ -28,7 +29,8 @@ class AcademyController extends Controller
                 $query->where('country_id', auth('api')->user()->country_id);
             }) : Academies::select(['id', 'commercial_name', 'logo'])->with('sports')
         ->whereHas('trainings', function (Builder $query) {
-            $query->isActive();
+            $query->isActive()
+            ->whereDate('date', '>', Carbon::today()->toDateString());
         });
 
         $total = $academiesQuery->count();
@@ -112,6 +114,7 @@ class AcademyController extends Controller
         return Training::where('academy_id', $academyId)
             ->with(['academy', 'address', 'sport'])
             ->withCount(['joins', 'classes'])
+            ->whereDate('date', '>=', Carbon::today()->toDateString())
             ->isActive();
     }
 

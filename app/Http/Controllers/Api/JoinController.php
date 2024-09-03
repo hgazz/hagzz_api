@@ -86,13 +86,13 @@ class JoinController extends Controller
             ];
             //notification to academy
             $academyTitle = 'New Booking';
-            $academyDescription = $join->user->name.' booked '.$join->training->academy->commercial_name;
+            $academyDescription = $join->user->name.' booked '.$join->training->name.' with you. Please check your bookings';
             NotificationService::dbNotification($join->training->academy_id,Academies::class, 2, $academyTitle, $academyDescription, $join->training->academy->image, $details);
             $this->smsService->sendMessage($join->training->academy->phone, "{$academyTitle} - {$academyDescription}");
 
             //notifications to user
             $title = 'Booking Confirmed';
-            $body = 'your booking with '.$join->training->academy->commercial_name.' is confirmed';
+            $body = 'your booking with '.$join->training->academy->commercial_name.' is confirmed Training - '. $join->training->name;
             $this->smsService->sendMessage($join->user->phone, "{$title} - {$body}");
             $data = [
                 'title' => $title,
@@ -100,7 +100,7 @@ class JoinController extends Controller
                 'image' => $join->training->academy->image,
                 'details' => $details
             ];
-            NotificationService::firebaseNotification($data, auth('api')->user()->fcm_token);
+            NotificationService::firebaseNotification($data, $join->user->fcm_token);
             NotificationService::dbNotification($join->user_id,User::class, 2, $title, $body, $join->training->academy->image, $details);
             DB::commit();
             return $this->apiResponse(200,trans('api.home.joined as training successfully'),null , $join);
@@ -119,7 +119,7 @@ class JoinController extends Controller
 
         // Query for upcoming trainings
         $upcomingQuery = Join::query()->whereHas('training', function ($query) use ($today) {
-            $query->where([['start_date', '<', $today],['end_date', '>=', $today]]);
+            $query->where([['end_date', '>=', $today]]);
         })->with([
             'training' => function ($query) {
                 $query->where('active', true);

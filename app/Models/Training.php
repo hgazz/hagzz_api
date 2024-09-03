@@ -89,7 +89,7 @@ class Training extends Model
     //scope return only active
     public function scopeIsActive($query)
     {
-        return $query->where([['active', 1],['end_date', '>=', Carbon::today()]]);
+        return $query->where([['active', 1],['start_date', '>=', Carbon::today()]]);
     }
 
     public function sport(): BelongsTo
