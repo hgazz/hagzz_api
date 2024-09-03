@@ -137,10 +137,13 @@ class AuthController extends Controller
         if ($validation->fails()){
             return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
         }
-        dd($request->fcm_token);
 
         $user = $this->userModel::where('phone',$request->phone)->withCount('sports')->first();
-        $user->update(['otp' => $otp, 'fcm_token' => $request->fcm_token]);
+        $user->update(['otp' => $otp]);
+        if($request->has('fcm_token'))
+        {
+            $user->update(['fcm_token' => $request->fcm_token]);
+        }
         if ($request->send_type == 'whatsapp'){
             $data = $this->beonService->sendOtp($request->country_code .$request->phone, $otp);
             $otp = json_decode($data, true);
