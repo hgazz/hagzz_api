@@ -93,7 +93,6 @@ class JoinController extends Controller
             //notifications to user
             $title = 'Booking Confirmed';
             $body = 'your booking with '.$join->training->academy->commercial_name.' is confirmed Training - '. $join->training->name;
-            $this->smsService->sendMessage($join->user->phone, "{$title} - {$body}");
             $data = [
                 'title' => $title,
                 'body' => $body,
@@ -102,6 +101,7 @@ class JoinController extends Controller
             ];
             NotificationService::firebaseNotification($data, auth()->user()->fcm_token);
             NotificationService::dbNotification($join->user_id,User::class, 2, $title, $body, $join->training->academy->image, $details);
+            $this->smsService->sendMessage($join->user->phone, "{$title} - {$body}");
             DB::commit();
             return $this->apiResponse(200,trans('api.home.joined as training successfully'),null , $join);
         }catch (\Exception $e){
