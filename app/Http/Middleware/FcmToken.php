@@ -17,8 +17,8 @@ class FcmToken
     {
         $token = $request->header('fcm-token');
 
-        if(auth()->user()) {
-            $user = auth()->user();
+        if(auth('api')->user()) {
+            $user = auth('api')->user();
             $user->update([
                 'fcm_token' => $token
             ]);
