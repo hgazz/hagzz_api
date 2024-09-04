@@ -20,7 +20,7 @@ class TClassResource extends JsonResource
             'subtitle' => $this->getTranslation('subtitle', app()->getLocale()) ?? $this->getTranslation('subtitle', 'en'),
             'date' => $this->date,
             'start_time' => $this->start_time,
-            'end_date' => $this->end_date,
+            'end_time' => $this->end_time,
             'out_comes' => $this->out_comes,
             'bring_with_me' => $this->bring_with_me,
         ];
