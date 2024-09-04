@@ -69,7 +69,8 @@ class JoinController extends Controller
                 'amount'=>$request->price,
                 'payment_status' => $request->payment_status,
                 'payment_order_id' => $request->payment_order_id,
-                'net_amount' => $netAmount
+                'net_amount' => $netAmount,
+                'user_type' => 'online'
             ]);
             $join = Join::create([
                 'user_id'=> auth()->id(),
