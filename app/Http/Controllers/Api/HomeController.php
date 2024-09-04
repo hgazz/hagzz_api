@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class HomeController extends Controller
@@ -111,6 +112,15 @@ class HomeController extends Controller
     {
         $terms = Setting::where('key','terms')->first();
         return $this->apiResponse(200, trans('api.terms'), null, $terms);
+    }
+
+    public function getSetting()
+    {
+        $settingsGrouped = DB::table('settings')
+            ->select('key', DB::raw('GROUP_CONCAT(value) as values'))
+            ->groupBy('key')
+            ->get();
+        return $this->apiResponse(200, trans('api.home.setting'), null, $settingsGrouped);
     }
 
     public function getFaqs()

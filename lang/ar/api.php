@@ -57,6 +57,7 @@ return [
         'Academy List' => 'قائمة الأكاديميات',
         'Training List' => 'قائمة التدريبات',
         'cancel booking successfully' => 'تم إلغاء الحجز بنجاح',
+        'setting' => 'الاعدادات'
     ],
 
 ];

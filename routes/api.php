@@ -50,6 +50,7 @@ Route::group(['middleware' => ['setLang', 'fcm_token']], function () {
 
     Route::get('home',[HomeController::class,'home']);
     Route::get('terms',[HomeController::class,'terms']);
+    Route::get('settings',[HomeController::class,'getSetting']);
 
 
     Route::controller(TrainingController::class)->group(function (){

@@ -19,6 +19,7 @@ class CoachResource extends JsonResource
             'name' => $this->getTranslation('name', app()->getLocale()) ?? $this->getTranslation('name', 'en'),
             'image' => $this->image,
             'license' => $this->getTranslation('license', app()->getLocale()) ?? $this->getTranslation('license', 'en'),
+            'license_type' => $this->getTranslation('license_type', app()->getLocale()) ?? $this->getTranslation('license_type', 'en'),
             'academy_id' => $this->academy_id,
             'gender' => $this->gender,
             'description' => $this->getTranslation('description', app()->getLocale()) ?? $this->getTranslation('description', 'en'),

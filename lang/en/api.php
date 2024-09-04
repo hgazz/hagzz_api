@@ -57,5 +57,6 @@ return [
         'Academy List' => 'Academy List',
         'Training List' => 'Training List',
         'cancel booking successfully' => 'cancel booking successfully',
+        'setting' => 'Setting',
     ]
 ];
