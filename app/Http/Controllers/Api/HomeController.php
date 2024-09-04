@@ -56,6 +56,7 @@ class HomeController extends Controller
             ->whereIn('sport_id', $userSportsIds)
             ->withCount(['classes', 'joins'])
             ->inRandomOrder()
+            ->isActive()
             ->limit(4)
             ->get();
 
