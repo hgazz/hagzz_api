@@ -24,10 +24,10 @@ class AcademyController extends Controller
         $pageSize = 10;
         $page = $request->input('page', 1);
 
-        $academiesQuery = auth('api')->check() ? Academies::select(['id', 'commercial_name', 'logo'])
+        $academiesQuery = auth('api')->check() ? Academies::select(['id', 'commercial_name', 'logo', 'facebbok', 'linkedin', 'instagram'])
             ->with('sports')->whereHas('addresses', function (Builder $query) {
                 $query->where('country_id', auth('api')->user()->country_id);
-            }) : Academies::select(['id', 'commercial_name', 'logo'])->with('sports')
+            }) : Academies::select(['id', 'commercial_name', 'logo', 'facebbok', 'linkedin', 'instagram'])->with('sports')
         ->whereHas('trainings', function (Builder $query) {
             $query->isActive()
             ->whereDate('date', '>', Carbon::today()->toDateString());

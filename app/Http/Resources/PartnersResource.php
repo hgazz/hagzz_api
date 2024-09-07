@@ -23,6 +23,7 @@ class PartnersResource extends JsonResource
             'addresses' => AddressResource::collection($this->addresses),
             'facebook' => $this->facebook,
             'instagram' => $this->instagram,
+            'linkedin' => $this->linkedin,
             'galleries' => $this->galleries,
             'follows_count' => $this->follows()->count(),
             'coaches_count' => $this->coaches()->count(),
