@@ -117,10 +117,7 @@ class HomeController extends Controller
     public function getSetting()
     {
         try {
-            $settingsGrouped = DB::table('settings')
-                ->select('key', DB::raw('GROUP_CONCAT(value) as values'))
-                ->groupBy('key')
-                ->get();
+            $settingsGrouped = Setting::get()->groupBy('key');
         }catch (\Exception $e){
             return $this->apiResponse(500, trans('api.something_went_wrong'), ['error' => $e->getMessage()]);
         }
