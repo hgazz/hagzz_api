@@ -77,7 +77,7 @@ class AcademyController extends Controller
     private function getAcademyById($id)
     {
         return Academies::with(['addresses', 'galleries' => fn($q)=>$q->where('active', 1), 'sports'])
-            ->select(['id', 'phone', 'commercial_name', 'logo', 'address', 'facebook', 'instagram', 'linkedin', ''])
+            ->select(['id', 'phone', 'commercial_name', 'logo', 'address', 'facebook', 'instagram', 'linkedin'])
             ->withCount(['follows', 'coaches', 'trainings', 'addresses'])
             ->find($id);
     }
