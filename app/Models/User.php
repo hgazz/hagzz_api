@@ -33,7 +33,7 @@ class User extends Authenticatable implements JWTSubject
         'fcm_token',
         'is_verify',
         'country_code',
-        'user_type
+        'user_type'
     ];
 
     /**
