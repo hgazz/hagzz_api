@@ -117,7 +117,6 @@ class HomeController extends Controller
     public function getSetting()
     {
         $settingsGrouped = DB::table('settings')
-            ->select('key', DB::raw('GROUP_CONCAT(value) as values'))
             ->groupBy('key')
             ->get();
         return $this->apiResponse(200, trans('api.home.setting'), null, $settingsGrouped);
