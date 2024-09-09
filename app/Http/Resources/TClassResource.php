@@ -21,8 +21,8 @@ class TClassResource extends JsonResource
             'date' => $this->date,
             'start_time' => $this->start_time,
             'end_time' => $this->end_time,
-            'out_comes' => $this->out_comes,
-            'bring_with_me' => $this->bring_with_me,
+            'out_comes' => $this->out_comes[app()->getLocale()],
+            'bring_with_me' => $this->bring_with_me[app()->getLocale()],
         ];
     }
 }
