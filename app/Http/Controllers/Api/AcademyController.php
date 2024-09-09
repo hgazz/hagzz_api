@@ -114,7 +114,7 @@ class AcademyController extends Controller
         return Training::where('academy_id', $academyId)
             ->with(['academy', 'address', 'sport'])
             ->withCount(['joins', 'classes'])
-            ->whereDate('date', '>=', Carbon::today()->toDateString())
+            ->whereDate('start_date', '>=', Carbon::today()->toDateString())
             ->isActive();
     }
 
