@@ -53,8 +53,7 @@ class HomeController extends Controller
             'sport'
         ])->whereHas('address', function ($query){
             $query->where('country_id', auth('api')->user()->country_id);
-        })->where('active', 1)
-            ->whereIn('sport_id', $userSportsIds)
+        })->whereIn('sport_id', $userSportsIds)
             ->withCount(['classes', 'joins'])
             ->inRandomOrder()
             ->isActive()
@@ -82,7 +81,6 @@ class HomeController extends Controller
             'classes',
             'sport'
         ])->inRandomOrder()
-            ->where('start_date', '>=' , now()->toDateString())
             ->limit(4)
             ->isActive()
             ->get();
