@@ -44,7 +44,7 @@ class Coach extends Model
        $class = TClass::whereHas('training', function($query)  {
             $query->where('coach_id', $this->id);
         })->first();
-        return $this->trainings()->count() > 0 !== null ? ceil($class?->duration_in_hours) : 0;
+        return $this->trainings()->count() > 0 != null ? ceil($class?->duration_in_hours) : 0;
     }
 
     public function getTotalUsersJoined()

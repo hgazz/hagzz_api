@@ -141,7 +141,7 @@ class JoinController extends Controller
 
         // Query for past trainings
         $pastQuery = Join::query()->whereHas('training', function ($query) use ($today) {
-            $query->where([['start_date', '<', $today],[ 'end_date', '<', $today]]);
+            $query->where([['start_date', '<', $today]]);
         })->with([
             'training' => function ($query) {
                 $query->where('active', true);
