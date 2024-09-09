@@ -136,7 +136,7 @@ class HomeController extends Controller
     {
         return Academies::whereHas('trainings', function ($query) {
                 $query->where('active', 1)
-                ->whereDate('date', '>', Carbon::today()->toDateString());
+                ->whereDate('start_date', '>', Carbon::today()->toDateString());
             })->with('sports')->inRandomOrder()->limit(4)->get(['id', 'commercial_name', 'logo']);
     }
 
