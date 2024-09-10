@@ -51,6 +51,7 @@ class CoachController extends Controller
                     'sport'
                 ])
                 ->withCount(['joins', 'classes'])
+                ->where('active', 1)
                 ->get();
 
             $today = Carbon::now()->startOfDay();
