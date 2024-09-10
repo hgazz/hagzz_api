@@ -42,9 +42,10 @@ class Coach extends Model
     public function getTotalHours(): float|int
     {
        $class = TClass::whereHas('training', function($query)  {
-            $query->where('coach_id', $this->id);
+            $query->where('coach_id', $this->id)
+            ->where('end_date', '<', now());
         })->first();
-        return $this->trainings()->count() > 0 != null ? ceil($class?->duration_in_hours) : 0;
+        return $this->trainings()->count() > 0 ? ceil($class?->duration_in_hours) : 0;
     }
 
     public function getTotalUsersJoined()
