@@ -61,7 +61,7 @@ class CoachController extends Controller
             })->values()->all(); // Reset keys and convert to array
 
             $pastTrainings = $trainings->filter(function ($training) use ($today) {
-                return Carbon::parse($training->start_date)->startOfDay()->isBefore($today);
+                return Carbon::parse($training->start_date)->isBefore($today);
             })->values()->all(); // Reset keys and convert to array
 
             $total = $trainings->count();
