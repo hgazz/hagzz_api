@@ -45,6 +45,7 @@ class Coach extends Model
             $query->where('coach_id', $this->id)
             ->where('end_date', '<', now());
         })->get();
+       dd($class);
         return $this->trainings()->count() > 0 ? ceil($class?->duration_in_hours) : 0;
     }
 
