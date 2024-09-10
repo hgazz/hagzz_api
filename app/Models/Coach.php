@@ -44,7 +44,7 @@ class Coach extends Model
        $class = TClass::whereHas('training', function($query)  {
             $query->where('coach_id', $this->id)
             ->where('end_date', '<', now());
-        })->first();
+        })->get();
         return $this->trainings()->count() > 0 ? ceil($class?->duration_in_hours) : 0;
     }
 
