@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\FaqResource;
 use App\Http\Resources\PartnerResource;
+use App\Http\Resources\SettingResource;
 use App\Http\Resources\SportResource;
 use App\Http\Resources\TrainingResource;
 use App\Http\Traits\apiResponse;
@@ -115,12 +116,15 @@ class HomeController extends Controller
     public function getSetting()
     {
         try {
-            $settingsGrouped = Setting::whereIn('key', ['egypt_address','qatar_address', 'email', 'whatsapp'])->get()->groupBy('key');
-        }catch (\Exception $e){
+            $settingsGrouped = Setting::whereIn('key', ['egypt_address', 'qatar_address', 'email', 'whatsapp'])
+                ->get()
+                ->groupBy('key');
+        } catch (\Exception $e) {
             return $this->apiResponse(500, trans('api.something_went_wrong'), ['error' => $e->getMessage()]);
         }
 
-        return $this->apiResponse(200, trans('api.home.setting'), null, $settingsGrouped);
+        // Using SettingResource to return the API response
+        return $this->apiResponse(200, trans('api.home.setting'), null, SettingResource::collection($settingsGrouped));
     }
 
     public function getFaqs()
