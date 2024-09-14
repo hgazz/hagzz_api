@@ -116,8 +116,7 @@ class HomeController extends Controller
     public function getSetting()
     {
         try {
-            $settingsGrouped = Setting::whereIn('key', ['egypt_address', 'qatar_address', 'email', 'whatsapp'])
-                ->get()
+            $settingsGrouped = Setting::get()
                 ->groupBy('key');
         } catch (\Exception $e) {
             return $this->apiResponse(500, trans('api.something_went_wrong'), ['error' => $e->getMessage()]);
