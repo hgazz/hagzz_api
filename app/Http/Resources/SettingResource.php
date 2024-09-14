@@ -14,16 +14,6 @@ class SettingResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $key = $this->key;
-
-        // Check if the key is 'egypt_address' and modify it
-        if ($key === 'egypt_address') {
-            $key = 'Egypt Address';
-        }
-        // Check if the key is qatar_address' and modify it
-        if ($key === 'qatar_address') {
-            $key = 'Qatar Address';
-        }
 
         return [
             'key' => $key,

@@ -116,14 +116,28 @@ class HomeController extends Controller
     public function getSetting()
     {
         try {
-            $settingsGrouped = Setting::get()
+            $settingsGrouped = Setting::whereIn('key', ['egypt_address', 'qatar_address', 'email', 'whatsapp'])
+                ->get()
                 ->groupBy('key');
+
+            // Transform the keys after grouping
+            $settingsTransformed = $settingsGrouped->mapWithKeys(function ($item, $key) {
+                if ($key === 'egypt_address') {
+                    $key = 'Egypt Address';
+                }
+
+                if ($key === 'qatar_address') {
+                    $key = 'Qatar Address';
+                }
+                return [$key => $item];
+            });
+
         } catch (\Exception $e) {
             return $this->apiResponse(500, trans('api.something_went_wrong'), ['error' => $e->getMessage()]);
         }
 
         // Using SettingResource to return the API response
-        return $this->apiResponse(200, trans('api.home.setting'), null, SettingResource::collection($settingsGrouped));
+        return $this->apiResponse(200, trans('api.home.setting'), null, SettingResource::collection($settingsTransformed));
     }
 
     public function getFaqs()
