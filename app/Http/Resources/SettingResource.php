@@ -16,7 +16,6 @@ class SettingResource extends JsonResource
     {
 
         return [
-            'id' => $this->id,
             'key' => $this->key,
             'value' => $this->value,
         ];
