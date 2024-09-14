@@ -21,7 +21,7 @@ class SettingResource extends JsonResource
             $key = 'Egypt Address';
         }
         // Check if the key is qatar_address' and modify it
-        elseif ($key === 'qatar_address') {
+        if ($key === 'qatar_address') {
             $key = 'Qatar Address';
         }
 
