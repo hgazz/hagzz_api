@@ -137,7 +137,7 @@ class HomeController extends Controller
         }
 
         // Using SettingResource to return the API response
-        return $this->apiResponse(200, trans('api.home.setting'), null, SettingResource::collection($settingsTransformed));
+        return $this->apiResponse(200, trans('api.home.setting'), null, $settingsTransformed);
     }
 
     public function getFaqs()
