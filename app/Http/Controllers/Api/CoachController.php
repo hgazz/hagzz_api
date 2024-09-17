@@ -60,12 +60,7 @@ class CoachController extends Controller
                 return $training->where([['start_date', '>', $today], ['end_date', '>=', $today]]);
             })->values()->all(); // Reset keys and convert to array
 
-            $pastTrainings = Training::where('coach_id', $id)
-                ->with([
-                    'academy',
-                    'address',
-                    'sport'
-                ])->where([['start_date', '<', now()], ['end_date', '<', now()]])->get(); // Reset keys and convert to array
+            $pastTrainings = Training::where('coach_id', $id)->where([['start_date', '<', now()]])->get(); // Reset keys and convert to array
 
             $total = $trainings->count();
 
