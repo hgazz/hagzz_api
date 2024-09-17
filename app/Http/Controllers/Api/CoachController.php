@@ -65,7 +65,7 @@ class CoachController extends Controller
                     'academy',
                     'address',
                     'sport'
-                ])->where([['start_date', '<', $today], ['end_date', '<', now()]])->get(); // Reset keys and convert to array
+                ])->where([['start_date', '<', now()], ['end_date', '<', now()]])->get(); // Reset keys and convert to array
 
             $total = $trainings->count();
 
