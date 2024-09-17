@@ -54,16 +54,14 @@ class CoachController extends Controller
                 ->where('active', 1)
                 ->get();
 
-            $today = Carbon::now()->startOfDay();
-
-            $upcomingTrainings = $trainings->filter(function ($training) use ($today) {
-                return $training->where([['start_date', '>', $today], ['end_date', '>=', $today]]);
+            $upcomingTrainings = $trainings->filter(function ($training) {
+                return $training->where([['start_date', '>', Carbon::today()], ['end_date', '>=', Carbon::today()]]);
             })->values()->all(); // Reset keys and convert to array
 
             $pastTrainings = Training::where([['start_date', '<=', Carbon::today()],['coach_id', $id]])
                 ->withCount(['joins', 'classes'])
                 ->where('active', 1)
-                ->get(); // Reset keys and convert to array
+                ->get();
 
             $total = $trainings->count();
 
