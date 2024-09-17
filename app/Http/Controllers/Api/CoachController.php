@@ -57,7 +57,7 @@ class CoachController extends Controller
             $today = Carbon::now()->startOfDay();
 
             $upcomingTrainings = $trainings->filter(function ($training) use ($today) {
-                return $training->where([['start_date', '>=', now()], ['end_date', '>', $today]]);
+                return $training->where([['start_date', '>', $today], ['end_date', '>=', $today]]);
             })->values()->all(); // Reset keys and convert to array
 
             $pastTrainings = $trainings->filter(function ($training) use ($today) {
