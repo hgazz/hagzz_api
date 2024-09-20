@@ -96,4 +96,36 @@ class Training extends Model
     {
         return $this->belongsTo(Sport::class, 'sport_id');
     }
+
+    public function getLevelAttribute($value)
+    {
+        return match ($value) {
+            'Any_Level' => trans('api.training.Any_Level', [], app()->getLocale()),
+            'Beginner' => trans('api.training.beginner', [], app()->getLocale()),
+            'Intermediate' => trans('api.training.intermediate', [], app()->getLocale()),
+            'Advanced' => trans('api.training.advanced', [], app()->getLocale()),
+            default => 'Unknown',
+        };
+    }
+
+    public function getGenderAttribute($value)
+    {
+        return match ($value) {
+            'All' => trans('api.training.all', [], app()->getLocale()),
+            'Men' => trans('api.training.men', [], app()->getLocale()),
+            'Women' => trans('api.training.women', [], app()->getLocale()),
+            default => 'Unknown',
+        };
+    }
+
+    public function getAgeGroupAttribute($value)
+    {
+        return match ($value) {
+            'All' => trans('api.training.all', [], app()->getLocale()),
+            'Kids' => trans('api.training.kids', [], app()->getLocale()),
+            'Juniors' => trans('api.training.juniors', [], app()->getLocale()),
+            'Adults' => trans('api.training.adults', [], app()->getLocale()),
+            default => 'Unknown',
+        };
+    }
 }
