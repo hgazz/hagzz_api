@@ -27,7 +27,7 @@ use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 |
 */
 
-Route::group(['middleware' => 'api'], function () {
+Route::group(['middleware' => ['api', 'fcm_token']], function () {
     Route::controller(AuthController::class)->group(function () {
         Route::post('/register','register');
         Route::post('/login','login');
