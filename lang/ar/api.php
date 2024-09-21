@@ -102,7 +102,7 @@ return [
         'men' => 'الرجال',
         'women' => 'النساء',
         'kids' => 'الأطفال',
-        'juniors' => 'الصغار',
+        'juniors' => 'الشباب',
         'adults' => 'الكبار',
         'status_inactive_successfully' => 'تم تغيير الحالة إلى غير نشط بنجاح',
         'status_active_successfully' => 'تم تغيير الحالة إلى نشط بنجاح',
