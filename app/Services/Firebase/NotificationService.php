@@ -2,7 +2,7 @@
 
 namespace App\Services\Firebase;
 
-
+use Google\Client as GoogleClient;
 use App\Models\Notification;
 use Illuminate\Support\Str;
 
