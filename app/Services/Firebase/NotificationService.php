@@ -14,7 +14,10 @@ class NotificationService
         $data = [
             "message" => [
                 "token" => $token,
-                "notification" => $notificationData,
+                "notification" => [
+                    "title" => (string)$notificationData['title'],
+                    "body" => (string)$notificationData['body'],
+                ],
             ]
         ];
 
