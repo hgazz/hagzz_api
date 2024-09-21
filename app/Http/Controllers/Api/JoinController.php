@@ -62,7 +62,7 @@ class JoinController extends Controller
             $training = Training::find($request->training_id);
             $netAmount = $request->price - (($training->academy->percentage / 100) * $request->price);
             $invoice = Invoice::create([
-                'user_id'=>auth()->id(),
+                'user_id'=> auth('api')->id(),
                 'training_id'=>$request->training_id,
                 'order_number' => $request->invoice_id,
                 'status'=>'paid',
