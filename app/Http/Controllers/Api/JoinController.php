@@ -66,7 +66,7 @@ class JoinController extends Controller
                 'training_id'=>$request->training_id,
                 'order_number' => $request->invoice_id,
                 'status'=>'paid',
-                'amount'=>$request->price,
+                'amount'=> $request->price,
                 'payment_status' => $request->payment_status,
                 'payment_order_id' => $request->payment_order_id,
                 'net_amount' => $netAmount,
@@ -100,8 +100,8 @@ class JoinController extends Controller
                 'image' => $join->training->academy->image,
                 'details' => $details
             ];
-           $x = NotificationService::firebaseNotification($data, auth('api')->user()->fcm_token);
-           dd($x);
+            NotificationService::firebaseNotification($data, auth('api')->user()->fcm_token);
+
             NotificationService::dbNotification($join->user_id,User::class, 2, $title, $body, $join->training->academy->image, $details);
             $this->smsService->sendMessage($join->user->phone, "{$title} - {$body}");
             DB::commit();
