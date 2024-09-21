@@ -4,6 +4,7 @@ namespace App\Services\Firebase;
 
 use Google\Client as GoogleClient;
 use App\Models\Notification;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class NotificationService
@@ -17,7 +18,7 @@ class NotificationService
             ]
         ];
 
-        $credentialsFilePath = asset('bokit-eafed-firebase-adminsdk-n2vgb-1cdfccf166.json');
+        $credentialsFilePath = Storage::path('json/bokit-eafed-firebase-adminsdk-n2vgb-1cdfccf166.json');
         $client = new GoogleClient();
         $client->setAuthConfig($credentialsFilePath);
         $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
