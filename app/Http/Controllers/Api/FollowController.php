@@ -24,7 +24,7 @@ class FollowController extends Controller
 
     public function followList()
     {
-        $user = auth()->user();
+        $user = auth('api')->user();
 
         $pageSize = 10;
         $page = (request()->has('page')) ? request('page') : 1;

@@ -98,7 +98,7 @@ class FavoriteController extends Controller
                     'latitude' => $training->address->latitude,
                     'academy_name' => $training->academy->commercial_name,
                 ];
-                $title = "Don't miss out";
+                $title = "Last Chance!";
                 $body = "Only two slots are available in a training you saved";
                 $data = [
                     'title' => $title,
@@ -107,8 +107,8 @@ class FavoriteController extends Controller
                     'details'=>$detail
                 ];
 
-                NotificationService::firebaseNotification($data,auth()->user()->fcm_token);
-                NotificationService::dbNotification(auth()->id(), User::class, 2, $title, $body, $training->academy->logo, $detail);
+                NotificationService::firebaseNotification($data,auth('api')->user()->fcm_token);
+                NotificationService::dbNotification(auth('api')->id(), User::class, 2, $title, $body, $training->academy->logo, $detail);
 
               $this->smsService->sendMessage($fav->user->phone, "{$title} - {$body}");
             }

@@ -40,7 +40,7 @@ class BookingService
             'academy_name' => $join->training->academy->commercial_name,
         ];
         $title = "Booking Cancelled";
-        $body = "Your booking with {$join->training->academy->commercial_name} is Cancelled. Please explore other trainings.";
+        $body = "Your booking with {$join->training->academy->commercial_name} was Cancelled. Your refund will be processed within 7-14 working days.";
         $this->smsService->sendMessage($join->user->phone, "{$title} - {$body}");
         $data = [
             'title' => $title,
