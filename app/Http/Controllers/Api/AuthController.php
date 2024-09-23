@@ -21,10 +21,10 @@ class AuthController extends Controller
 {
     use apiResponse, FileUploader;
 
-    private $userModel;
-    private $smsOtp;
+    private User $userModel;
+    private SmsMisrOtpSender $smsOtp;
 
-    private $beonService;
+    private BeonService $beonService;
 
     /**
      * @param User $user
@@ -40,7 +40,7 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        $validation = Validator::make($request->all(),[
+        $validation = Validator::make($request->all(), [
             'phone' => 'required|unique:users,phone',
             'name' => 'required',
             'gender' => 'required|in:male,female',
@@ -50,10 +50,41 @@ class AuthController extends Controller
             'area_id' => 'required|exists:areas,id',
             'country_code' => 'required',
             'send_type' => 'nullable|in:sms,whatsapp',
+        ], [
+            // Custom English Messages
+            'phone.required' => 'Phone number is required.',
+            'phone.unique' => 'The phone number has already been taken.',
+            'name.required' => 'Name is required.',
+            'gender.required' => 'Gender is required.',
+            'gender.in' => 'Gender must be either male or female.',
+            'birthdate.required' => 'Birthdate is required.',
+            'country_id.required' => 'Country is required.',
+            'country_id.exists' => 'The selected country is invalid.',
+            'city_id.required' => 'City is required.',
+            'city_id.exists' => 'The selected city is invalid.',
+            'area_id.required' => 'Area is required.',
+            'area_id.exists' => 'The selected area is invalid.',
+            'country_code.required' => 'Country code is required.',
+            'send_type.in' => 'Send type must be either SMS or WhatsApp.',
+
+            // Custom Arabic Messages
+            'phone.required' => 'رقم الهاتف مطلوب.',
+            'phone.unique' => 'رقم الهاتف مستخدم من قبل.',
+            'name.required' => 'الاسم مطلوب.',
+            'gender.required' => 'النوع مطلوب.',
+            'gender.in' => 'يجب أن يكون النوع ذكر أو أنثى.',
+            'birthdate.required' => 'تاريخ الميلاد مطلوب.',
+            'country_id.required' => 'الدولة مطلوبة.',
+            'country_id.exists' => 'الدولة المختارة غير صالحة.',
+            'city_id.required' => 'المدينة مطلوبة.',
+            'city_id.exists' => 'المدينة المختارة غير صالحة.',
+            'area_id.required' => 'المنطقة مطلوبة.',
+            'area_id.exists' => 'المنطقة المختارة غير صالحة.',
+            'country_code.required' => 'كود الدولة مطلوب.',
+            'send_type.in' => 'نوع الإرسال يجب أن يكون SMS أو WhatsApp.',
         ]);
 
-        if($validation->fails())
-        {
+        if ($validation->fails()) {
             return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
         }
 
