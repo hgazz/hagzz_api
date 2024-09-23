@@ -80,7 +80,7 @@ class JoinController extends Controller
                 'net_amount' => $netAmount
             ]);
             $details = [
-                'training_id' => $join->training_id,
+                'training_id' => $request->training_id,
                 'longitude' => $join->training->address->longitude,
                 'latitude' => $join->training->address->latitude,
                 'training_name' => $join->training->name,
