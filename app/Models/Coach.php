@@ -24,10 +24,6 @@ class Coach extends Model
         return $this->belongsTo(Academies::class, 'academy_id');
     }
 
-    public function trainings()
-    {
-        return $this->hasMany(Training::class, 'coach_id')->withCount(['classes', 'joins']);
-    }
 
     public function follows()
     {
@@ -38,22 +34,36 @@ class Coach extends Model
     {
         return $this->belongsToMany(Sport::class, 'coach_sports', 'coach_id', 'sport_id');
     }
-
-    public function getTotalHours(): float|int
+    public function trainings()
     {
-        $totalHours = TClass::whereHas('training', function($query) {
-            $query->where('coach_id', $this->id)
-                ->where('end_date', '<', now());
-        })->sum('duration_in_hours');
+        return $this->hasMany(Training::class, 'coach_id')->withCount(['classes', 'joins']);
+    }
 
+    public function getTotalHours(): int
+    {
+        // Use Eloquent relationships to sum the duration of classes associated with this coach's trainings
+        $totalHours = $this->trainings()
+            ->where('end_date', '<', now())
+            ->with('classes')
+            ->get()
+            ->sum(fn($training) => $training->classes->sum('duration_in_hours'));
+
+        // Return the total hours, rounding up if necessary
         return $totalHours > 0 ? ceil($totalHours) : 0;
     }
 
-    public function getTotalUsersJoined()
+    public function getTotalUsersJoined(): int
     {
-       return $this->trainings()->where('coach_id', $this->id)->count() > 0 ? Join::whereHas('training', function ($query) {
-            $query->where('coach_id', $this->id);
-        })->count() : 0;
+        // Use Eloquent relationships to count users who joined this coach's trainings
+        $totalJoins = $this->trainings()
+            ->whereHas('joins')
+            ->withCount('joins')
+            ->get()
+            ->sum('joins_count');
+
+        // Return the total number of users joined
+        return $totalJoins;
     }
+
 
 }
