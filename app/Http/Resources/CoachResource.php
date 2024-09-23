@@ -40,7 +40,7 @@ class CoachResource extends JsonResource
 
         return TClass::whereHas('training', function($query) {
             $query->where('coach_id', $this->id)
-                ->where('end_date', '<', now());
+                ->where('start_date', '<', now());
         })->get()->sum('duration_in_hours');
     }
 
