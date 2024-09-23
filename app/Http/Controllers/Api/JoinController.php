@@ -73,7 +73,7 @@ class JoinController extends Controller
                 'user_type' => 'online'
             ]);
             $join = Join::create([
-                'user_id'=> auth()->id(),
+                'user_id'=> auth('api')->id(),
                 'invoice_id' => $invoice->id,
                 'training_id'=> $request->training_id,
                 'price'=> $request->price,
@@ -100,7 +100,7 @@ class JoinController extends Controller
                 'image' => $join->training->academy->image,
                 'details' => $details
             ];
-            NotificationService::firebaseNotification($data, $request->header('fcm-token'));
+            NotificationService::firebaseNotification($data, auth('api')->user()->fcm_token);
 
             NotificationService::dbNotification($join->user_id,User::class, 2, $title, $body, $join->training->academy->image, $details);
             $this->smsService->sendMessage($join->user->phone, "{$title} - {$body}");
