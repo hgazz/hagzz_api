@@ -62,10 +62,10 @@ class TClass extends Model
         $startTime = \Carbon\Carbon::parse($this->start_time);
         $endTime = \Carbon\Carbon::parse($this->end_time);
 
-        // Safeguard against invalid times (e.g., end time before start time)
-        if ($startTime->greaterThan($endTime)) {
-            return 0;
-        }
+//        // Safeguard against invalid times (e.g., end time before start time)
+//        if ($startTime->greaterThan($endTime)) {
+//            return 0;
+//        }
 
         return $startTime->diffInMinutes($endTime) / 60; // Convert minutes to hours
     }
