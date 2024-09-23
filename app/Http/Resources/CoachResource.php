@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Join;
 use App\Models\TClass;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -28,7 +29,7 @@ class CoachResource extends JsonResource
             'academy' => new PartnerResource($this->academy),
             'total_hours' => $this->getTotalHours(),
             'trainings_count' => $this->trainings()->count(),
-            'trainees_count' => $this->total_users_joined,
+            'trainees_count' => $this->getCountUsersJoined(),
             'sports' => SportResource::collection($this->whenLoaded('sports')),
         ];
     }
@@ -41,5 +42,12 @@ class CoachResource extends JsonResource
             $query->where('coach_id', $this->id)
                 ->where('end_date', '<', now());
         })->get()->sum('duration_in_hours');
+    }
+
+    protected function getCountUsersJoined()
+    {
+        Join::whereHas('training', function($query) {
+            $query->where('coach_id', $this->id);
+        })->count();
     }
 }
