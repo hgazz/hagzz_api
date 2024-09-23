@@ -39,19 +39,25 @@ class Coach extends Model
         return $this->hasMany(Training::class, 'coach_id')->withCount(['classes', 'joins']);
     }
 
+    // Coach Model
     public function getTotalHours(): int
     {
         // Use Eloquent relationships to sum the duration of classes associated with this coach's trainings
-        $totalHours = $this->trainings()
-            ->where('end_date', '<', now())
-            ->with('classes')
+        $totalMinutes = $this->trainings()
+            ->where('end_date', '<', now()) // Only include past trainings
+            ->whereHas('classes') // Ensure trainings have classes
+            ->with('classes') // Eager load classes
             ->get()
-            ->sum(fn($training) => $training->classes->sum('duration_in_hours'));
+            ->flatMap(function ($training) {
+                return $training->classes;
+            })
+            ->sum(fn($class) => \Carbon\Carbon::parse($class->start_time)->diffInMinutes(\Carbon\Carbon::parse($class->end_time)));
 
-        // Return the total hours, rounding up if necessary
+        // Convert total minutes to hours, rounding up if necessary
+        $totalHours = $totalMinutes / 60;
+
         return $totalHours > 0 ? ceil($totalHours) : 0;
     }
-
     public function getTotalUsersJoined(): int
     {
         // Use Eloquent relationships to count users who joined this coach's trainings
