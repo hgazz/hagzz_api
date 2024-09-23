@@ -51,7 +51,7 @@ class Coach extends Model
 
     public function getTotalUsersJoined()
     {
-       return $this->trainings() > 0 ? Join::whereHas('training', function ($query) {
+       return $this->trainings()->where('coach_id', $this->id)->count() > 0 ? Join::whereHas('training', function ($query) {
             $query->where('coach_id', $this->id);
         })->count() : 0;
     }
