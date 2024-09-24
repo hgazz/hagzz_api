@@ -58,6 +58,7 @@ return [
         'Training List' => 'قائمة التدريبات',
         'cancel booking successfully' => 'تم إلغاء الحجز بنجاح',
         'setting' => 'الاعدادات',
+        'join training is full' => 'التدريب ممتلئ',
 
     ],
     'training' => [

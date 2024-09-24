@@ -58,6 +58,7 @@ return [
         'Training List' => 'Training List',
         'cancel booking successfully' => 'cancel booking successfully',
         'setting' => 'Setting',
+        'join training is full' => 'join training is full',
 
     ] ,
     'training'=>[

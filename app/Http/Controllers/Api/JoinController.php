@@ -38,80 +38,92 @@ class JoinController extends Controller
 
     public function addJoin(Request $request)
     {
-        $validations = Validator::make($request->all(),[
-            'training_id'=>'required|exists:trainings,id',
-            'price'=>'required|numeric|min:0.01',
+        $validations = Validator::make($request->all(), [
+            'training_id' => 'required|exists:trainings,id',
+            'price' => 'required|numeric|min:0.01',
             'payment_status' => 'required|in:Pending,Paid',
             'payment_order_id' => 'required'
         ]);
 
-        if ($validations->fails()){
+        if ($validations->fails()) {
             return $this->apiResponse(400, trans('api.validation_error'), $validations->errors());
         }
 
-        $joinsExist = Join::where([
-            ['user_id',auth()->id()],
-            ['training_id',$request->training_id],
-        ])->exists();
-
-        if ($joinsExist){
-            return  $this->apiResponse(400 , null,trans('api.home.join training already exists'));
+        if (Join::where(['user_id' => auth('api')->id(), 'training_id' => $request->training_id])->exists()) {
+            return $this->apiResponse(400, null, trans('api.home.join training already exists'));
         }
+
+        $training = Training::find($request->training_id);
+        $count = $training->joins()->count();
+        if ($count >= $training->max_players) {
+            return $this->apiResponse(400, null, trans('api.home.join training is full'));
+        }
+
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
-            $training = Training::find($request->training_id);
             $netAmount = $request->price - (($training->academy->percentage / 100) * $request->price);
+
             $invoice = Invoice::create([
-                'user_id'=> auth('api')->id(),
-                'training_id'=>$request->training_id,
+                'user_id' => auth('api')->id(),
+                'training_id' => $request->training_id,
                 'order_number' => $request->invoice_id,
-                'status'=>'paid',
-                'amount'=> $request->price,
+                'status' => 'paid',
+                'amount' => $request->price,
                 'payment_status' => $request->payment_status,
                 'payment_order_id' => $request->payment_order_id,
                 'net_amount' => $netAmount,
                 'user_type' => 'online'
             ]);
+
             $join = Join::create([
-                'user_id'=> auth('api')->id(),
+                'user_id' => auth('api')->id(),
                 'invoice_id' => $invoice->id,
-                'training_id'=> $request->training_id,
-                'price'=> $request->price,
+                'training_id' => $request->training_id,
+                'price' => $request->price,
                 'net_amount' => $netAmount
             ]);
-            $details = [
-                'training_id' => $request->training_id,
-                'longitude' => $join->training->address->longitude,
-                'latitude' => $join->training->address->latitude,
-                'training_name' => $join->training->name,
-            ];
-            //notification to academy
-            $academyTitle = 'New Booking';
-            $academyDescription = $join->user->name.' booked '.$join->training->name.' with you. Please check your bookings';
-            NotificationService::dbNotification($join->training->academy_id,Academies::class, 2, $academyTitle, $academyDescription, $join->training->academy->image, $details);
-            $this->smsService->sendMessage($join->training->academy->phone, "{$academyTitle} - {$academyDescription}");
 
-            //notifications to user
-            $title = 'Booking Confirmed';
-            $body = 'your booking with '.$join->training->academy->commercial_name.' is confirmed Training - '. $join->training->name;
-            $data = [
-                'title' => $title,
-                'body' => $body,
-                'image' => $join->training->academy->image,
-                'details' => $details
-            ];
-            NotificationService::firebaseNotification($data, $request->header('fcm-token'));
-
-            NotificationService::dbNotification($join->user_id,User::class, 2, $title, $body, $join->training->academy->image, $details);
-            $this->smsService->sendMessage($join->user->phone, "{$title} - {$body}");
             DB::commit();
-            return $this->apiResponse(200,trans('api.home.joined as training successfully'),null , $join);
-        }catch (\Exception $e){
+
+            // Send notifications (not rolled back)
+            $this->sendNotifications($join, $request->header('fcm-token'));
+
+            return $this->apiResponse(200, trans('api.home.joined as training successfully'), null, $join);
+        } catch (\Exception $e) {
             DB::rollBack();
             return $this->apiResponse(400, trans('api.validation_error'), $e->getMessage());
         }
-
     }
+
+    private function sendNotifications($join, $fcmToken)
+    {
+        $details = [
+            'training_id' => $join->training_id,
+            'longitude' => $join->training->address->longitude,
+            'latitude' => $join->training->address->latitude,
+            'training_name' => $join->training->name,
+        ];
+
+        // Notification to academy
+        $academyTitle = 'New Booking';
+        $academyDescription = $join->user->name . ' booked ' . $join->training->name . ' with you. Please check your bookings';
+        NotificationService::dbNotification($join->training->academy_id, Academies::class, 2, $academyTitle, $academyDescription, $join->training->academy->image, $details);
+        $this->smsService->sendMessage($join->training->academy->phone, "{$academyTitle} - {$academyDescription}");
+
+        // Notifications to user
+        $title = 'Booking Confirmed';
+        $body = 'Your booking with ' . $join->training->academy->commercial_name . ' is confirmed Training - ' . $join->training->name;
+        $data = [
+            'title' => $title,
+            'body' => $body,
+            'image' => $join->training->academy->image,
+            'details' => $details
+        ];
+        NotificationService::firebaseNotification($data, $fcmToken);
+        NotificationService::dbNotification($join->user_id, User::class, 2, $title, $body, $join->training->academy->image, $details);
+        $this->smsService->sendMessage($join->user->phone, "{$title} - {$body}");
+    }
+
 
     public function join(Request $request)
     {
