@@ -28,7 +28,8 @@ class Academies extends Model
         'logo',
         'contract_number',
         'account_manager',
-        'is_registered'
+        'is_registered',
+        'website'
     ];
 
     protected $hidden = ['created_at', 'updated_at'];
