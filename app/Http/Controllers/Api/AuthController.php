@@ -238,9 +238,6 @@ class AuthController extends Controller
             $user->update(['otp' => $otp]);
         }
 
-
-
-
         return $this->apiResponse(200, trans('api.auth.resend code'), null, 'otp was send');
     }
 
