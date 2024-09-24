@@ -230,11 +230,11 @@ class AuthController extends Controller
         $user = $this->userModel::where('phone',$request->phone)->first();
         $otp = $request->phone == '01070809633' ? '12345' : rand(10000,99999);
         if ($request->send_type == 'whatsapp'){
-            $responseOtp = $this->beonService->sendOtp($request->country_code . $request->phone, $user->name);
+            $responseOtp = $this->beonService->sendOtp($user->country_code . $request->phone, $user->name);
             $otp = json_decode($responseOtp, true);
             $user->update(['otp' => $otp['data'], 'fcm_token' => $request->fcm_token]);
         }else{
-            $this->smsOtp->sendOtp($user->country_code.$request->phone, $user->name);
+            $this->smsOtp->sendOtp($user->country_code.$request->phone, $otp);
             $user->update(['otp' => $otp]);
         }
 
