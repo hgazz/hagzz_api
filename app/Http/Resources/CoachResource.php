@@ -46,7 +46,7 @@ class CoachResource extends JsonResource
 
     protected function getCountUsersJoined()
     {
-        Join::whereHas('training', function($query) {
+      return  Join::whereHas('training', function($query) {
             $query->where('coach_id', $this->id);
         })->count();
     }
