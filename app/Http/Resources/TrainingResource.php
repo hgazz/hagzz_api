@@ -30,7 +30,7 @@ class TrainingResource extends JsonResource
             'age_group' => $this->age_group,
             'active' => $this->active,
             'sport_id' => $this->sport_id,
-            'discount_price' => $this->price - $this->discount_price,
+            'discount_price' => $this->discount_price != 0 ? $this->price - $this->discount_price : 0,
             'classes_count' => $this->classes()->count(),
             'joins_count' => $this->joins()->count(),
             'is_fav' => $this->is_fav,
