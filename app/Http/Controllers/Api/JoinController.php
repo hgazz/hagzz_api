@@ -120,7 +120,7 @@ class JoinController extends Controller
             'details' => $details
         ];
         NotificationService::firebaseNotification($data, $fcmToken);
-        NotificationService::dbNotification($join->user_id, User::class, 2, $title, $body, $join->training->academy->image, $details);
+//        NotificationService::dbNotification($join->user_id, User::class, 2, $title, $body, $join->training->academy->image, $details);
         $this->smsService->sendMessage($join->user->phone, "{$title} - {$body}");
     }
 
