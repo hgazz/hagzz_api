@@ -32,8 +32,8 @@ class NotifySavedTrainingsBeforeAWeek extends Command
     {
         $oneWeekFromNow = Carbon::now()->subDays(7);
 
-        $favorites = Favorite::with(['training', 'user'])->where('created_at', $oneWeekFromNow->toDateString())->get();
-dd($favorites, $oneWeekFromNow);
+        $favorites = Favorite::with(['training', 'user'])->where('created_at', '>=',$oneWeekFromNow->toDateString())->get();
+
         foreach ($favorites as $favorite) {
             $joinsCount = Join::where('training_id', $favorite->training_id)->count();
             $slotsAvailable = $favorite->training->max_players - $joinsCount;
