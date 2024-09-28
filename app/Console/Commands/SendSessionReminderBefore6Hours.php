@@ -51,13 +51,12 @@ class SendSessionReminderBefore6Hours extends Command
             ];
 
             foreach ($joins as $join) {
-                $user = $join->user;
                 $data = [
                     'title' => 'Session Reminder',
                     'body' => 'Your upcoming session with ' . $class->training->academy->getTranslation('commercial_name', 'en') .  ' starting soon. Session starts at  ' . $class->start_time,
                     'details' => $detail
                 ];
-                NotificationService::firebaseNotification($data, $user->fcm_token);
+                NotificationService::firebaseNotification($data, $join->user->fcm_token);
             }
         }
         $this->info('Session reminders sent successfully.');
