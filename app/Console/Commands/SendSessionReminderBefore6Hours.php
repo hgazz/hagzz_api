@@ -34,30 +34,54 @@ class SendSessionReminderBefore6Hours extends Command
         $now = Carbon::now();
         $sixHoursLater = $now->copy()->addHours(6);
 
-        $classes = TClass::with('training.academy')
-            ->where('date', $now->toDateString())
-            ->where('start_time', '>=', $now)
-            ->where('start_time', '<=', $sixHoursLater)
-            ->orderBy('start_time')
-            ->get();
+        $classes = $this->getUpcomingClasses($now, $sixHoursLater);
 
         foreach ($classes as $class) {
-            $joins = Join::where('training_id', $class->training_id)->get();
-            $detail = [
-                'training_id' => $class->training_id,
-                'longitude' => $class->training->address->longitude,
-                'latitude' => $class->training->address->latitude,
-                'academy_name' => $class->training->academy->getTranslation('commercial_name', 'en'),
-            ];
-            $data = [
-                'title' => 'Session Reminder',
-                'body' => 'Your upcoming session with ' . $class->training->academy->getTranslation('commercial_name', 'en') .  ' starting soon. Session starts at  ' . $class->start_time,
-                'details' => $detail
-            ];
-            foreach ($joins as $join) {
-                NotificationService::firebaseNotification($data, $join->user->fcm_token);
-            }
+            $this->sendRemindersForClass($class);
         }
+
         $this->info('Session reminders sent successfully.');
     }
+
+    private function getUpcomingClasses($now, $sixHoursLater)
+    {
+        return TClass::with(['training.academy', 'training.address'])
+            ->where('date', $now->toDateString())
+            ->whereBetween('start_time', [$now, $sixHoursLater])
+            ->orderBy('start_time')
+            ->get();
+    }
+
+    private function sendRemindersForClass($class)
+    {
+        $joins = Join::where('training_id', $class->training_id)->with('user')->get();
+        $notificationData = $this->prepareNotificationData($class);
+
+        foreach ($joins as $join) {
+            if ($join->user && $join->user->fcm_token) {
+                NotificationService::firebaseNotification($notificationData, $join->user->fcm_token);
+            }
+        }
+    }
+
+    private function prepareNotificationData($class)
+    {
+        $detail = [
+            'training_id' => $class->training_id,
+            'longitude' => $class->training->address->longitude,
+            'latitude' => $class->training->address->latitude,
+            'academy_name' => $class->training->academy->getTranslation('commercial_name', 'en'),
+        ];
+
+        return [
+            'title' => 'Session Reminder',
+            'body' => sprintf(
+                'Your upcoming session with %s starting soon. Session starts at %s',
+                $class->training->academy->getTranslation('commercial_name', 'en'),
+                $class->start_time
+            ),
+            'details' => $detail
+        ];
+    }
+
 }
