@@ -88,7 +88,7 @@ class JoinController extends Controller
 
             // Send notifications (not rolled back)
             $this->sendNotifications($join, $request->header('fcm-token'));
-            $this->sendNotificationsForSavedTraining($request, $training);
+            $this->sendNotificationsForSavedTraining($training);
 
             return $this->apiResponse(200, trans('api.home.joined as training successfully'), null, $join);
         } catch (\Exception $e) {
@@ -219,20 +219,19 @@ class JoinController extends Controller
     }
 
     /**
-     * @param Request $request
      * @param Training $training
      * @return void
      */
-    public function sendNotificationsForSavedTraining(Request $request,Training $training): void
+    public function sendNotificationsForSavedTraining(Training $training): void
     {
-        $favorites = Favorite::with('user')->where(['training_id' => $request->training_id])->get();
-        $joinsCount = Join::where('training_id', $request->training_id)->count();
+        $favorites = Favorite::with('user')->where(['training_id' => $training->id])->get();
+        $joinsCount = Join::where('training_id', $training->id)->count();
         $slotsAvailable = $training->max_players - $joinsCount;
         $detail = [
             'training_id' => $training->id,
             'longitude' => $training->address->longitude,
             'latitude' => $training->address->latitude,
-            'academy_name' => $training->academy->getTranslations('commercial_name', 'en'),
+            'academy_name' => $training->academy->getTranslation('commercial_name', 'en'),
         ];
         $title = "Last Chance!";
         $body = "Only two slots remaining in a training you saved";
