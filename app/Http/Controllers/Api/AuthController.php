@@ -40,7 +40,9 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        $validation = Validator::make($request->all(), [
+        $lang = $request->lang ?? 'en';
+
+        $validationRules = [
             'phone' => 'required|unique:users,phone',
             'name' => 'required',
             'gender' => 'required|in:male,female',
@@ -50,110 +52,88 @@ class AuthController extends Controller
             'area_id' => 'required|exists:areas,id',
             'country_code' => 'required',
             'send_type' => 'nullable|in:sms,whatsapp',
-        ], [
-            // Custom English Messages
-            'phone.required' => 'Phone number is required.',
-            'phone.unique' => 'The phone number has already been taken.',
-            'name.required' => 'Name is required.',
-            'gender.required' => 'Gender is required.',
-            'gender.in' => 'Gender must be either male or female.',
-            'birthdate.required' => 'Birthdate is required.',
-            'country_id.required' => 'Country is required.',
-            'country_id.exists' => 'The selected country is invalid.',
-            'city_id.required' => 'City is required.',
-            'city_id.exists' => 'The selected city is invalid.',
-            'area_id.required' => 'Area is required.',
-            'area_id.exists' => 'The selected area is invalid.',
-            'country_code.required' => 'Country code is required.',
-            'send_type.in' => 'Send type must be either SMS or WhatsApp.',
+        ];
 
-            // Custom Arabic Messages
-            'phone.required' => 'رقم الهاتف مطلوب.',
-            'phone.unique' => 'رقم الهاتف مستخدم من قبل.',
-            'name.required' => 'الاسم مطلوب.',
-            'gender.required' => 'النوع مطلوب.',
-            'gender.in' => 'يجب أن يكون النوع ذكر أو أنثى.',
-            'birthdate.required' => 'تاريخ الميلاد مطلوب.',
-            'country_id.required' => 'الدولة مطلوبة.',
-            'country_id.exists' => 'الدولة المختارة غير صالحة.',
-            'city_id.required' => 'المدينة مطلوبة.',
-            'city_id.exists' => 'المدينة المختارة غير صالحة.',
-            'area_id.required' => 'المنطقة مطلوبة.',
-            'area_id.exists' => 'المنطقة المختارة غير صالحة.',
-            'country_code.required' => 'كود الدولة مطلوب.',
-            'send_type.in' => 'نوع الإرسال يجب أن يكون SMS أو WhatsApp.',
-        ]);
+        $validationMessages = [
+            'en' => [
+                'phone.required' => 'Phone number is required.',
+                'phone.unique' => 'The phone number has already been taken.',
+                'name.required' => 'Name is required.',
+                'gender.required' => 'Gender is required.',
+                'gender.in' => 'Gender must be either male or female.',
+                'birthdate.required' => 'Birthdate is required.',
+                'country_id.required' => 'Country is required.',
+                'country_id.exists' => 'The selected country is invalid.',
+                'city_id.required' => 'City is required.',
+                'city_id.exists' => 'The selected city is invalid.',
+                'area_id.required' => 'Area is required.',
+                'area_id.exists' => 'The selected area is invalid.',
+                'country_code.required' => 'Country code is required.',
+                'send_type.in' => 'Send type must be either SMS or WhatsApp.',
+            ],
+            'ar' => [
+                'phone.required' => 'رقم الهاتف مطلوب.',
+                'phone.unique' => 'رقم الهاتف مستخدم من قبل.',
+                'name.required' => 'الاسم مطلوب.',
+                'gender.required' => 'النوع مطلوب.',
+                'gender.in' => 'يجب أن يكون النوع ذكر أو أنثى.',
+                'birthdate.required' => 'تاريخ الميلاد مطلوب.',
+                'country_id.required' => 'الدولة مطلوبة.',
+                'country_id.exists' => 'الدولة المختارة غير صالحة.',
+                'city_id.required' => 'المدينة مطلوبة.',
+                'city_id.exists' => 'المدينة المختارة غير صالحة.',
+                'area_id.required' => 'المنطقة مطلوبة.',
+                'area_id.exists' => 'المنطقة المختارة غير صالحة.',
+                'country_code.required' => 'كود الدولة مطلوب.',
+                'send_type.in' => 'نوع الإرسال يجب أن يكون SMS أو WhatsApp.',
+            ],
+        ];
 
-        if ($validation->fails()) {
-            return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
+        $validator = Validator::make($request->all(), $validationRules, $validationMessages[$lang]);
+
+        if ($validator->fails()) {
+            return $this->apiResponse(400, trans('api.validation_error', [], $lang), $validator->errors());
         }
 
+        $validatedData = $validator->validated();
+
         try {
-            $otp = $request->phone == '01070809633' ? '12345' : rand(10000,99999);
-            if($request->has('old_phone'))
-            {
+            $otp = $validatedData['phone'] == '01070809633' ? '12345' : rand(10000, 99999);
+
+            if ($request->has('old_phone')) {
                 $user = User::where('phone', $request->old_phone)->first();
-                if($user)
-                {
-                    $user->update([
-                        'name' => $request->name,
-                        'phone' => $request->phone,
-                        'country_code' => $request->country_code,
-                        'gender' => $request->gender,
-                        'birth_date' => $request->birthdate,
-                        'country_id' => $request->country_id,
-                        'city_id' => $request->city_id,
-                        'area_id' => $request->area_id,
-                        'otp' => $otp,
-                        'fcm_token' => $request->fcm_token
-                    ]);
-                }else{
-                    return $this->apiResponse(401, 'the user not exists');
+                if (!$user) {
+                    return $this->apiResponse(401, trans('api.auth.user_not_exists', [], $lang));
                 }
-            }else{
-                $validation = Validator::make($request->all(),[
-                    'phone' => 'unique:users,phone',
-                ]);
-
-                if($validation->fails())
-                {
-                    return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
-                }
-
-                $user = User::create([
-                    'name' => $request->name,
-                    'phone' => $request->phone,
-                    'country_code' => $request->country_code,
-                    'gender' => $request->gender,
-                    'birth_date' => $request->birthdate,
-                    'country_id' => $request->country_id,
-                    'city_id' => $request->city_id,
-                    'area_id' => $request->area_id,
+                $user->update(array_merge($validatedData, ['otp' => $otp, 'fcm_token' => $request->fcm_token]));
+            } else {
+                $user = User::create(array_merge($validatedData, [
                     'otp' => $otp,
                     'fcm_token' => $request->fcm_token,
-                    'language' => $request->lang ?? 'ar'
-                ]);
+                    'language' => $lang
+                ]));
             }
-            if ($request->send_type == 'whatsapp') {
-                $responseOtp = $this->beonService->sendOtp($request->country_code . $request->phone, $otp);
-                $otp = json_decode($responseOtp, true);
-                $user->update(['otp' => $otp['data'], 'fcm_token' => $request->fcm_token]);
-                }else{
-                $responseOtp = $this->smsOtp->sendOtp($request->country_code .$request->phone, $otp);
-                if($responseOtp['code'] == 'error')
-                {
-                    return $this->apiResponse(400, 'sms error', $responseOtp['message']);
+
+            if ($validatedData['send_type'] == 'whatsapp') {
+                $responseOtp = $this->beonService->sendOtp($validatedData['country_code'] . $validatedData['phone'], $otp);
+                $otpData = json_decode($responseOtp, true);
+                $user->update(['otp' => $otpData['data'], 'fcm_token' => $request->fcm_token]);
+            } else {
+                $responseOtp = $this->smsOtp->sendOtp($validatedData['country_code'] . $validatedData['phone'], $otp);
+                if ($responseOtp['code'] == 'error') {
+                    return $this->apiResponse(400, trans('api.auth.sms_error', [], $lang), $responseOtp['message']);
                 }
             }
 
-            return $this->apiResponse(200, trans('api.auth.the_verify_code_successfully', [],$request->lang), null, [
-                'user'=> $user,
+            return $this->apiResponse(200, trans('api.auth.the_verify_code_successfully', [], $lang), null, [
+                'user' => $user,
             ]);
 
         } catch (\Exception $e) {
-            return $this->apiResponse(500, trans('api.auth.registration_failed'), $e->getMessage());
+            return $this->apiResponse(500, trans('api.auth.registration_failed', [], $lang), $e->getMessage());
         }
     }
+
 
     public function login(Request $request)
     {
