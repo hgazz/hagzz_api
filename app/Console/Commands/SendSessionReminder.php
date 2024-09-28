@@ -31,7 +31,7 @@ class SendSessionReminder extends Command
      */
     public function handle()
     {
-        $tomorrowClasses = TClass::with('training.academy', 'training.user')
+        $tomorrowClasses = TClass::with('training.academy', 'training')
             ->whereDate('date', now()->addDay()->toDateString())
             ->get();
 
