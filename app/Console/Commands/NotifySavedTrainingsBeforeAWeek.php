@@ -30,7 +30,7 @@ class NotifySavedTrainingsBeforeAWeek extends Command
      */
     public function handle()
     {
-        $oneWeekFromNow = Carbon::now()->addWeek();
+        $oneWeekFromNow = Carbon::now()->subDays(7);
 
         $favorites = Favorite::with(['training', 'user'])->where('created_at', $oneWeekFromNow->toDateString())->get();
 dd($favorites, $oneWeekFromNow);
