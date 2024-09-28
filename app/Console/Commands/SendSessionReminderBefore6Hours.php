@@ -34,7 +34,7 @@ class SendSessionReminderBefore6Hours extends Command
         $now = Carbon::now();
         $sixHoursLater = $now->copy()->addHours(6);
 
-        $classes = TClass::with('training.academy', 'training.user')
+        $classes = TClass::with('training.academy')
             ->where('date', $now->toDateString())
             ->where('start_time', '>=', $now)
             ->where('start_time', '<=', $sixHoursLater)
