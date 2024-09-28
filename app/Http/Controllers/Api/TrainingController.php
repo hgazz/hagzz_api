@@ -170,10 +170,11 @@ class TrainingController extends Controller
         },
             'address:id,address,area_id,city_id',
             'sport:id,name,icon'])
-            ->whereHas('address', function ($query) {
-                return $query->where('country_id', auth('api')->user()->country_id);
+            ->whereHas('address.country', function ($query) {
+                return $query->where('id', auth('api')->user()->country_id);
             })
-            ->withCount(['classes', 'joins'])->isActive()->get() :
+            ->withCount(['classes', 'joins'])->isActive()
+            ->get() :
             $query->with(['academy'=> function ($query) {
                 $query->select(['id', 'commercial_name', 'logo']);
                 $query->withCount('follows');

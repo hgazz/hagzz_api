@@ -41,12 +41,12 @@ class SendSessionReminder extends Command
                 'training_id' => $class->training_id,
                 'longitude' => $class->training->address->longitude,
                 'latitude' => $class->training->address->latitude,
-                'academy_name' => $class->training->academy->commercial_name,
+                'academy_name' => $class->training->academy->getTranslations('commercial_name', 'en'),
             ];
             foreach ($joins as $join) {
                 $user = $join->user;
                 $title= 'Session Reminder';
-                $body = 'Get ready, your session with ' . $class->training->academy->commercial_name . ' will start at ' . $class->start_time;
+                $body = 'Get ready, your session with ' . $class->training->academy->getTranslations('commercial_name', 'en') . ' will start at ' . $class->start_time;
                 NotificationService::dbNotification($user->id, User::class, 3, $title, $body, $join->training->academy->image);
             }
         }

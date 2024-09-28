@@ -7,7 +7,6 @@ use App\Http\Resources\FavoriteResource;
 use App\Http\Traits\apiResponse;
 use App\Models\Favorite;
 use App\Models\Join;
-use App\Models\Notification;
 use App\Models\Training;
 use App\Models\User;
 use App\Services\Firebase\NotificationService;
@@ -15,8 +14,6 @@ use App\Services\SMSMISR\SmsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
-use function Laravel\Prompts\select;
 
 class FavoriteController extends Controller
 {
@@ -96,7 +93,7 @@ class FavoriteController extends Controller
                     'training_id' => $training->id,
                     'longitude' => $training->address->longitude,
                     'latitude' => $training->address->latitude,
-                    'academy_name' => $training->academy->commercial_name,
+                    'academy_name' => $training->academy->getTranslations('commercial_name', 'en'),
                 ];
                 $title = "Last Chance!";
                 $body = "Only two slots are available in a training you saved";
@@ -122,7 +119,7 @@ class FavoriteController extends Controller
 
     public function deleteFavorite($id)
     {
-        $favorite = Favorite::where([['user_id',auth()->id()], ['training_id', $id]])->first();
+        $favorite = Favorite::where([['user_id',auth('api')->id()], ['training_id', $id]])->first();
        if (!$favorite){
            return $this->apiResponse(400, trans('api.validation_error'), trans('api.home.Favorite not found'));
        }

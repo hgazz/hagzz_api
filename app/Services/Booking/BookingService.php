@@ -37,10 +37,10 @@ class BookingService
             'training_id' => $join->training_id,
             'longitude' => $join->training->address->longitude,
             'latitude' => $join->training->address->latitude,
-            'academy_name' => $join->training->academy->commercial_name,
+            'academy_name' => $join->training->academy->getTranslations('commercial_name', 'en'),
         ];
         $title = "Booking Cancelled";
-        $body = "Your booking with {$join->training->academy->commercial_name} was Cancelled. Your refund will be processed within 7-14 working days.";
+        $body = "Your booking with {$join->training->academy->getTranslations('commercial_name', 'en')} was Cancelled. Your refund will be processed within 7-14 working days.";
         $this->smsService->sendMessage($join->user->phone, "{$title} - {$body}");
         $data = [
             'title' => $title,
