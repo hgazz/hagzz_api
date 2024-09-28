@@ -225,7 +225,7 @@ class JoinController extends Controller
      */
     public function sendNotificationsForSavedTraining(Request $request,Training $training): void
     {
-        $favorites = Favorite::where(['training_id' => $request->training_id])->get();
+        $favorites = Favorite::with('user')->where(['training_id' => $request->training_id])->get();
         $joinsCount = Join::where('training_id', $request->training_id)->count();
         $slotsAvailable = $training->max_players - $joinsCount;
         $detail = [
@@ -234,15 +234,15 @@ class JoinController extends Controller
             'latitude' => $training->address->latitude,
             'academy_name' => $training->academy->getTranslations('commercial_name', 'en'),
         ];
+        $title = "Last Chance!";
+        $body = "Only two slots remaining in a training you saved";
+        $data = [
+            'title' => $title,
+            'body' => $body,
+            'details' => $detail
+        ];
         if ($favorites->count() > 0 & $slotsAvailable <= 2) {
             foreach ($favorites as $favorite) {
-                $title = "Last Chance!";
-                $body = "Only two slots remaining in a training you saved";
-                $data = [
-                    'title' => $title,
-                    'body' => $body,
-                    'details' => $detail
-                ];
                 NotificationService::firebaseNotification($data, $favorite->user->fcm_token);
             }
         }
