@@ -50,7 +50,7 @@ class SendSessionCompletionNotifications extends Command
         $completedClasses = TClass::whereDate('date', '=', '2024-09-29')
 //            ->whereTime('end_time', '<', $currentTime)
             ->get();
-dd($completedClasses);
+
         foreach ($completedClasses as $class) {
             $joins = Join::where('training_id', $class->training_id)->get();
             $detail = [
