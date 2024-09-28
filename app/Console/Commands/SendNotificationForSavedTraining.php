@@ -60,7 +60,7 @@ class SendNotificationForSavedTraining extends Command
                     'training_id' => $training->id,
                     'longitude' => $training->address->longitude,
                     'latitude' => $training->address->latitude,
-                    'academy_name' => $training->academy->getTranslations('commercial_name', 'en')
+                    'academy_name' => $training->academy->getTranslation('commercial_name', 'en')
                 ];
 
                 $title = "Don't miss out";
@@ -73,10 +73,8 @@ class SendNotificationForSavedTraining extends Command
                     'details' => $detail
                 ];
 
-                // Send notifications
-                $user = auth('api')->user();
-                NotificationService::firebaseNotification($data, $user->fcm_token);
-                NotificationService::dbNotification($user->id, User::class, 2, $title, $body, $training->academy->logo, $detail);
+                NotificationService::firebaseNotification($data, $join->user->fcm_token);
+//                NotificationService::dbNotification($user->id, User::class, 2, $title, $body, $training->academy->logo, $detail);
             }
         }
     }

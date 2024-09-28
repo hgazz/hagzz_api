@@ -41,7 +41,7 @@ class SendSessionReminder extends Command
                 'training_id' => $class->training_id,
                 'longitude' => $class->training->address->longitude,
                 'latitude' => $class->training->address->latitude,
-                'academy_name' => $class->training->academy->getTranslations('commercial_name', 'en'),
+                'academy_name' => $class->training->academy->getTranslation('commercial_name', 'en'),
             ];
             foreach ($joins as $join) {
                 $user = $join->user;
