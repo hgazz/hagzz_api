@@ -49,13 +49,12 @@ class SendSessionReminderBefore6Hours extends Command
                 'latitude' => $class->training->address->latitude,
                 'academy_name' => $class->training->academy->getTranslation('commercial_name', 'en'),
             ];
-
+            $data = [
+                'title' => 'Session Reminder',
+                'body' => 'Your upcoming session with ' . $class->training->academy->getTranslation('commercial_name', 'en') .  ' starting soon. Session starts at  ' . $class->start_time,
+                'details' => $detail
+            ];
             foreach ($joins as $join) {
-                $data = [
-                    'title' => 'Session Reminder',
-                    'body' => 'Your upcoming session with ' . $class->training->academy->getTranslation('commercial_name', 'en') .  ' starting soon. Session starts at  ' . $class->start_time,
-                    'details' => $detail
-                ];
                 NotificationService::firebaseNotification($data, $join->user->fcm_token);
             }
         }
