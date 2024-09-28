@@ -78,7 +78,7 @@ class FavoriteController extends Controller
                 return  $this->apiResponse(400 , null,trans('api.home.favorite already exists'));
             }
             $fav = Favorite::create([
-                'user_id'=>auth()->id(),
+                'user_id'=>auth('api')->id(),
                 'training_id'=>$request->training_id
             ]);
 

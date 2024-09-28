@@ -62,7 +62,12 @@ class SendSessionCompletionNotifications extends Command
             foreach ($joins as $join) {
                 $user = $join->user;
                 $randomBodyMessage = $bodyMessages[array_rand($bodyMessages)];
-                NotificationService::dbNotification($user->id, User::class, 3, 'Session Completed', $randomBodyMessage, $join->training->academy->image, $detail);
+                $data = [
+                    'title' => 'Session Completed',
+                    'body' => $randomBodyMessage,
+                    'details' => $detail
+                ];
+                NotificationService::firebaseNotification($data, $user->fcm_token);
             }
         }
 

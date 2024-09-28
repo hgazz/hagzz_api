@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\JoinResource;
 use App\Http\Traits\apiResponse;
 use App\Models\Academies;
+use App\Models\Favorite;
 use App\Models\Join;
 use App\Models\Training;
 use App\Models\User;
@@ -87,6 +88,7 @@ class JoinController extends Controller
 
             // Send notifications (not rolled back)
             $this->sendNotifications($join, $request->header('fcm-token'));
+            $this->sendNotificationsForSavedTraining($request, $training);
 
             return $this->apiResponse(200, trans('api.home.joined as training successfully'), null, $join);
         } catch (\Exception $e) {
@@ -214,6 +216,36 @@ class JoinController extends Controller
             return $this->apiResponse(400, trans('api.error'), $e->getMessage());
         }
 
+    }
+
+    /**
+     * @param Request $request
+     * @param Training $training
+     * @return void
+     */
+    public function sendNotificationsForSavedTraining(Request $request,Training $training): void
+    {
+        $favorites = Favorite::where(['training_id' => $request->training_id])->get();
+        $joinsCount = Join::where('training_id', $request->training_id)->count();
+        $slotsAvailable = $training->max_players - $joinsCount;
+        $detail = [
+            'training_id' => $training->id,
+            'longitude' => $training->address->longitude,
+            'latitude' => $training->address->latitude,
+            'academy_name' => $training->academy->getTranslations('commercial_name', 'en'),
+        ];
+        if ($favorites->count() > 0 & $slotsAvailable <= 2) {
+            foreach ($favorites as $favorite) {
+                $title = "Last Chance!";
+                $body = "Only two slots remaining in a training you saved";
+                $data = [
+                    'title' => $title,
+                    'body' => $body,
+                    'details' => $detail
+                ];
+                NotificationService::firebaseNotification($data, $favorite->user->fcm_token);
+            }
+        }
     }
 
     protected function checkJoinDate(Request $request)
