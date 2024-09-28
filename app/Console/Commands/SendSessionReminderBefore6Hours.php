@@ -47,7 +47,7 @@ class SendSessionReminderBefore6Hours extends Command
     {
         return TClass::with(['training.academy', 'training.address'])
             ->where('date', $now->toDateString())
-            ->whereBetween('start_time', [$now, $sixHoursLater])
+//            ->whereBetween('start_time', [$now, $sixHoursLater])
             ->orderBy('start_time')
             ->get();
     }
