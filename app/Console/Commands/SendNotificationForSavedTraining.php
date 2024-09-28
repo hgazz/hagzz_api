@@ -69,7 +69,7 @@ class SendNotificationForSavedTraining extends Command
                 $data = [
                     'title' => $title,
                     'body' => $body,
-                    'image' => $training->academy->image,
+                    'image' => $join->training->academy->image,
                     'details' => $detail
                 ];
 
