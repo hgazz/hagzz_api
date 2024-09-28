@@ -82,33 +82,33 @@ class FavoriteController extends Controller
                 'training_id'=>$request->training_id
             ]);
 
-            $joinsCount = Join::where('training_id', $fav->training_id)->count();
-
-            $training = Training::find($fav->training_id);
-
-            $slotsAvailable = $training->max_players - $joinsCount;
-
-            if ($slotsAvailable <= 2) {
-                $detail = [
-                    'training_id' => $training->id,
-                    'longitude' => $training->address->longitude,
-                    'latitude' => $training->address->latitude,
-                    'academy_name' => $training->academy->getTranslations('commercial_name', 'en'),
-                ];
-                $title = "Last Chance!";
-                $body = "Only two slots are available in a training you saved";
-                $data = [
-                    'title' => $title,
-                    'body' => $body,
-                    'image' => $training->academy->image,
-                    'details'=>$detail
-                ];
-
-                NotificationService::firebaseNotification($data,auth('api')->user()->fcm_token);
-                NotificationService::dbNotification(auth('api')->id(), User::class, 2, $title, $body, $training->academy->logo, $detail);
-
-              $this->smsService->sendMessage($fav->user->phone, "{$title} - {$body}");
-            }
+//            $joinsCount = Join::where('training_id', $fav->training_id)->count();
+//
+//            $training = Training::find($fav->training_id);
+//
+//            $slotsAvailable = $training->max_players - $joinsCount;
+//
+//            if ($slotsAvailable <= 2) {
+//                $detail = [
+//                    'training_id' => $training->id,
+//                    'longitude' => $training->address->longitude,
+//                    'latitude' => $training->address->latitude,
+//                    'academy_name' => $training->academy->getTranslations('commercial_name', 'en'),
+//                ];
+//                $title = "Last Chance!";
+//                $body = "Only two slots are available in a training you saved";
+//                $data = [
+//                    'title' => $title,
+//                    'body' => $body,
+//                    'image' => $training->academy->image,
+//                    'details'=>$detail
+//                ];
+//
+//                NotificationService::firebaseNotification($data,auth('api')->user()->fcm_token);
+//                NotificationService::dbNotification(auth('api')->id(), User::class, 2, $title, $body, $training->academy->logo, $detail);
+//
+//              $this->smsService->sendMessage($fav->user->phone, "{$title} - {$body}");
+//            }
             DB::commit();
             return $this->apiResponse(200 ,trans('api.home.add favorite successfully'),null, $fav);
         }catch (\Exception $e){
