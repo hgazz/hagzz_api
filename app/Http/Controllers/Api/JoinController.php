@@ -103,18 +103,18 @@ class JoinController extends Controller
             'training_id' => $join->training_id,
             'longitude' => $join->training->address->longitude,
             'latitude' => $join->training->address->latitude,
-            'training_name' => $join->training->getTranslations('name', 'en'),
+            'training_name' => $join->training->getTranslation('name', 'en'),
         ];
 
         // Notification to academy
         $academyTitle = 'New Booking';
-        $academyDescription = $join->user->name . ' booked ' . $join->training->getTranslations('name', 'en') . ' with you. Please check your bookings';
+        $academyDescription = $join->user->name . ' booked ' . $join->training->getTranslation('name', 'en') . ' with you. Please check your bookings';
         NotificationService::dbNotification($join->training->academy_id, Academies::class, 2, $academyTitle, $academyDescription, $join->training->academy->image, $details);
         $this->smsService->sendMessage($join->training->academy->phone, "{$academyTitle} - {$academyDescription}");
 
         // Notifications to user
         $title = 'Booking Confirmed';
-        $body = 'Your booking with ' . $join->training->academy->getTranslations('commercial_name', 'en') . ' is confirmed Training - ' . $join->training->getTranslations('name', 'en');
+        $body = 'Your booking with ' . $join->training->academy->getTranslation('commercial_name', 'en') . ' is confirmed Training - ' . $join->training->getTranslation('name', 'en');
         $data = [
             'title' => $title,
             'body' => $body,
