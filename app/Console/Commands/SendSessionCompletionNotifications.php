@@ -64,6 +64,10 @@ class SendSessionCompletionNotifications extends Command
                 $data = [
                     'title' => 'Session Completed',
                     'body' => $randomBodyMessage,
+                    'id' => $join->training_id,
+                    'page' => 'details',
+                    'longitude' => $join->training->address->longitude,
+                    'latitude' => $join->training->address->latitude,
                     'details' => $detail
                 ];
                 NotificationService::firebaseNotification($data, $join->user->fcm_token);

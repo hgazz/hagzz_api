@@ -80,7 +80,10 @@ class SendSessionReminderBefore6Hours extends Command
                 $class->training->academy->getTranslation('commercial_name', 'en'),
                 $class->start_time
             ),
-            'details' => $detail
+            'id' => $class->training_id,
+            'page' => 'directions',
+            'longitude' => $class->training->address->longitude,
+            'latitude' => $class->training->address->latitude,
         ];
     }
 

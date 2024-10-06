@@ -82,6 +82,12 @@ class NotificationService
                     "title" => (string)$notificationData['title'],
                     "body" => (string)$notificationData['body'],
                 ],
+                "data" => [
+                    "id" => (string)$notificationData['id'], // Custom data
+                    "page" => (string)$notificationData['page'], // Custom data
+                    "longitude" => (string)$notificationData['longitude'], // Custom data
+                    "latitude" => (string)$notificationData['latitude'], // Custom data
+                ],
             ]
         ];
     }

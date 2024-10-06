@@ -50,7 +50,10 @@ class SendSessionReminder extends Command
                 $data = [
                     'title' => $title,
                     'body' => $body,
-                    'details' => $detail
+                    'id' => $join->training_id,
+                    'page' => 'directions',
+                    'longitude' => $join->training->address->longitude,
+                    'latitude' => $join->training->address->latitude
                 ];
                 NotificationService::firebaseNotification($data, $user->fcm_token);
             }

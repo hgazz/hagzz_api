@@ -119,7 +119,11 @@ class JoinController extends Controller
             'title' => $title,
             'body' => $body,
             'image' => $join->training->academy->image,
-            'details' => $details
+            'details' => $details,
+            'id' => $join->training_id,
+            'page' => 'details',
+            'longitude' => $join->training->address->longitude,
+            'latitude' => $join->training->address->latitude
         ];
         NotificationService::firebaseNotification($data, $fcmToken);
         NotificationService::dbNotification($join->user_id, User::class, 2, $title, $body, $join->training->academy->image, $details);
@@ -238,7 +242,11 @@ class JoinController extends Controller
         $data = [
             'title' => $title,
             'body' => $body,
-            'details' => $detail
+            'details' => $detail,
+            'id' => $training->id,
+            'page' => 'checkout',
+            'longitude' => $training->address->longitude,
+            'latitude' => $training->address->latitude
         ];
         if ($favorites->count() > 0 & $slotsAvailable <= 2) {
             foreach ($favorites as $favorite) {
