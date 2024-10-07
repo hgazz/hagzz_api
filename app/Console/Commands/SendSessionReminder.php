@@ -37,7 +37,7 @@ class SendSessionReminder extends Command
 
         foreach ($tomorrowClasses as $class) {
             $joins = Join::where('training_id', $class->training_id)->get();
-            dd($joins);
+
             $detail = [
                 'training_id' => $class->training_id,
                 'longitude' => $class->training->address->longitude,
@@ -57,7 +57,9 @@ class SendSessionReminder extends Command
                     'latitude' => $join->training->address->latitude
                 ];
                 NotificationService::firebaseNotification($data, $user->fcm_token);
+                dd($join);
             }
+
         }
         $this->info('Session reminders sent successfully.');
     }
