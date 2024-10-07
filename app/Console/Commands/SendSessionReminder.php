@@ -31,28 +31,32 @@ class SendSessionReminder extends Command
      */
     public function handle()
     {
-        $tomorrowClasses = TClass::with('training.academy')
+        $tomorrowClasses = TClass::with([
+            'training.academy',
+            'training.joins.user',
+            'training.joins.training.address'
+        ])
             ->where('date', now()->addDay()->toDateString())
             ->get();
 
         foreach ($tomorrowClasses as $class) {
-            $joins = Join::with(['user', 'training'])->where('training_id', $class->training_id)->get();
-
-            foreach ($joins as $join) {
+            // Access all joins related to the training of the class
+            foreach ($class->training->joins as $join) {
                 $user = $join->user;
-                $title= 'Session Reminder';
-                $body = 'Get ready,  Don’t forget to bring the required equipment for your upcoming session.' ;
+
+                // Prepare the notification data
                 $data = [
-                    'title' => $title,
-                    'body' => $body,
+                    'title' => 'Session Reminder',
+                    'body' => 'Get ready, Don’t forget to bring the required equipment for your upcoming session.',
                     'id' => $join->training_id,
                     'page' => 'directions',
                     'longitude' => $join->training->address->longitude,
-                    'latitude' => $join->training->address->latitude
+                    'latitude' => $join->training->address->latitude,
                 ];
+
+                // Send notification to the user
                 NotificationService::firebaseNotification($data, $user->fcm_token);
             }
-
         }
         $this->info('Session reminders sent successfully.');
     }
