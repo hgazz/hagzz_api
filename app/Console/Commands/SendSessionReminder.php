@@ -57,7 +57,6 @@ class SendSessionReminder extends Command
                     'latitude' => $join->training->address->latitude
                 ];
                 NotificationService::firebaseNotification($data, $user->fcm_token);
-                dd($join);
             }
 
         }
