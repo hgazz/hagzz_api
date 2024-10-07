@@ -36,14 +36,8 @@ class SendSessionReminder extends Command
             ->get();
 
         foreach ($tomorrowClasses as $class) {
-            $joins = Join::where('training_id', $class->training_id)->get();
+            $joins = Join::with(['user', 'training'])->where('training_id', $class->training_id)->get();
 
-            $detail = [
-                'training_id' => $class->training_id,
-                'longitude' => $class->training->address->longitude,
-                'latitude' => $class->training->address->latitude,
-                'academy_name' => $class->training->academy->getTranslation('commercial_name', 'en'),
-            ];
             foreach ($joins as $join) {
                 $user = $join->user;
                 $title= 'Session Reminder';
