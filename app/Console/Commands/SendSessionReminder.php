@@ -49,7 +49,7 @@ class SendSessionReminder extends Command
                     'title' => 'Session Reminder',
                     'body' => 'Get ready, Don’t forget to bring the required equipment for your upcoming session.',
                     'id' => $join->training_id,
-                    'page' => 'directions',
+                    'page' => 'details',
                     'longitude' => $join->training->address->longitude,
                     'latitude' => $join->training->address->latitude,
                 ];
