@@ -69,12 +69,12 @@ class SendNotificationForSavedTraining extends Command
                 $data = [
                     'title' => $title,
                     'body' => $body,
-                    'image' => $join->training->academy->image,
+                    'image' => $training->academy->image,
                     'details' => $detail,
-                    'id' => $join->training_id,
+                    'id' => $training->id,
                     'page' => 'details',
-                    'longitude' => $join->training->address->longitude,
-                    'latitude' => $join->training->address->latitude
+                    'longitude' => $training->address->longitude,
+                    'latitude' => $training->address->latitude
                 ];
 
                 NotificationService::firebaseNotification($data, $join->user->fcm_token);
