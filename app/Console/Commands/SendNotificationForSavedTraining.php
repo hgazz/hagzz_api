@@ -32,12 +32,14 @@ class SendNotificationForSavedTraining extends Command
     public function handle()
     {
         // Retrieve all joins with necessary relationships to minimize queries in the loop
-        $joins = DB::table('joins')
-            ->join('users', 'users.id', '=', 'joins.user_id')
-            ->join('trainings', 'trainings.id', '=', 'joins.training_id')
-            ->select('joins.*', 'trainings.id as training_id', 'trainings.max_players', 'trainings.start_date', 'trainings.name', 'trainings.academy_id', 'users.fcm_token')
-            ->get();
+//        $joins = DB::table('joins')
+//            ->join('users', 'users.id', '=', 'joins.user_id')
+//            ->join('trainings', 'trainings.id', '=', 'joins.training_id')
+//            ->select('joins.*', 'trainings.id as training_id', 'trainings.max_players', 'trainings.start_date', 'trainings.name', 'trainings.academy_id', 'users.fcm_token')
+//            ->get();
 
+        $joins = Join::with(['user', 'training.address', 'training.academy'])
+            ->get();
         // Fetch all necessary training data in one query to avoid multiple finds within the loop
         $trainingIds = $joins->pluck('training_id')->unique();
         $trainings = Training::whereIn('id', $trainingIds)
