@@ -228,7 +228,7 @@ class JoinController extends Controller
      */
     public function sendNotificationsForSavedTraining(Training $training): void
     {
-        $favorites = Favorite::with('user')->where(['training_id' => $training->id])->get();
+        $favorites = Favorite::with('user')->where([['training_id' , $training->id], ['user_id', '!=', auth('api')->id()]])->get();
         $joinsCount = Join::where('training_id', $training->id)->count();
         $slotsAvailable = $training->max_players - $joinsCount;
         $detail = [
