@@ -49,7 +49,7 @@ class SendNotificationForSavedTraining extends Command
 
         foreach ($joins as $join) {
             $training = $trainings->get($join->training_id);
-
+            $user = $join->user;
             if (!$training) continue; // Skip if training data is missing
 
             $joinsCount = Join::where('training_id', $join->training_id)->count();
@@ -77,7 +77,7 @@ class SendNotificationForSavedTraining extends Command
                     'latitude' => $training->address->latitude
                 ];
 
-                NotificationService::firebaseNotification($data, $join->user->fcm_token);
+                NotificationService::firebaseNotification($data, $user->fcm_token);
 //                NotificationService::dbNotification($user->id, User::class, 2, $title, $body, $training->academy->logo, $detail);
             }
         }
