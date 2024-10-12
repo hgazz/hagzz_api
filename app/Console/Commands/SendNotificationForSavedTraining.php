@@ -35,7 +35,7 @@ class SendNotificationForSavedTraining extends Command
         $joins = DB::table('joins')
             ->join('users', 'users.id', '=', 'joins.user_id')
             ->join('trainings', 'trainings.id', '=', 'joins.training_id')
-            ->select('joins.*', 'trainings.id as training_id', 'trainings.max_players', 'trainings.start_date', 'trainings.name', 'trainings.academy_id')
+            ->select('joins.*', 'trainings.id as training_id', 'trainings.max_players', 'trainings.start_date', 'trainings.name', 'trainings.academy_id', 'users.fcm_token')
             ->get();
 
         // Fetch all necessary training data in one query to avoid multiple finds within the loop
