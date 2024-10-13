@@ -246,7 +246,8 @@ class JoinController extends Controller
             'id' => $training->id,
             'page' => 'checkout',
             'longitude' => $training->address->longitude,
-            'latitude' => $training->address->latitude
+            'latitude' => $training->address->latitude,
+            'class_id' => null
         ];
         if ($favorites->count() > 0 & $slotsAvailable <= 2) {
             foreach ($favorites as $favorite) {

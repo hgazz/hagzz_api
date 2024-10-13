@@ -50,7 +50,8 @@ class BookingService
             'id' => $join->training_id,
             'page' => 'details',
             'longitude' => $join->training->address->longitude,
-            'latitude' => $join->training->address->latitude
+            'latitude' => $join->training->address->latitude,
+            'class_id' => null
         ];
         NotificationService::firebaseNotification($data, $join->user->fcm_token);
 
