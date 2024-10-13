@@ -87,6 +87,7 @@ class NotificationService
                     "page" => (string)$notificationData['page'], // Custom data
                     "longitude" => (string)$notificationData['longitude'], // Custom data
                     "latitude" => (string)$notificationData['latitude'], // Custom data
+                    "class" => (string)$notificationData['class_id'], // Custom data
                 ],
             ]
         ];

@@ -49,8 +49,8 @@ class SendSessionReminder extends Command
                     'title' => 'Session Reminder',
                     'body' => 'Get ready, Don’t forget to bring the required equipment for your upcoming session.',
                     'id' => $join->training_id,
-                    'page' => 'class',
-                    'class_id' => $class->id,
+                    'page' => 'details',
+                    'class_id' => $class->id ?? null,
                 ];
 
                 // Send notification to the user
