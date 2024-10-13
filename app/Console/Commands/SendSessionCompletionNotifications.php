@@ -61,6 +61,10 @@ class SendSessionCompletionNotifications extends Command
             ];
             foreach ($joins as $join) {
                 $randomBodyMessage = $bodyMessages[array_rand($bodyMessages)];
+                $upcomingClass = TClass::where('training_id', $join->training_id)
+                    ->where('date', '>', $class->date)
+                    ->orderBy('date', 'asc')
+                    ->first();
                 $data = [
                     'title' => 'Session Completed',
                     'body' => $randomBodyMessage,
@@ -68,7 +72,8 @@ class SendSessionCompletionNotifications extends Command
                     'page' => 'details',
                     'longitude' => $join->training->address->longitude,
                     'latitude' => $join->training->address->latitude,
-                    'details' => $detail
+                    'details' => $detail,
+                    'class_id' => $upcomingClass->id ?? null
                 ];
                 NotificationService::firebaseNotification($data, $join->user->fcm_token);
             }
