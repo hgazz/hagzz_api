@@ -54,7 +54,8 @@ class NotifySavedTrainingsBeforeAWeek extends Command
                    'id' => $favorite->training_id,
                    'page' => 'checkout',
                    'longitude' => $favorite->training->address->longitude,
-                   'latitude' => $favorite->training->address->latitude
+                   'latitude' => $favorite->training->address->latitude,
+                   'class_id' => null
                ];
                NotificationService::firebaseNotification($data, $favorite->user->fcm_token);
             }
