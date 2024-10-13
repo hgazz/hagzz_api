@@ -49,7 +49,6 @@ class NotifySavedTrainingsBeforeAWeek extends Command
                        'longitude' => $favorite->training->address->longitude,
                        'latitude' => $favorite->training->address->latitude,
                        'academy_name' => $favorite->training->academy->getTranslation('commercial_name', 'en'),
-
                    ],
                    'id' => $favorite->training_id,
                    'page' => 'checkout',
