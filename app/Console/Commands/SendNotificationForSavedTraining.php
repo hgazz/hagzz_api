@@ -73,7 +73,7 @@ class SendNotificationForSavedTraining extends Command
                     'image' => $training->academy->image,
                     'details' => $detail,
                     'id' => $training->id,
-                    'page' => 'details',
+                    'page' => 'checkout',
                     'longitude' => $training->address->longitude,
                     'latitude' => $training->address->latitude,
                     'class_id' => null
