@@ -65,7 +65,6 @@ class SendSessionCompletionNotifications extends Command
                     ->where('date', '>', $class->date)
                     ->orderBy('date', 'asc')
                     ->first();
-                dd($upcomingClass);
 
                 $data = [
                     'title' => 'Session Completed',
