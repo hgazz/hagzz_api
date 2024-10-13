@@ -84,6 +84,7 @@ class SendSessionReminderBefore6Hours extends Command
             'page' => 'directions',
             'longitude' => $class->training->address->longitude,
             'latitude' => $class->training->address->latitude,
+            'class_id' => $class->id,
         ];
     }
 
