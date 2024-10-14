@@ -123,7 +123,8 @@ class JoinController extends Controller
             'id' => $join->training_id,
             'page' => 'details',
             'longitude' => $join->training->address->longitude,
-            'latitude' => $join->training->address->latitude
+            'latitude' => $join->training->address->latitude,
+            'class_id' => null
         ];
         NotificationService::firebaseNotification($data, $fcmToken);
         NotificationService::dbNotification($join->user_id, User::class, 2, $title, $body, $join->training->academy->image, $details);
