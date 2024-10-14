@@ -48,7 +48,7 @@ class SendSessionCompletionNotifications extends Command
 
         // Filter classes that ended today before the current time
         $completedClasses = TClass::whereDate('date', '<=', $now->toDateString())
-            ->whereTime('end_time', '<', $currentTime)
+//            ->whereTime('end_time', '<', $currentTime)
             ->get();
 
         foreach ($completedClasses as $class) {
