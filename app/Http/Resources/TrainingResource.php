@@ -16,7 +16,7 @@ class TrainingResource extends JsonResource
     {
         $locale = app()->getLocale(); // Current locale
         $academy = $this->academy; // Assuming 'academy' is already an object in the loaded Training model
-        $localizedCommercialName = $academy->getTranslation('commercial_name', $locale) ?? $academy->getTranslation('commercial_name', 'en');
+        $localizedCommercialName = $academy->getTranslation('app_name', $locale) ?? $academy->getTranslation('app_name', 'en');
         return [
             'id' => $this->id,
             'name' => $this->name,

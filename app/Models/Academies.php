@@ -10,7 +10,7 @@ class Academies extends Model
 {
     use HasTranslations;
 
-    public $translatable = ['commercial_name'];
+    public $translatable = ['commercial_name', 'app_name'];
     const PATH ='images/academies';
     protected $fillable = [
         'email',
@@ -29,7 +29,8 @@ class Academies extends Model
         'contract_number',
         'account_manager',
         'is_registered',
-        'website'
+        'website',
+        'app_name'
     ];
 
     protected $hidden = ['created_at', 'updated_at'];

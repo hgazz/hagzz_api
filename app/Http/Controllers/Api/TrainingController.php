@@ -24,7 +24,7 @@ class TrainingController extends Controller
         $total = $query->count();
         $query = $query->skip($page * $pageSize - $pageSize)->limit($pageSize);
         $trainings = $query->with(['academy'=> function ($query) {
-            $query->select(['id', 'commercial_name', 'logo']);
+            $query->select(['id', 'app_name', 'logo']);
             $query->withCount('follows');
         },
             'address:id,address,area_id,city_id',
@@ -134,7 +134,7 @@ class TrainingController extends Controller
             'coach:id,name,image,gender',
             'sport',
             'academy' => function ($query) {
-                $query->select(['id', 'commercial_name', 'logo']);
+                $query->select(['id', 'app_name', 'logo']);
                 $query->withCount('follows');
             },
             'address:id,address,longitude,latitude',
@@ -176,7 +176,7 @@ class TrainingController extends Controller
             ->withCount(['classes', 'joins'])->isActive()
             ->get() :
             $query->with(['academy'=> function ($query) {
-                $query->select(['id', 'commercial_name', 'logo']);
+                $query->select(['id', 'app_name', 'logo']);
                 $query->withCount('follows');
             },
                 'address:id,address,area_id,city_id',
