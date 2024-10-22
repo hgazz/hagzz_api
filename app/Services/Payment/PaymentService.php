@@ -25,8 +25,8 @@ class PaymentService
             'Uid' => $myuuid,
             'KeyId' => "04d4005f-9475-4d8f-845a-c581f242343d",
             'Amount' => strval($amount),
-            'FirstName' => auth()->user()->first_name,
-            'LastName' => auth()->user()->last_name,
+            'FirstName' => auth()->user()->name,
+            'LastName' => auth()->user()->name,
             'Phone' => '+976' . auth()->user()->phone,
             'Email' => "achouak@skipcash.com",
             'TransactionId' => "005"
