@@ -93,6 +93,7 @@ Route::group(['middleware' => ['setLang', 'fcm_token']], function () {
             Route::post('addJoin','addJoin');
             Route::get('join','join');
             Route::post('cancelBooking','cancelBooking');
+            Route::post('payment','payment');
         });
 
         Route::controller(FavoriteController::class)->group(function (){

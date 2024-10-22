@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Models\Invoice;
 use App\Services\Booking\BookingService;
 use App\Services\Firebase\NotificationService;
+use App\Services\Payment\PaymentService;
 use App\Services\SMSMISR\SmsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -129,6 +130,15 @@ class JoinController extends Controller
         NotificationService::firebaseNotification($data, $fcmToken);
         NotificationService::dbNotification($join->user_id, User::class, 2, $title, $body, $join->training->academy->image, $details);
         $this->smsService->sendMessage($join->user->phone, "{$title} - {$body}");
+    }
+
+    public function payment()
+    {
+        $amount = Invoice::where('user_id', auth('api')->id())
+            ->where('status', 'pending')
+            ->sum('amount');
+        $payment = PaymentService::payment($amount);
+        return $this->apiResponse(200   , 'payment', null, $payment);
     }
 
 
