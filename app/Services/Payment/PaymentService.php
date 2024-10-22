@@ -56,6 +56,7 @@ class PaymentService
         curl_close($curl);
 
         $responseData = json_decode($response, true);
+        dd($responseData);
 
         $formattedResponse = [
             'resultObj' => $responseData['resultObj'],
