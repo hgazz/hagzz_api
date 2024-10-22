@@ -132,11 +132,10 @@ class JoinController extends Controller
         $this->smsService->sendMessage($join->user->phone, "{$title} - {$body}");
     }
 
-    public function payment()
+    public function payment(Request $request)
     {
-        $amount = Invoice::where('user_id', auth('api')->id())
-            ->where('status', 'pending')
-            ->sum('amount');
+        $training = Training::find($request->training_id);
+        $amount = $training->price - $training->discount_price;
         $payment = PaymentService::payment($amount);
         return $this->apiResponse(200   , 'payment', null, $payment);
     }
