@@ -137,6 +137,7 @@ class JoinController extends Controller
         $training = Training::find($request->training_id);
         $amount = $training->price - $training->discount_price;
         $payment = PaymentService::payment($amount);
+        return $payment;
         return $this->apiResponse(200   , 'payment', null, $payment);
     }
 
