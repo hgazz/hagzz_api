@@ -233,6 +233,11 @@ class JoinController extends Controller
 
     }
 
+    public function callback(Request $request)
+    {
+
+    }
+
     /**
      * @param Training $training
      * @return void
