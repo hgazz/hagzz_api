@@ -20,10 +20,10 @@ class PaymentService
         $productionURL = "https://api.skipcash.app/api/v1/payments";
 
         $myuuid = guidv4();
-        $secretkey = "LILYNDkSTjYOlaDLT1qNw2kGoHiwwhxZ1UMnCDQsO/T4AhWN0RlVdatfenQdZ+RdaV+oZ5xWAf8kItGgFTjMYTkRhXX+9gboF0oGwzK/Dr6taRHriQxh1COOIAG/SjtE3FIlJVKyUzPmDnHQIov5ek6v+U6NpfdFvu3MMVJzLh7drxv+6uvWIb6A+LtQPo/MFo6X3oHOIjdAsWTzyj06jjb45Yewmnep1UPXSgX2CmqlaPqXD/D6tQY1JO3gNTXTzpbxvenkpDqg/1J4BZ8kJCdU7VQ0gs6oAWIAluveROfAH5Du2/l6LHp7tI93LS4L8TB2M4jRwRB1nzX8VhnTLHqmeAye9tb90DpD1te7yBfst1CIdRu+RRD31IWD51TDZKlFaFd4eVsbdIkQgUiI9pUXQGD4SUXwQinh+vG7hTob95nvhEhd2sfdz72bVnIObK7VAztsP7jhLgAhPXWcANTmLAeEomAO+tBaBSMqj8FTsS5egskxrm1A+q2eJaiVt9TnBc9KgLUd6f1FOAhorA==";
+        $secretkey = "rMCFUAmM7IsnbHPQh0NoLtBT2Pr/lZ0FYT2tVaOCBTihdfegIpKwCEEJTkR8tP0uc3Vpp+8xOEW1BS+qy6cnwq+OELyOyUvdpsKmvqTQhrM/PIK0VzhMFBEtAlTWwPS9D0ciHjNZoyAxABI9Hes/AZr0RPoFW/LTiYJ2nr1QRNxqh2pQG08XWv8TV5GJpEFtme2q/fXBRRx+PRpREdYg4hWL7WCXktWzq7JU/3f+czbGZpmxyFjsxdKKwbHoORtyU9MxZPeJf9ghfJahsfGcLjwyfZ36LYBPmjMzS641u36h48DKYzZftwLUWE1jRjUBvalqhzi1dDXzss3p/xqvQ2xAWBGsER4vUNin91GARHEkVM0GxJQTDw+D3Davolpm/MDaRJ4UTbjiOryRwcDwiCJN3uud6QEskln+ZsTMe6q7353PIUCPABfz23u5GCj88I9lIkFJlPLyyDrlQoNI1Ci064Sncw950FM50QDTMGJVe2c6SS+mahlQcGyFNH9tLJ68iVJ8Ia8pjIp7cmn0sg==";
         $data = [
             'Uid' => $myuuid,
-            'KeyId' => "04d4005f-9475-4d8f-845a-c581f242343d",
+            'KeyId' => "6681779a-b2b5-475c-8fc3-b3806a62a365",
             'Amount' => strval($amount),
             'FirstName' => auth()->user()->name,
             'LastName' => auth()->user()->name,
@@ -39,7 +39,7 @@ class PaymentService
 
         $curl = curl_init();
         curl_setopt_array($curl, [
-            CURLOPT_URL => $sanboxURL,
+            CURLOPT_URL => $productionURL,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
             CURLOPT_MAXREDIRS => 10,
