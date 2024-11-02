@@ -57,9 +57,6 @@ class PaymentService
 
         $responseData = json_decode($response, true);
 
-        dd($responseData);
-
-
         $formattedResponse = [
             'resultObj' => $responseData['resultObj'],
             'returnCode' => $responseData['returnCode'],

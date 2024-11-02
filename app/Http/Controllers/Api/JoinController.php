@@ -136,10 +136,12 @@ class JoinController extends Controller
     {
         $training = Training::find($request->training_id);
         $amount = $training->price - $training->discount_price;
-        dd($training);
+        if($amount == 0)
+        {
+            return $this->apiResponse(200,'amount invalid' , ['price' => "price can't be zero"]);
+        }
         $payment = PaymentService::payment($amount);
         return $payment;
-        return $this->apiResponse(200   , 'payment', null, $payment);
     }
 
 
