@@ -140,8 +140,7 @@ class JoinController extends Controller
         {
             return $this->apiResponse(400,'amount invalid' , ['price' => "price can't be zero"]);
         }
-        $payment = PaymentService::payment($amount);
-        return $payment;
+        return PaymentService::payment($amount);
     }
 
 
