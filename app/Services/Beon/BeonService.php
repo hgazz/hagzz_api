@@ -15,7 +15,7 @@ class BeonService
     {
         $this->client = new Client();
         $this->token = 'vSCuMzZwLjDxzR882YphwEgW';
-        $this->baseUri = 'https://beon-system.unlimited-software.com/api/send/message/otp';
+        $this->baseUri = 'https://beon.chat/api/send/message/otp';
     }
 
     public function sendOtp($phoneNumber, $name)
