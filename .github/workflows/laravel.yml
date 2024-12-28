@@ -5,7 +5,7 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
- 
+
 jobs:
   build-cicd:
     runs-on: ubuntu-latest
@@ -28,7 +28,7 @@ jobs:
 
       # - name: Directory Permissions
       #   run: chmod -R 777 storage bootstrap/cache
-      
+
       # - name: Execute tests (Unit and Feature tests) via PHPUnit
       #   env:
       #    DB_CONNECTION: mysql
@@ -42,9 +42,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-cicd
     steps:
-      - name: SSH Deploy-Test 
-# ${{ success() }} && 
-        if: ( github.event_name == 'push' ||  github.event_name == 'pull_request' ) && github.ref == 'refs/heads/master' 
+      - name: SSH Deploy-Test
+# ${{ success() }} &&
+        if: ( github.event_name == 'push' ||  github.event_name == 'pull_request' ) && github.ref == 'refs/heads/master'
 
         uses: appleboy/ssh-action@master
         with:
@@ -63,9 +63,10 @@ jobs:
               echo "Composer.json modified, running composer update"
               yes | sudo composer update
             else
+              sudo composer update
               echo "No changes in composer.json, skipping composer update"
             fi
             echo "Optimize Cach"
             sudo php artisan optimize:clear
-        
- 
+
+
