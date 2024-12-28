@@ -15,6 +15,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Stevebauman\Location\Facades\Location;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
@@ -167,12 +168,7 @@ class AuthController extends Controller
             }
         }
 
-
-
-
-
         return $this->apiResponse(200, trans('api.auth.login success'), null, 'otp was send');
-
     }
 
     public function updateSportsData(Request $request)
@@ -228,7 +224,6 @@ class AuthController extends Controller
 
     public function verifyCode(VerifyCode $request)
     {
-
         $user = User::where([
             ['phone', $request->phone_number],
             ['otp', $request->otp]
@@ -242,7 +237,6 @@ class AuthController extends Controller
             return  $this->apiResponse(410 ,trans('api.auth.Otp Expired'));
         }
 
-
         if($user)
         {
             $user->update([
@@ -251,10 +245,16 @@ class AuthController extends Controller
             ]);
             auth()->loginUsingId($user->id);
 
+
+            $ip = $request->ip() == '127.0.0.1' ? '196.47.62.26' : $request->ip(); // Replace with a test IP if localhost
+            $location = Location::get($ip);
+
+
             $token = JWTAuth::fromUser($user);
             return $this->apiResponse(200, trans('api.auth.the verify code successfully'), null, [
                 'token'=>$token,
                 'user'=> new UserSportResource($user),
+                'region' => $location->regionCode
             ]);
         }
 

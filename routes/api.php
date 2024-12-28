@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
+use Stevebauman\Location\Facades\Location;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,6 +27,11 @@ use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+Route::get('/test',function (Request $request){
+    $ip = $request->ip() == '127.0.0.1' ? '196.47.62.26' : $request->ip(); // Replace with a test IP if localhost
+    $location = Location::get($ip);
+});
 
 Route::group(['middleware' => ['api', 'fcm_token']], function () {
     Route::controller(AuthController::class)->group(function () {
