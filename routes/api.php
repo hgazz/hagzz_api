@@ -28,11 +28,6 @@ use Stevebauman\Location\Facades\Location;
 |
 */
 
-Route::get('/test',function (Request $request){
-    $ip = $request->ip() == '127.0.0.1' ? '196.47.62.26' : $request->ip(); // Replace with a test IP if localhost
-    $location = Location::get($ip);
-});
-
 Route::group(['middleware' => ['api', 'fcm_token']], function () {
     Route::controller(AuthController::class)->group(function () {
         Route::post('/register','register');

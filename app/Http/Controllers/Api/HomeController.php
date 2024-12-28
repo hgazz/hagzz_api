@@ -28,6 +28,10 @@ class HomeController extends Controller
     use apiResponse;
     public function home()
     {
+
+        $ip = $request->ip();
+        $location = Location::get($ip);
+
         $banners = Banner::whereStatus('active')->limit(6)->inRandomOrder()->get();
         $sports = auth('api')->check() ? $this->getUserSports() : SportResource::collection(Sport::limit(6)->inRandomOrder()->get(['id','name','icon']));
         $academies = auth('api')->check() ? PartnerResource::collection($this->getPartnersWithAuth()) : PartnerResource::collection($this->getPartnersGuest())  ;
@@ -40,6 +44,7 @@ class HomeController extends Controller
                 'trainings_count' => auth('api')->check() ? Training::whereHas('address',function($q){$q->where('country_id',auth('api')->user()->country_id);})->isActive()->count()   : Training::isActive()->count(),
                 'trainings' => $trainings
             ],
+            'country' => $location->countryCode
         ]);
     }
     protected function getUserTraining()
