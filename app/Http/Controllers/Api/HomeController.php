@@ -22,11 +22,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Stevebauman\Location\Facades\Location;
 
 class HomeController extends Controller
 {
     use apiResponse;
-    public function home()
+    public function home(Request $request)
     {
 
         $ip = $request->ip();
