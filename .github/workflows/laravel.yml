@@ -63,7 +63,6 @@ jobs:
               echo "Composer.json modified, running composer update"
               yes | sudo composer update
             else
-              sudo composer update
               echo "No changes in composer.json, skipping composer update"
             fi
             echo "Optimize Cach"

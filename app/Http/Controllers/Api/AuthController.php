@@ -246,7 +246,7 @@ class AuthController extends Controller
             auth()->loginUsingId($user->id);
 
 
-            $ip = $request->ip() == '127.0.0.1' ? '196.47.62.26' : $request->ip(); // Replace with a test IP if localhost
+            $ip = $request->ip();
             $location = Location::get($ip);
 
 
