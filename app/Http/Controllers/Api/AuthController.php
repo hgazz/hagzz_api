@@ -254,7 +254,7 @@ class AuthController extends Controller
             return $this->apiResponse(200, trans('api.auth.the verify code successfully'), null, [
                 'token'=>$token,
                 'user'=> new UserSportResource($user),
-                'country' => $location->countryCode
+                'country' => auth()->user() ? auth()->user()->country->name : $location->countryCode,
             ]);
         }
 
