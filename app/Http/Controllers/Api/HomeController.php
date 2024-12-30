@@ -45,7 +45,7 @@ class HomeController extends Controller
                 'trainings_count' => auth('api')->check() ? Training::whereHas('address',function($q){$q->where('country_id',auth('api')->user()->country_id);})->isActive()->count()   : Training::isActive()->count(),
                 'trainings' => $trainings
             ],
-            'country' => $location->countryCode
+            'country' => auth()->user() ? auth()->user()->country->name : $location->countryCode,
         ]);
     }
     protected function getUserTraining()
