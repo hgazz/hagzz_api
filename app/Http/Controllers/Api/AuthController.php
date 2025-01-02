@@ -115,16 +115,10 @@ class AuthController extends Controller
                 ]));
             }
 
-            if ($validatedData['send_type'] == 'whatsapp') {
-                $responseOtp = $this->beonService->sendOtp($validatedData['country_code'] . $validatedData['phone'], $otp);
+//                $data = $this->beonService->sendOtp($request->country_code .$request->phone, $user->name, $request->send_type);
+                $responseOtp = $this->beonService->sendOtp($validatedData['country_code'] . $validatedData['phone'], $validatedData['name'], $validatedData['send_type']);
                 $otpData = json_decode($responseOtp, true);
                 $user->update(['otp' => $otpData['data'], 'fcm_token' => $request->fcm_token]);
-            } else {
-                $responseOtp = $this->smsOtp->sendOtp($validatedData['country_code'] . $validatedData['phone'], $otp);
-                if ($responseOtp['code'] == 'error') {
-                    return $this->apiResponse(400, trans('api.auth.sms_error', [], $lang), $responseOtp['message']);
-                }
-            }
 
             return $this->apiResponse(200, trans('api.auth.the_verify_code_successfully', [], $lang), null, [
                 'user' => $user,
