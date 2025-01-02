@@ -30,10 +30,22 @@ class HomeController extends Controller
     public function home(Request $request)
     {
 
-        $ip = $request->ip();
-        $location = Location::get($ip);
+        if(auth()->check())
+        {
+            $countryid = auth()->user()->country_id;
+            if($countryid == 1)
+            {
+                $countryCode = 'eg';
+            }else{
+                $countryCode = 'qa';
+            }
+        }else {
+            $ip = $request->ip();
+            $location = Location::get($ip);
+            $countryCode = strtolower($location->countryCode);
+        }
 
-        $banners = Banner::where('country', strtolower($location->countryCode))->whereStatus('active')->limit(6)->inRandomOrder()->get();
+        $banners = Banner::where('country', $countryCode)->whereStatus('active')->limit(6)->inRandomOrder()->get();
         $sports = auth('api')->check() ? $this->getUserSports() : SportResource::collection(Sport::limit(6)->inRandomOrder()->get(['id','name','icon']));
         $academies = auth('api')->check() ? PartnerResource::collection($this->getPartnersWithAuth()) : PartnerResource::collection($this->getPartnersGuest())  ;
         $trainings = auth('api')->check() ? $this->getUserTraining() : $this->getRandomTrainings();
