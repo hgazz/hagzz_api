@@ -115,10 +115,9 @@ class AuthController extends Controller
                 ]));
             }
 
-//                $data = $this->beonService->sendOtp($request->country_code .$request->phone, $user->name, $request->send_type);
-                $responseOtp = $this->beonService->sendOtp($validatedData['country_code'] . $validatedData['phone'], $validatedData['name'], $validatedData['send_type']);
-                $otpData = json_decode($responseOtp, true);
-                $user->update(['otp' => $otpData['data'], 'fcm_token' => $request->fcm_token]);
+            $responseOtp = $this->beonService->sendOtp($validatedData['country_code'] . $validatedData['phone'], $validatedData['name'], $validatedData['send_type']);
+            $otpData = json_decode($responseOtp, true);
+            $user->update(['otp' => $otpData['data'], 'fcm_token' => $request->fcm_token]);
 
             return $this->apiResponse(200, trans('api.auth.the_verify_code_successfully', [], $lang), null, [
                 'user' => $user,
