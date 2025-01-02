@@ -18,7 +18,7 @@ class BeonService
         $this->baseUri = 'https://beon.chat/api/send/message/otp';
     }
 
-    public function sendOtp($phoneNumber, $name)
+    public function sendOtp($phoneNumber, $name, $type)
     {
         $headers = [
             'beon-token' => $this->token,
@@ -33,6 +33,10 @@ class BeonService
                 [
                     'name' => 'name',
                     'contents' => $name,
+                ],
+                [
+                    'name' => 'type',
+                    'contents' => $type
                 ],
                 [
                     'name' => 'otp_length',
