@@ -33,6 +33,7 @@ class HomeController extends Controller
         if(auth()->check())
         {
             $countryid = auth()->user()->country_id;
+            dd($countryid);
             if($countryid == 1)
             {
                 $countryCode = 'eg';
