@@ -30,7 +30,7 @@ class HomeController extends Controller
     public function home(Request $request)
     {
 
-        if(auth()->check())
+        if(auth('api')->check())
         {
             $countryid = auth()->user()->country_id;
             dd($countryid);
