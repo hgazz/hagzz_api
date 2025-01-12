@@ -111,7 +111,7 @@ class TrainingController extends Controller
 
             return $this->apiResponse(200, trans('api.home.All Training'), null, $data);
         }catch (Exception $exception){
-            return $this->apiResponse(400, trans('api.validation_error'), ["code" => $exception->getLine(),"message" =>$exception->getMessage()]);
+            return $this->apiResponse(400, trans('api.validation_error'), ["code" => $exception->getLine(),"file" => $exception->getFile(),"message" =>$exception->getMessage()]);
         }
     }
 
