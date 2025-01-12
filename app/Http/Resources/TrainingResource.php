@@ -39,7 +39,6 @@ class TrainingResource extends JsonResource
             'address' => new AddressResource($this->whenLoaded('address')),
             'academy' => new PartnerResource($this->whenLoaded('academy')),
             'sport' => new SportResource($this->whenLoaded('sport')),
-            'classes' => TClassResource::collection($this->whenLoaded('classes')),
             'coach' => new CoachResource($this->whenLoaded('coach')),
         ];
     }

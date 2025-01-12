@@ -127,9 +127,6 @@ class TrainingController extends Controller
                 $query->withCount('follows');
             },
             'address:id,address,longitude,latitude',
-            'classes'=>function ($q) use ($pageSize , $page) {
-                $q->skip($page * $pageSize - $pageSize)->limit($pageSize);
-            }
         ])->find($id);
 
         if(!$training)
@@ -170,7 +167,7 @@ class TrainingController extends Controller
             },
                 'address:id,address,area_id,city_id',
                 'sport:id,name,icon'])
-                ->withCount(['classes', 'joins'])
+                ->withCount(['joins'])
                 ->isActive()->get();
     }
 
