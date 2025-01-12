@@ -20,7 +20,7 @@ class TrainingController extends Controller
     {
         $pageSize = 10;
         $page = (request()->has('page')) ? request('page') : 1;
-        $query = Training::query()->select(['id','name','price','start_date','end_date','max_players','level','gender','age_group','academy_id','address_id','sport_id']);
+        $query = Training::query()->select(['id','name','price','end_date','max_players','level','gender','age_group','academy_id','address_id','sport_id']);
         $total = $query->count();
         $query = $query->skip($page * $pageSize - $pageSize)->limit($pageSize);
         $trainings = $query->with(['academy'=> function ($query) {
@@ -32,7 +32,7 @@ class TrainingController extends Controller
             ->whereHas('address', function ($q) {
                 $q->where('country_id', auth('api')->user()->country_id);
             })
-            ->withCount(['classes', 'joins'])->where('start_date' , '>=', Carbon::today())->get();
+            ->withCount(['classes', 'joins'])->get();
         $data = [
             'trainings' => TrainingResource::collection($trainings),
             'total' => $total,
