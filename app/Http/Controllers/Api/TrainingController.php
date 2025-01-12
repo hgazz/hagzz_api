@@ -117,8 +117,6 @@ class TrainingController extends Controller
 
     public function trainingDetails($id)
     {
-        $pageSize = 10;
-        $page = (request()->has('page')) ? request('page') : 1;
         $training = Training::with([
             'coach:id,name,image,gender',
             'sport',
@@ -128,6 +126,7 @@ class TrainingController extends Controller
             },
             'address:id,address,longitude,latitude',
         ])->find($id);
+        return $training;
 
         if(!$training)
         {
