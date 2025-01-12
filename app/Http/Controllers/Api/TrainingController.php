@@ -101,7 +101,6 @@ class TrainingController extends Controller
             // Calculate the total number of pages
             $totalPages = ceil($total / $pageSize);
             $trainings = $this->filterHome($query);
-            return $total;
             $data = [
                 'trainings' => TrainingResource::collection($trainings),
                 'total' => $total,
@@ -160,10 +159,10 @@ class TrainingController extends Controller
         },
             'address:id,address,area_id,city_id',
             'sport:id,name,icon'])
-            ->whereHas('address.country', function ($query) {
-                return $query->where('id', auth('api')->user()->country_id);
-            })
-            ->withCount(['classes', 'joins'])->isActive()
+//            ->whereHas('address.country', function ($query) {
+//                return $query->where('id', auth('api')->user()->country_id);
+//            })
+//            ->withCount(['classes', 'joins'])->isActive()
             ->get() :
             $query->with(['academy'=> function ($query) {
                 $query->select(['id', 'app_name', 'logo']);
