@@ -162,7 +162,7 @@ class TrainingController extends Controller
 //            ->whereHas('address.country', function ($query) {
 //                return $query->where('id', auth('api')->user()->country_id);
 //            })
-            ->withCount(['classes'])->isActive()
+            ->withCount(['joins'])->isActive()
             ->get() :
             $query->with(['academy'=> function ($query) {
                 $query->select(['id', 'app_name', 'logo']);
