@@ -57,17 +57,17 @@ class TClass extends Model
     }
 
     // Tclass Model
-    public function getDurationInHoursAttribute()
-    {
-        $startTime = \Carbon\Carbon::parse($this->start_time);
-        $endTime = \Carbon\Carbon::parse($this->end_time);
-
-//        // Safeguard against invalid times (e.g., end time before start time)
-//        if ($startTime->greaterThan($endTime)) {
-//            return 0;
-//        }
-
-        return $startTime->diffInMinutes($endTime) / 60; // Convert minutes to hours
-    }
+//    public function getDurationInHoursAttribute()
+//    {
+//        $startTime = \Carbon\Carbon::parse($this->start_time);
+//        $endTime = \Carbon\Carbon::parse($this->end_time);
+//
+////        // Safeguard against invalid times (e.g., end time before start time)
+////        if ($startTime->greaterThan($endTime)) {
+////            return 0;
+////        }
+//
+//        return $startTime->diffInMinutes($endTime) / 60; // Convert minutes to hours
+//    }
 
 }
