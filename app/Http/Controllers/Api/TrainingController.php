@@ -51,7 +51,7 @@ class TrainingController extends Controller
         try {
             $pageSize = 10;
             $page = (request()->has('page')) ? request('page') : 1;
-            $query = Training::query()->select(['id','name','price','start_date','end_date','max_players','level','gender','age_group','academy_id','address_id','sport_id', 'discount_price']);
+            $query = Training::query()->select(['id','name','price','end_date','max_players','level','gender','age_group','academy_id','address_id','sport_id', 'discount_price']);
 
             $request->whenHas('sports_ids', function($sportsIds) use($query){
                 $query->whereIn('sport_id', $sportsIds);
