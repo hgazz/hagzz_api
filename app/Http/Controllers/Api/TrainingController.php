@@ -97,6 +97,7 @@ class TrainingController extends Controller
             });
 
             $total = $query->count();
+            return $total;
             $query = $query->skip($page * $pageSize - $pageSize)->limit($pageSize);
             // Calculate the total number of pages
             $totalPages = ceil($total / $pageSize);
