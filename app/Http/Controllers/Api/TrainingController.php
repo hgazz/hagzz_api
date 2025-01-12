@@ -126,7 +126,6 @@ class TrainingController extends Controller
             },
             'address:id,address,longitude,latitude',
         ])->find($id);
-        return $training;
 
         if(!$training)
         {
@@ -136,6 +135,7 @@ class TrainingController extends Controller
         $joins = User::whereHas('joins', function($query) use($training){
             return $query->where('training_id',$training->id);
         })->select(['id','image'])->get();
+        return $joins;
 
         $is_joined = auth('api')->check() ? Join::whereUserId(auth('api')->id())->whereTrainingId($id)->exists() : null;
         $data = [
