@@ -63,14 +63,6 @@ class TrainingController extends Controller
                     ->orWhereRaw('LOWER(JSON_UNQUOTE(name->"$.ar")) LIKE ?', [$lowercaseSearchTerm]);
             });
 
-//            $request->whenHas('start_soon', function () use ($query) {
-//                $today = Carbon::now()->toDateString();
-//                $tenDaysFromNow = Carbon::now()->addDays(15)->toDateString();
-//
-//                // Update the query to filter between today and 10 days from now
-//                $query->whereDate('start_date', '>=', $today)
-//                    ->whereDate('start_date', '<=', $tenDaysFromNow);
-//            });
 
             $request->whenHas('age_group', function ($age_group) use($query){
                 $query->whereIn('age_group',$age_group);
@@ -104,9 +96,6 @@ class TrainingController extends Controller
                 });
             });
 
-//            $query->when($request->start_date && $request->end_date, function ($q) use ($request) {
-//                $q->whereBetween('start_date', [$request->start_date, $request->end_date]);
-//            });
             $total = $query->count();
             $query = $query->skip($page * $pageSize - $pageSize)->limit($pageSize);
             // Calculate the total number of pages

@@ -21,8 +21,6 @@ class TrainingResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'price' => $this->price,
-            'start_date' => $this->start_date,
-            'end_date' => $this->end_date,
             'description' => $this->description,
             'max_players' => $this->max_players,
             'level' => $this->level,
