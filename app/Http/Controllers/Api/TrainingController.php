@@ -138,7 +138,7 @@ class TrainingController extends Controller
 
         $is_joined = auth('api')->check() ? Join::whereUserId(auth('api')->id())->whereTrainingId($id)->exists() : null;
         $data = [
-//            'training' => new TrainingResource($training),
+            'training' => new TrainingResource($training),
             'is_joined' => $is_joined,
             'joins' => $joins
         ];
