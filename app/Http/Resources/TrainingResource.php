@@ -38,8 +38,8 @@ class TrainingResource extends JsonResource
             'classes_number' => $this->classes_number,
             'address' => new AddressResource($this->whenLoaded('address')),
             'academy' => new PartnerResource($this->whenLoaded('academy')),
-//            'sport' => new SportResource($this->whenLoaded('sport')),
-//            'coach' => new CoachResource($this->whenLoaded('coach')),
+            'sport' => new SportResource($this->whenLoaded('sport')),
+            'coach' => new CoachResource($this->whenLoaded('coach')),
         ];
     }
 }

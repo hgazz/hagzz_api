@@ -39,8 +39,7 @@ class CoachResource extends JsonResource
         // Compute total hours correctly
 
         return TClass::whereHas('training', function($query) {
-            $query->where('coach_id', $this->id)
-                ->where('start_date', '<', now());
+            $query->where('coach_id', $this->id);
         })->get()->sum('duration_in_hours');
     }
 
