@@ -122,6 +122,8 @@ class TrainingController extends Controller
             'address:id,address,longitude,latitude',
         ])->find($id);
 
+        return $training;
+
         if(!$training)
         {
             return $this->apiResponse(400, trans('api.validation_error'), trans('api.home.training_not_found'),);
