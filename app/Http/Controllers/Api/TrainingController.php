@@ -122,7 +122,6 @@ class TrainingController extends Controller
             'address:id,address,longitude,latitude',
         ])->find($id);
 
-        return $training;
 
         if(!$training)
         {
