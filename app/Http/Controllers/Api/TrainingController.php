@@ -119,7 +119,6 @@ class TrainingController extends Controller
     {
         $training = Training::with([
             'coach:id,name,image,gender',
-            'sport',
             'address:id,address,longitude,latitude',
         ])->find($id);
 
