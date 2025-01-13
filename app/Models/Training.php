@@ -13,6 +13,10 @@ class Training extends Model
 {
     use HasTranslations;
 
+    protected $casts = [
+        'classes_days' => 'array',
+    ];
+
     protected array $translatable = ['name', 'description'];
     protected $hidden = ['created_at', 'updated_at','academy_id','address_id','coach_id'];
 
