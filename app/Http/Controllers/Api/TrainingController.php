@@ -119,10 +119,15 @@ class TrainingController extends Controller
     {
         $training = Training::with([
             'coach:id,name,image,gender',
+            'sport',
+            'academy' => function ($query) {
+                $query->select(['id', 'app_name', 'logo']);
+                $query->withCount('follows');
+            },
             'address:id,address,longitude,latitude',
         ])->find($id);
 
-
+        return $training;
         if(!$training)
         {
             return $this->apiResponse(400, trans('api.validation_error'), trans('api.home.training_not_found'),);
