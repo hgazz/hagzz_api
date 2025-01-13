@@ -30,8 +30,8 @@ class FavoriteController extends Controller
         $page = (request()->has('page')) ? request('page') : 1;
         $query = Favorite::with([
             'training' => function ($query) {
-                $query->select('id', 'name', 'price', 'start_date', 'end_date', 'max_players', 'level', 'gender', 'age_group','address_id','academy_id','active', 'discount_price');
-                $query->withCount(['joins', 'classes']);
+                $query->select('id', 'name', 'price', 'start_time', 'end_time', 'classes_days','classes_number', 'max_players', 'level', 'gender', 'age_group','address_id','academy_id','active', 'discount_price');
+                $query->withCount(['joins']);
             },
             'training.academy'=>function ($query){
                 $query->select('id','app_name')
