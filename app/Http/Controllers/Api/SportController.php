@@ -21,7 +21,7 @@ class SportController extends Controller
 
     public function getSportsNotSelected()
     {
-        $userSports = UserSport::where('user_id',auth('api')->id())->pluck('id')->toArray();
+        $userSports = UserSport::where('user_id',auth('api')->id())->pluck('sport_id')->toArray();
 
         $sports = SportResource::collection(Sport::active()->whereKeyNot($userSports)->get());
 
