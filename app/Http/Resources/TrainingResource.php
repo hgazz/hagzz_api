@@ -14,9 +14,9 @@ class TrainingResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $locale = app()->getLocale(); // Current locale
-        $academy = $this->academy; // Assuming 'academy' is already an object in the loaded Training model
-        $localizedCommercialName = $academy->getTranslation('app_name', $locale) ?? $academy->getTranslation('app_name', 'en');
+//        $locale = app()->getLocale(); // Current locale
+//        $academy = $this->academy; // Assuming 'academy' is already an object in the loaded Training model
+//        $localizedCommercialName = $academy->getTranslation('app_name', $locale) ?? $academy->getTranslation('app_name', 'en');
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -36,10 +36,10 @@ class TrainingResource extends JsonResource
             'end_time' => $this->end_time,
             'classes_days' => $this->classes_days,
             'classes_number' => $this->classes_number,
-            'address' => new AddressResource($this->whenLoaded('address')),
-            'academy' => new PartnerResource($this->whenLoaded('academy')),
-            'sport' => new SportResource($this->whenLoaded('sport')),
-            'coach' => new CoachResource($this->whenLoaded('coach')),
+//            'address' => new AddressResource($this->whenLoaded('address')),
+//            'academy' => new PartnerResource($this->whenLoaded('academy')),
+//            'sport' => new SportResource($this->whenLoaded('sport')),
+//            'coach' => new CoachResource($this->whenLoaded('coach')),
         ];
     }
 }
