@@ -37,7 +37,7 @@ class TrainingResource extends JsonResource
             'classes_days' => $this->classes_days,
             'classes_number' => $this->classes_number,
             'address' => new AddressResource($this->whenLoaded('address')),
-//            'academy' => new PartnerResource($this->whenLoaded('academy')),
+            'academy' => new PartnerResource($this->whenLoaded('academy')),
 //            'sport' => new SportResource($this->whenLoaded('sport')),
 //            'coach' => new CoachResource($this->whenLoaded('coach')),
         ];
