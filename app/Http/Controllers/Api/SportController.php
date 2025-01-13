@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\SportResource;
 use App\Http\Traits\apiResponse;
 use App\Models\Sport;
+use App\Models\UserSport;
 use Illuminate\Http\Request;
 
 class SportController extends Controller
@@ -20,7 +21,7 @@ class SportController extends Controller
 
     public function getSportsNotSelected()
     {
-        $userSports = auth('api')->user()->sports->pluck('id');
+        $userSports = UserSport::where('user_id',auth('api')->id())->pluck('id')->toArray();
 
         $sports = SportResource::collection(Sport::active()->whereKeyNot($userSports)->get());
 
