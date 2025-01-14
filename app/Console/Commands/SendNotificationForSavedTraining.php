@@ -55,7 +55,7 @@ class SendNotificationForSavedTraining extends Command
 
             $joinsCount = Join::where('training_id', $join->training_id)->count();
 
-            if ($training->max_players > $joinsCount && $training->start_date <= $oneWeekFromNow) {
+            if ($training->max_players > $joinsCount) {
 
                 $detail = [
                     'training_id' => $training->id,

@@ -26,8 +26,6 @@ class Training extends Model
         'name',
         'image',
         'price',
-        'start_date',
-        'end_date',
         'description',
         'max_players',
         'level',

@@ -153,8 +153,7 @@ class HomeController extends Controller
     public function getPartnersGuest(): array|Collection
     {
         return Academies::whereHas('trainings', function ($query) {
-                $query->where('active', 1)
-                ->whereDate('start_date', '>', Carbon::today()->toDateString());
+                $query->where('active', 1);
             })->with('sports')->inRandomOrder()->limit(4)->get(['id', 'app_name', 'logo']);
     }
 
