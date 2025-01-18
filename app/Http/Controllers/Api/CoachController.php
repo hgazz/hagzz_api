@@ -52,10 +52,9 @@ class CoachController extends Controller
                 ])
                 ->withCount(['joins', 'classes'])
                 ->where('active', 1)
-                ->where([['start_date', '>', Carbon::today()], ['end_date', '>=', Carbon::today()]])
                 ->get();
 
-            $pastTrainings = Training::where([['start_date', '<=', Carbon::today()],['coach_id', $id]])
+            $pastTrainings = Training::where('coach_id', $id)
                 ->withCount(['joins', 'classes'])
                 ->where('active', 1)
                 ->get();

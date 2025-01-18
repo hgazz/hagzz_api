@@ -22,13 +22,30 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Stevebauman\Location\Facades\Location;
 
 class HomeController extends Controller
 {
     use apiResponse;
-    public function home()
+    public function home(Request $request)
     {
-        $banners = Banner::whereStatus('active')->limit(6)->inRandomOrder()->get();
+
+        if(auth('api')->check())
+        {
+            $countryid = auth('api')->user()->country_id;
+            if($countryid == 1)
+            {
+                $countryCode = 'eg';
+            }else{
+                $countryCode = 'qa';
+            }
+        }else {
+            $ip = $request->ip();
+            $location = Location::get($ip);
+            $countryCode = strtolower($location->countryCode);
+        }
+
+        $banners = Banner::where('country', $countryCode)->whereStatus('active')->limit(6)->inRandomOrder()->get();
         $sports = auth('api')->check() ? $this->getUserSports() : SportResource::collection(Sport::limit(6)->inRandomOrder()->get(['id','name','icon']));
         $academies = auth('api')->check() ? PartnerResource::collection($this->getPartnersWithAuth()) : PartnerResource::collection($this->getPartnersGuest())  ;
         $trainings = auth('api')->check() ? $this->getUserTraining() : $this->getRandomTrainings();
@@ -40,6 +57,7 @@ class HomeController extends Controller
                 'trainings_count' => auth('api')->check() ? Training::whereHas('address',function($q){$q->where('country_id',auth('api')->user()->country_id);})->isActive()->count()   : Training::isActive()->count(),
                 'trainings' => $trainings
             ],
+            'country' => $countryCode,
         ]);
     }
     protected function getUserTraining()
@@ -135,8 +153,7 @@ class HomeController extends Controller
     public function getPartnersGuest(): array|Collection
     {
         return Academies::whereHas('trainings', function ($query) {
-                $query->where('active', 1)
-                ->whereDate('start_date', '>', Carbon::today()->toDateString());
+                $query->where('active', 1);
             })->with('sports')->inRandomOrder()->limit(4)->get(['id', 'app_name', 'logo']);
     }
 

@@ -151,12 +151,10 @@ class JoinController extends Controller
         $today = Carbon::now()->startOfDay();
 
         // Query for upcoming trainings
-        $upcomingQuery = Join::query()->whereHas('training', function ($query) use ($today) {
-            $query->where([['start_date', '>', $today],['end_date', '>=', $today]]);
-        })->with([
+        $upcomingQuery = Join::query()->with([
             'training' => function ($query) {
                 $query->where('active', true);
-                $query->select(['id', 'name', 'price', 'start_date', 'end_date', 'max_players', 'level', 'gender', 'age_group', 'address_id', 'academy_id', 'active', 'sport_id']);
+                $query->select(['id', 'name', 'price', 'classes_days','classes_number', 'start_time', 'end_time', 'max_players', 'level', 'gender', 'age_group', 'address_id', 'academy_id', 'active', 'sport_id']);
                 $query->withCount(['joins', 'classes']);
             },
             'training.academy' => function ($query) {
@@ -172,13 +170,11 @@ class JoinController extends Controller
         ])->where('user_id', auth('api')->id());
 
         // Query for past trainings
-        $pastQuery = Join::query()->whereHas('training', function ($query) use ($today) {
-            $query->where([['start_date', '<', $today]]);
-        })->with([
+        $pastQuery = Join::query()->with([
             'training' => function ($query) {
                 $query->where('active', true);
-                $query->select(['id', 'name', 'price', 'start_date', 'end_date', 'max_players', 'level', 'gender', 'age_group', 'address_id', 'academy_id', 'active', 'discount_price', 'sport_id']);
-                $query->withCount(['joins', 'classes']);
+                $query->select(['id', 'name', 'price', 'classes_days','classes_number', 'start_time', 'end_time', 'max_players', 'level', 'gender', 'age_group', 'address_id', 'academy_id', 'active', 'discount_price', 'sport_id']);
+                $query->withCount(['joins']);
             },
             'training.academy' => function ($query) {
                 $query->select(['id', 'app_name']);

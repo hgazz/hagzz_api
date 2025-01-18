@@ -13,6 +13,10 @@ class Training extends Model
 {
     use HasTranslations;
 
+    protected $casts = [
+        'classes_days' => 'array',
+    ];
+
     protected array $translatable = ['name', 'description'];
     protected $hidden = ['created_at', 'updated_at','academy_id','address_id','coach_id'];
 
@@ -22,8 +26,6 @@ class Training extends Model
         'name',
         'image',
         'price',
-        'start_date',
-        'end_date',
         'description',
         'max_players',
         'level',
@@ -90,7 +92,7 @@ class Training extends Model
     //scope return only active
     public function scopeIsActive($query)
     {
-        return $query->where([['active', 1],['start_date', '>=', Carbon::today()]]);
+        return $query->where([['active', 1]]);
     }
 
     public function sport(): BelongsTo

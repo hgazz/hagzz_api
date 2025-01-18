@@ -15,6 +15,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Stevebauman\Location\Facades\Location;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
@@ -114,16 +115,9 @@ class AuthController extends Controller
                 ]));
             }
 
-            if ($validatedData['send_type'] == 'whatsapp') {
-                $responseOtp = $this->beonService->sendOtp($validatedData['country_code'] . $validatedData['phone'], $otp);
-                $otpData = json_decode($responseOtp, true);
-                $user->update(['otp' => $otpData['data'], 'fcm_token' => $request->fcm_token]);
-            } else {
-                $responseOtp = $this->smsOtp->sendOtp($validatedData['country_code'] . $validatedData['phone'], $otp);
-                if ($responseOtp['code'] == 'error') {
-                    return $this->apiResponse(400, trans('api.auth.sms_error', [], $lang), $responseOtp['message']);
-                }
-            }
+            $responseOtp = $this->beonService->sendOtp($validatedData['country_code'] . $validatedData['phone'], $validatedData['name'], $validatedData['send_type']);
+            $otpData = json_decode($responseOtp, true);
+            $user->update(['otp' => $otpData['data'], 'fcm_token' => $request->fcm_token]);
 
             return $this->apiResponse(200, trans('api.auth.the_verify_code_successfully', [], $lang), null, [
                 'user' => $user,
@@ -158,21 +152,13 @@ class AuthController extends Controller
         if($request->phone == '01070809633') {
             $user->update(['otp' => '12345', 'fcm_token' => $request->fcm_token]);
         }else{
-            if ($request->send_type == 'whatsapp'){
-                $data = $this->beonService->sendOtp($request->country_code .$request->phone, $otp);
-                $otp = json_decode($data, true);
-                $user->update(['otp' => $otp['data'], 'fcm_token' => $request->fcm_token]);
-            }else{
-//            $this->smsOtp->sendOtp($request->country_code .$request->phone, $otp);
-            }
+            $data = $this->beonService->sendOtp($request->country_code .$request->phone, $user->name, $request->send_type);
+            $otp = json_decode($data, true);
+            $user->update(['otp' => $otp['data'], 'fcm_token' => $request->fcm_token]);
+
         }
 
-
-
-
-
         return $this->apiResponse(200, trans('api.auth.login success'), null, 'otp was send');
-
     }
 
     public function updateSportsData(Request $request)
@@ -228,7 +214,6 @@ class AuthController extends Controller
 
     public function verifyCode(VerifyCode $request)
     {
-
         $user = User::where([
             ['phone', $request->phone_number],
             ['otp', $request->otp]
@@ -242,7 +227,6 @@ class AuthController extends Controller
             return  $this->apiResponse(410 ,trans('api.auth.Otp Expired'));
         }
 
-
         if($user)
         {
             $user->update([
@@ -251,10 +235,16 @@ class AuthController extends Controller
             ]);
             auth()->loginUsingId($user->id);
 
+
+            $ip = $request->ip();
+            $location = Location::get($ip);
+
+
             $token = JWTAuth::fromUser($user);
             return $this->apiResponse(200, trans('api.auth.the verify code successfully'), null, [
                 'token'=>$token,
                 'user'=> new UserSportResource($user),
+                'country' => auth()->user() ? auth()->user()->country->name : $location->countryCode,
             ]);
         }
 

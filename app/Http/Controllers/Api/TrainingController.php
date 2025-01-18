@@ -20,7 +20,7 @@ class TrainingController extends Controller
     {
         $pageSize = 10;
         $page = (request()->has('page')) ? request('page') : 1;
-        $query = Training::query()->select(['id','name','price','start_date','end_date','max_players','level','gender','age_group','academy_id','address_id','sport_id']);
+        $query = Training::query()->select(['id','name','price','end_date','max_players','level','gender','age_group','academy_id','address_id','sport_id']);
         $total = $query->count();
         $query = $query->skip($page * $pageSize - $pageSize)->limit($pageSize);
         $trainings = $query->with(['academy'=> function ($query) {
@@ -32,7 +32,7 @@ class TrainingController extends Controller
             ->whereHas('address', function ($q) {
                 $q->where('country_id', auth('api')->user()->country_id);
             })
-            ->withCount(['classes', 'joins'])->where('start_date' , '>=', Carbon::today())->get();
+            ->withCount(['classes', 'joins'])->get();
         $data = [
             'trainings' => TrainingResource::collection($trainings),
             'total' => $total,
@@ -51,7 +51,7 @@ class TrainingController extends Controller
         try {
             $pageSize = 10;
             $page = (request()->has('page')) ? request('page') : 1;
-            $query = Training::query()->select(['id','name','price','start_date','end_date','max_players','level','gender','age_group','academy_id','address_id','sport_id', 'discount_price']);
+            $query = Training::query()->select(['id','name','start_time','end_time','classes_days','classes_number','price','max_players','level','gender','age_group','academy_id','address_id','sport_id', 'discount_price']);
 
             $request->whenHas('sports_ids', function($sportsIds) use($query){
                 $query->whereIn('sport_id', $sportsIds);
@@ -63,14 +63,6 @@ class TrainingController extends Controller
                     ->orWhereRaw('LOWER(JSON_UNQUOTE(name->"$.ar")) LIKE ?', [$lowercaseSearchTerm]);
             });
 
-            $request->whenHas('start_soon', function () use ($query) {
-                $today = Carbon::now()->toDateString();
-                $tenDaysFromNow = Carbon::now()->addDays(15)->toDateString();
-
-                // Update the query to filter between today and 10 days from now
-                $query->whereDate('start_date', '>=', $today)
-                    ->whereDate('start_date', '<=', $tenDaysFromNow);
-            });
 
             $request->whenHas('age_group', function ($age_group) use($query){
                 $query->whereIn('age_group',$age_group);
@@ -104,9 +96,6 @@ class TrainingController extends Controller
                 });
             });
 
-            $query->when($request->start_date && $request->end_date, function ($q) use ($request) {
-                $q->whereBetween('start_date', [$request->start_date, $request->end_date]);
-            });
             $total = $query->count();
             $query = $query->skip($page * $pageSize - $pageSize)->limit($pageSize);
             // Calculate the total number of pages
@@ -122,14 +111,12 @@ class TrainingController extends Controller
 
             return $this->apiResponse(200, trans('api.home.All Training'), null, $data);
         }catch (Exception $exception){
-            return $this->apiResponse(400, trans('api.validation_error'), $exception->getMessage());
+            return $this->apiResponse(400, trans('api.validation_error'), ["code" => $exception->getLine(),"file" => $exception->getFile(),"message" =>$exception->getMessage()]);
         }
     }
 
     public function trainingDetails($id)
     {
-        $pageSize = 10;
-        $page = (request()->has('page')) ? request('page') : 1;
         $training = Training::with([
             'coach:id,name,image,gender',
             'sport',
@@ -138,9 +125,6 @@ class TrainingController extends Controller
                 $query->withCount('follows');
             },
             'address:id,address,longitude,latitude',
-            'classes'=>function ($q) use ($pageSize , $page) {
-                $q->skip($page * $pageSize - $pageSize)->limit($pageSize);
-            }
         ])->find($id);
 
         if(!$training)
@@ -170,9 +154,9 @@ class TrainingController extends Controller
         },
             'address:id,address,area_id,city_id',
             'sport:id,name,icon'])
-            ->whereHas('address.country', function ($query) {
-                return $query->where('id', auth('api')->user()->country_id);
-            })
+//            ->whereHas('address.country', function ($query) {
+//                return $query->where('id', auth('api')->user()->country_id);
+//            })
             ->withCount(['classes', 'joins'])->isActive()
             ->get() :
             $query->with(['academy'=> function ($query) {
@@ -181,7 +165,7 @@ class TrainingController extends Controller
             },
                 'address:id,address,area_id,city_id',
                 'sport:id,name,icon'])
-                ->withCount(['classes', 'joins'])
+                ->withCount(['joins'])
                 ->isActive()->get();
     }
 
