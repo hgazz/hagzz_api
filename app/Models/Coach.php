@@ -71,5 +71,10 @@ class Coach extends Model
         return $totalJoins;
     }
 
+    public function getGenderAttribute($value)
+    {
+        return $value == 'male' ? trans('api.training.male') : trans('api.training.female');
+    }
+
 
 }
