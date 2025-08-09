@@ -220,12 +220,12 @@ class AuthController extends Controller
         ])->with('sports')->first();
 
         $diff =  Carbon::now()->diff($user->updated_at);
-        $minutes = $diff->i;
+        // $minutes = $diff->i;
 
-        if($minutes >= 10 )
-        {
-            return  $this->apiResponse(410 ,trans('api.auth.Otp Expired'));
-        }
+        // if($minutes >= 10 )
+        // {
+        //     return  $this->apiResponse(410 ,trans('api.auth.Otp Expired'));
+        // }
 
         if($user)
         {
