@@ -2,11 +2,14 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\Concerns\ResolvesTranslations;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class FaqResource extends JsonResource
 {
+    use ResolvesTranslations;
+
     /**
      * Transform the resource into an array.
      *
@@ -16,8 +19,8 @@ class FaqResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'question' => $this->getTranslation('question', app()->getLocale()) ?? $this->getTranslation('question', 'en'),
-            'answer' => $this->getTranslation('answer', app()->getLocale()) ??$this->getTranslation('answer', 'en'),
+            'question' => $this->translated('question'),
+            'answer' => $this->translated('answer'),
         ];
     }
 }

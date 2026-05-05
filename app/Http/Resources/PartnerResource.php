@@ -2,11 +2,14 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\Concerns\ResolvesTranslations;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class PartnerResource extends JsonResource
 {
+    use ResolvesTranslations;
+
     /**
      * Transform the resource into an array.
      *
@@ -16,7 +19,7 @@ class PartnerResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'commercial_name' => $this->getTranslation('app_name', app()->getLocale()),
+            'commercial_name' => $this->translated('app_name'),
             'logo' => $this->logo,
             'sports' => SportResource::collection($this->sports),
             'follows_count' => $this->follows()->count(),

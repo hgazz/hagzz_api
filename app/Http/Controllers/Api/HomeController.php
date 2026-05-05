@@ -42,7 +42,9 @@ class HomeController extends Controller
         }else {
             $ip = $request->ip();
             $location = Location::get($ip);
-            $countryCode = strtolower($location->countryCode);
+            $countryCode = $location && isset($location->countryCode)
+                ? strtolower($location->countryCode)
+                : 'eg';
         }
 
         $banners = Banner::where('country', $countryCode)->whereStatus('active')->limit(6)->inRandomOrder()->get();

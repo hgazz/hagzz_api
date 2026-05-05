@@ -2,11 +2,14 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\Concerns\ResolvesTranslations;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class TClassResource extends JsonResource
 {
+    use ResolvesTranslations;
+
     /**
      * Transform the resource into an array.
      *
@@ -16,8 +19,8 @@ class TClassResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'title' => $this->getTranslation('title', app()->getLocale()) ?? $this->getTranslation('title', 'en'),
-            'subtitle' => $this->getTranslation('subtitle', app()->getLocale()) ?? $this->getTranslation('subtitle', 'en'),
+            'title' => $this->translated('title'),
+            'subtitle' => $this->translated('subtitle'),
             'date' => $this->date,
             'start_time' => $this->start_time,
             'end_time' => $this->end_time,

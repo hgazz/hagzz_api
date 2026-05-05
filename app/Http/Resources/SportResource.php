@@ -2,11 +2,14 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\Concerns\ResolvesTranslations;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class SportResource extends JsonResource
 {
+    use ResolvesTranslations;
+
     /**
      * Transform the resource into an array.
      *
@@ -16,7 +19,7 @@ class SportResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->getTranslation('name', app()->getLocale()),
+            'name' => $this->translated('name'),
             'icon' => $this->icon,
             'status' => $this->status,
         ];

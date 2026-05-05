@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\Concerns\ResolvesTranslations;
 use App\Models\Join;
 use App\Models\TClass;
 use Illuminate\Http\Request;
@@ -9,6 +10,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class CoachResource extends JsonResource
 {
+    use ResolvesTranslations;
+
     /**
      * Transform the resource into an array.
      *
@@ -18,13 +21,13 @@ class CoachResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->getTranslation('name', app()->getLocale()) ?? $this->getTranslation('name', 'en'),
+            'name' => $this->translated('name'),
             'image' => $this->image,
-            'license' => $this->getTranslation('license', app()->getLocale()) ?? $this->getTranslation('license', 'en'),
-            'license_type' => $this->getTranslation('license_type', app()->getLocale()) ?? $this->getTranslation('license_type', 'en'),
+            'license' => $this->translated('license'),
+            'license_type' => $this->translated('license_type'),
             'academy_id' => $this->academy_id,
             'gender' => $this->gender,
-            'description' => $this->getTranslation('description', app()->getLocale()) ?? $this->getTranslation('description', 'en'),
+            'description' => $this->translated('description'),
             'active' => $this->active,
             'academy' => new PartnerResource($this->academy),
             'total_hours' => $this->getTotalHours(),
