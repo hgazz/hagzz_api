@@ -47,7 +47,7 @@ class HomeController extends Controller
                 : 'eg';
         }
 
-        $banners = Banner::whereStatus('active')->limit(6)->inRandomOrder()->get();
+        $banners = Banner::limit(6)->inRandomOrder()->get();
         $sports = auth('api')->check() ? $this->getUserSports() : SportResource::collection(Sport::limit(6)->inRandomOrder()->get(['id','name','icon']));
         $academies = auth('api')->check() ? PartnerResource::collection($this->getPartnersWithAuth()) : PartnerResource::collection($this->getPartnersGuest())  ;
         $trainings = auth('api')->check() ? $this->getUserTraining() : $this->getRandomTrainings();
