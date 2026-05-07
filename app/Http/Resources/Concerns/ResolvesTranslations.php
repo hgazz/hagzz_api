@@ -2,12 +2,16 @@
 
 namespace App\Http\Resources\Concerns;
 
+use Illuminate\Database\Eloquent\Model;
+
 trait ResolvesTranslations
 {
     protected function translated(string $attribute, ?string $locale = null, string $fallbackLocale = 'en'): mixed
     {
         $locale ??= app()->getLocale();
-        $value = $this->{$attribute};
+        $value = $this->resource instanceof Model
+            ? $this->resource->getRawOriginal($attribute)
+            : ($this->{$attribute} ?? null);
 
         if (is_array($value)) {
             return $value[$locale] ?? $value[$fallbackLocale] ?? reset($value) ?: null;

@@ -2,11 +2,14 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\Concerns\ResolvesTranslations;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class TrainingResource extends JsonResource
 {
+    use ResolvesTranslations;
+
     /**
      * Transform the resource into an array.
      *
@@ -19,9 +22,9 @@ class TrainingResource extends JsonResource
 //        $localizedCommercialName = $academy->getTranslation('app_name', $locale) ?? $academy->getTranslation('app_name', 'en');
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'name' => $this->translated('name'),
             'price' => $this->price,
-            'description' => $this->description,
+            'description' => $this->translated('description'),
             'max_players' => $this->max_players,
             'level' => $this->level,
             'gender' => $this->gender,
