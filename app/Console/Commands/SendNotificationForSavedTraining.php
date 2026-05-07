@@ -61,7 +61,7 @@ class SendNotificationForSavedTraining extends Command
                     'training_id' => $training->id,
                     'longitude' => $training->address->longitude,
                     'latitude' => $training->address->latitude,
-                    'academy_name' => $training->academy->getTranslation('app_name', 'en')
+                    'academy_name' => $training->academy->getTranslation('commercial_name', 'en')
                 ];
 
                 $title = "Don't miss out";

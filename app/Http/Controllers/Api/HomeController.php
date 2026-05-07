@@ -156,7 +156,7 @@ class HomeController extends Controller
     {
         return Academies::whereHas('trainings', function ($query) {
                 $query->where('active', 1);
-            })->with('sports')->inRandomOrder()->limit(4)->get(['id', 'app_name', 'logo']);
+            })->with('sports')->inRandomOrder()->limit(4)->get(['id', 'commercial_name', 'logo']);
     }
 
     /**
@@ -166,14 +166,14 @@ class HomeController extends Controller
     {
         return Academies::with('sports')->whereHas('addresses', function ($q) {
             $q->where('country_id', auth('api')->user()->country_id);
-        })->limit(6)->inRandomOrder()->get(['id', 'app_name', 'logo']);
+        })->limit(6)->inRandomOrder()->get(['id', 'commercial_name', 'logo']);
     }
 
     protected function getAcademies()
     {
         try {
             $query = Academies::with('sports')
-                ->select(['id', 'app_name', 'logo']);
+                ->select(['id', 'commercial_name', 'logo']);
 
             if (auth()->check()) {
                 $query->whereHas('addresses.country', function ($q) {

@@ -158,7 +158,7 @@ class JoinController extends Controller
                 $query->withCount(['joins', 'classes']);
             },
             'training.academy' => function ($query) {
-                $query->select(['id', 'app_name']);
+                    $query->select(['id', 'commercial_name']);
                 $query->withCount(['follows']);
             },
             'training.address' => function ($query) {
@@ -177,7 +177,7 @@ class JoinController extends Controller
                 $query->withCount(['joins']);
             },
             'training.academy' => function ($query) {
-                $query->select(['id', 'app_name']);
+                    $query->select(['id', 'commercial_name']);
                 $query->withCount(['follows']);
             },
             'training.address' => function ($query) {

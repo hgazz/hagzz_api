@@ -19,7 +19,7 @@ class PartnerResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'commercial_name' => $this->translated('app_name'),
+            'commercial_name' => $this->translated('commercial_name'),
             'logo' => $this->logo,
             'sports' => SportResource::collection($this->sports),
             'follows_count' => $this->follows()->count(),

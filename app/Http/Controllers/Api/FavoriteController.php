@@ -34,7 +34,7 @@ class FavoriteController extends Controller
                 $query->withCount(['joins']);
             },
             'training.academy'=>function ($query){
-                $query->select('id','app_name')
+                    $query->select('id','commercial_name')
                 ->withCount(['follows']);
             },
             'training.address'=>function($query){
