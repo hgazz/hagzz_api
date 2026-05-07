@@ -24,10 +24,10 @@ class AcademyController extends Controller
         $pageSize = 10;
         $page = $request->input('page', 1);
 
-        $academiesQuery = auth('api')->check() ? Academies::select(['id', 'app_name', 'logo', 'facebook', 'linkedin', 'instagram'])
+        $academiesQuery = auth('api')->check() ? Academies::query()
             ->with('sports')->whereHas('addresses', function (Builder $query) {
                 $query->where('country_id', auth('api')->user()->country_id);
-            }) : Academies::select(['id', 'app_name', 'logo', 'facebook', 'linkedin', 'instagram'])->with('sports')
+            }) : Academies::with('sports')
         ->whereHas('trainings', function (Builder $query) {
             $query->isActive();
         });
