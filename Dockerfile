@@ -1,4 +1,4 @@
-FROM composer:2 AS vendor
+FROM composer:2.2 AS vendor
 
 WORKDIR /app
 
