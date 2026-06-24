@@ -20,7 +20,18 @@ class ChatamanServiceTest extends TestCase
         ]);
 
         Http::fake([
-            'chataman.example/api/send' => Http::response(['success' => true]),
+            'chataman.example/api/send' => Http::response([
+                'statusCode' => 200,
+                'data' => [
+                    'success' => true,
+                    'data' => [
+                        'success' => true,
+                        'reached_meta' => true,
+                        'messages' => [['id' => 'wamid.test']],
+                        'chat' => [['value' => ['status' => 'sent']]],
+                    ],
+                ],
+            ]),
         ]);
 
         (new ChatamanService())->sendOtp('+201070809633', '12345');
@@ -49,6 +60,35 @@ class ChatamanServiceTest extends TestCase
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('status 401');
+
+        (new ChatamanService())->sendOtp('+201070809633', '12345');
+    }
+
+    public function test_it_throws_when_chataman_does_not_reach_meta(): void
+    {
+        config()->set('services.chataman', [
+            'base_url' => 'https://chataman.example',
+            'token' => 'test-token',
+            'token_header' => 'Authorization',
+            'token_prefix' => 'Bearer',
+            'timeout' => 15,
+        ]);
+
+        Http::fake([
+            'chataman.example/api/send' => Http::response([
+                'statusCode' => 200,
+                'data' => [
+                    'success' => true,
+                    'data' => [
+                        'success' => true,
+                        'reached_meta' => false,
+                    ],
+                ],
+            ]),
+        ]);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('did not confirm');
 
         (new ChatamanService())->sendOtp('+201070809633', '12345');
     }
