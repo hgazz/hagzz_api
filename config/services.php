@@ -42,6 +42,14 @@ return [
         'sender' => env('SMS_SENDER','d60e33a3f97b3927989e95bee7d7780f46589d1b86cc2f674997645fd37529d0'),
         'base_url_otp' => env('SMS_BASE_URL_OTP','https://smsmisr.com/api/OTP/'),
         'template_token' => env('SMS_TEMPLATE_TOKEN','e83faf6025ec41d0f40256d2812629f5fa9291d05c8322f31eea834302501da8'),
-    ]
+    ],
+
+    'chataman' => [
+        'base_url' => env('CHATAMAN_BASE_URL', 'https://chataman.com'),
+        'token' => env('CHATAMAN_ACCESS_TOKEN'),
+        'token_header' => env('CHATAMAN_TOKEN_HEADER', 'Authorization'),
+        'token_prefix' => env('CHATAMAN_TOKEN_PREFIX', 'Bearer'),
+        'timeout' => env('CHATAMAN_TIMEOUT', 15),
+    ],
 
 ];

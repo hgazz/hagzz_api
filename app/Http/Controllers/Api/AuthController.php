@@ -8,12 +8,13 @@ use App\Http\Resources\UserSportResource;
 use App\Http\Traits\apiResponse;
 use App\Http\Traits\FileUploader;
 use App\Models\User;
-use App\Services\Beon\BeonService;
+use App\Services\Chataman\ChatamanService;
 use App\Services\SMSMISR\SmsMisrOtpSender;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Stevebauman\Location\Facades\Location;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -25,18 +26,18 @@ class AuthController extends Controller
     private User $userModel;
     private SmsMisrOtpSender $smsOtp;
 
-    private BeonService $beonService;
+    private ChatamanService $chatamanService;
 
     /**
      * @param User $user
      * @param SmsMisrOtpSender $smsOtp
-     * @param BeonService $beonService
+     * @param ChatamanService $chatamanService
      */
-    public function __construct(User $user, SmsMisrOtpSender $smsOtp, BeonService $beonService)
+    public function __construct(User $user, SmsMisrOtpSender $smsOtp, ChatamanService $chatamanService)
     {
         $this->userModel = $user;
         $this->smsOtp = $smsOtp;
-        $this->beonService = $beonService;
+        $this->chatamanService = $chatamanService;
     }
 
     public function register(Request $request)
@@ -99,6 +100,8 @@ class AuthController extends Controller
         $validatedData = $validator->validated();
 
         try {
+            DB::beginTransaction();
+
             $otp = $validatedData['phone'] == '01070809633' ? '12345' : rand(10000, 99999);
 
             if ($request->has('old_phone')) {
@@ -115,16 +118,29 @@ class AuthController extends Controller
                 ]));
             }
 
-            $responseOtp = $this->beonService->sendOtp($validatedData['country_code'] . $validatedData['phone'], $validatedData['name'], $validatedData['send_type']);
-            $otpData = json_decode($responseOtp, true);
-            $user->update(['otp' => $otpData['data'], 'fcm_token' => $request->fcm_token]);
+            if ($validatedData['phone'] !== '01070809633') {
+                $this->sendOtp(
+                    $validatedData['send_type'] ?? 'whatsapp',
+                    $this->fullPhoneNumber($validatedData['country_code'], $validatedData['phone']),
+                    $otp,
+                    $lang
+                );
+            }
+
+            DB::commit();
 
             return $this->apiResponse(200, trans('api.auth.the_verify_code_successfully', [], $lang), null, [
                 'user' => $user,
             ]);
 
         } catch (\Exception $e) {
-            return $this->apiResponse(500, trans('api.auth.registration_failed', [], $lang), $e->getMessage());
+            DB::rollBack();
+            Log::error('Registration OTP delivery failed', [
+                'provider' => 'chataman',
+                'message' => $e->getMessage(),
+            ]);
+
+            return $this->apiResponse(502, trans('api.auth.registration_failed', [], $lang));
         }
     }
 
@@ -143,19 +159,30 @@ class AuthController extends Controller
             return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
         }
 
-        $user = $this->userModel::where('phone',$request->phone)->withCount('sports')->first();
-        $user->update(['otp' => $otp]);
-        if($request->has('fcm_token'))
-        {
-            $user->update(['fcm_token' => $request->fcm_token]);
-        }
-        if($request->phone == '01070809633') {
-            $user->update(['otp' => '12345', 'fcm_token' => $request->fcm_token]);
-        }else{
-            $data = $this->beonService->sendOtp($request->country_code .$request->phone, $user->name, $request->send_type);
-            $otp = json_decode($data, true);
-            $user->update(['otp' => $otp['data'], 'fcm_token' => $request->fcm_token]);
+        try {
+            $user = $this->userModel::where('phone',$request->phone)->withCount('sports')->first();
+            $user->update(['otp' => $otp]);
+            if($request->has('fcm_token'))
+            {
+                $user->update(['fcm_token' => $request->fcm_token]);
+            }
+            if($request->phone == '01070809633') {
+                $user->update(['otp' => '12345', 'fcm_token' => $request->fcm_token]);
+            }else{
+                $this->sendOtp(
+                    $request->send_type ?? 'whatsapp',
+                    $this->fullPhoneNumber($request->country_code, $request->phone),
+                    $otp,
+                    $request->lang ?? $user->language ?? 'en'
+                );
+            }
+        } catch (\Exception $e) {
+            Log::error('Login OTP delivery failed', [
+                'provider' => $request->send_type ?? 'whatsapp',
+                'message' => $e->getMessage(),
+            ]);
 
+            return $this->apiResponse(502, 'OTP delivery failed');
         }
 
         return $this->apiResponse(200, trans('api.auth.login success'), null, 'otp was send');
@@ -193,6 +220,7 @@ class AuthController extends Controller
     {
         $validation = Validator::make($request->all(),[
             'phone'=> 'required|exists:users,phone',
+            'country_code' => 'nullable',
             'send_type' => 'nullable|in:sms,whatsapp',
         ]);
         if ($validation->fails()){
@@ -200,16 +228,62 @@ class AuthController extends Controller
         }
         $user = $this->userModel::where('phone',$request->phone)->first();
         $otp = $request->phone == '01070809633' ? '12345' : rand(10000,99999);
-        if ($request->send_type == 'whatsapp'){
-            $responseOtp = $this->beonService->sendOtp($user->country_code . $request->phone, $user->name);
-            $otp = json_decode($responseOtp, true);
-            $user->update(['otp' => $otp['data']]);
-        }else{
-            $this->smsOtp->sendOtp($user->country_code.$request->phone, $otp);
+        try {
+            if ($request->phone !== '01070809633') {
+                $this->sendOtp(
+                    $request->send_type ?? 'whatsapp',
+                    $this->fullPhoneNumber($request->country_code ?? $user->country_code, $request->phone),
+                    $otp,
+                    $request->lang ?? $user->language ?? 'en'
+                );
+            }
             $user->update(['otp' => $otp]);
+        } catch (\Exception $e) {
+            Log::error('Resend OTP delivery failed', [
+                'provider' => $request->send_type ?? 'whatsapp',
+                'message' => $e->getMessage(),
+            ]);
+
+            return $this->apiResponse(502, 'OTP delivery failed');
         }
 
         return $this->apiResponse(200, trans('api.auth.resend code'), null, 'otp was send');
+    }
+
+    private function sendOtp(string $sendType, string $phoneNumber, string $otp, string $locale): void
+    {
+        if ($sendType === 'sms') {
+            $result = $this->smsOtp->sendOtp($phoneNumber, $otp);
+
+            if (($result['code'] ?? 'error') === 'error') {
+                throw new \RuntimeException($result['message'] ?? 'SMS OTP delivery failed.');
+            }
+
+            return;
+        }
+
+        $this->chatamanService->sendOtp($phoneNumber, $otp, $locale);
+    }
+
+    private function fullPhoneNumber(string $countryCode, string $phoneNumber): string
+    {
+        $countryCode = ltrim(preg_replace('/\D/', '', $countryCode), '0');
+        $phoneNumber = preg_replace('/\D/', '', $phoneNumber);
+
+        if (str_starts_with($phoneNumber, '00')) {
+            $phoneNumber = substr($phoneNumber, 2);
+        }
+
+        if (str_starts_with($phoneNumber, $countryCode)) {
+            return '+' . $phoneNumber;
+        }
+
+        // The released mobile app uses "+2" with Egyptian numbers starting in 0.
+        if ($countryCode === '2' && str_starts_with($phoneNumber, '0')) {
+            return '+' . $countryCode . $phoneNumber;
+        }
+
+        return '+' . $countryCode . ltrim($phoneNumber, '0');
     }
 
     public function verifyCode(VerifyCode $request)
