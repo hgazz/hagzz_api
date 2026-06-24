@@ -10,6 +10,7 @@ use App\Http\Traits\FileUploader;
 use App\Models\User;
 use App\Services\Chataman\ChatamanService;
 use App\Services\SMSMISR\SmsMisrOtpSender;
+use App\Support\InternationalPhoneNumber;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -121,7 +122,7 @@ class AuthController extends Controller
             if ($validatedData['phone'] !== '01070809633') {
                 $this->sendOtp(
                     $validatedData['send_type'] ?? 'whatsapp',
-                    $this->fullPhoneNumber($validatedData['country_code'], $validatedData['phone']),
+                    InternationalPhoneNumber::format($validatedData['country_code'], $validatedData['phone']),
                     $otp,
                     $lang
                 );
@@ -171,7 +172,7 @@ class AuthController extends Controller
             }else{
                 $this->sendOtp(
                     $request->send_type ?? 'whatsapp',
-                    $this->fullPhoneNumber($request->country_code, $request->phone),
+                    InternationalPhoneNumber::format($request->country_code, $request->phone),
                     $otp,
                     $request->lang ?? $user->language ?? 'en'
                 );
@@ -232,7 +233,7 @@ class AuthController extends Controller
             if ($request->phone !== '01070809633') {
                 $this->sendOtp(
                     $request->send_type ?? 'whatsapp',
-                    $this->fullPhoneNumber($request->country_code ?? $user->country_code, $request->phone),
+                    InternationalPhoneNumber::format($request->country_code ?? $user->country_code, $request->phone),
                     $otp,
                     $request->lang ?? $user->language ?? 'en'
                 );
@@ -263,27 +264,6 @@ class AuthController extends Controller
         }
 
         $this->chatamanService->sendOtp($phoneNumber, $otp, $locale);
-    }
-
-    private function fullPhoneNumber(string $countryCode, string $phoneNumber): string
-    {
-        $countryCode = ltrim(preg_replace('/\D/', '', $countryCode), '0');
-        $phoneNumber = preg_replace('/\D/', '', $phoneNumber);
-
-        if (str_starts_with($phoneNumber, '00')) {
-            $phoneNumber = substr($phoneNumber, 2);
-        }
-
-        if (str_starts_with($phoneNumber, $countryCode)) {
-            return '+' . $phoneNumber;
-        }
-
-        // The released mobile app uses "+2" with Egyptian numbers starting in 0.
-        if ($countryCode === '2' && str_starts_with($phoneNumber, '0')) {
-            return '+' . $countryCode . $phoneNumber;
-        }
-
-        return '+' . $countryCode . ltrim($phoneNumber, '0');
     }
 
     public function verifyCode(VerifyCode $request)
