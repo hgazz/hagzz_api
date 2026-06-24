@@ -59,13 +59,14 @@ class ChatamanService
         }
 
         $payload = $response->json();
-        $providerData = $payload['data']['data'] ?? [];
+        $responseData = $payload['data'] ?? [];
+        $providerData = $responseData['data'] ?? [];
 
         if (
             !is_array($payload)
             || ($payload['statusCode'] ?? null) !== 200
-            || ($providerData['success'] ?? false) !== true
-            || ($providerData['reached_meta'] ?? false) !== true
+            || ($responseData['success'] ?? false) !== true
+            || ($responseData['reached_meta'] ?? false) !== true
         ) {
             throw new RuntimeException('Chataman did not confirm that the message reached Meta.');
         }

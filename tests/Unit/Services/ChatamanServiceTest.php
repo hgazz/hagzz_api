@@ -26,9 +26,8 @@ class ChatamanServiceTest extends TestCase
                 'statusCode' => 200,
                 'data' => [
                     'success' => true,
+                    'reached_meta' => true,
                     'data' => [
-                        'success' => true,
-                        'reached_meta' => true,
                         'messages' => [['id' => 'wamid.test']],
                         'chat' => [['value' => ['status' => 'sent']]],
                     ],
@@ -88,9 +87,8 @@ class ChatamanServiceTest extends TestCase
                 'statusCode' => 200,
                 'data' => [
                     'success' => true,
+                    'reached_meta' => false,
                     'data' => [
-                        'success' => true,
-                        'reached_meta' => false,
                     ],
                 ],
             ]),
