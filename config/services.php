@@ -50,6 +50,8 @@ return [
         'token_header' => env('CHATAMAN_TOKEN_HEADER', 'Authorization'),
         'token_prefix' => env('CHATAMAN_TOKEN_PREFIX', 'Bearer'),
         'timeout' => env('CHATAMAN_TIMEOUT', 15),
+        'otp_template_name' => env('CHATAMAN_OTP_TEMPLATE_NAME', 'otp_el7lmplatform'),
+        'otp_template_language' => env('CHATAMAN_OTP_TEMPLATE_LANGUAGE', 'ar'),
     ],
 
 ];
