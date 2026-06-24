@@ -257,7 +257,11 @@ class AuthController extends Controller
             $result = $this->smsOtp->sendOtp($phoneNumber, $otp);
 
             if (($result['code'] ?? 'error') === 'error') {
-                throw new \RuntimeException($result['message'] ?? 'SMS OTP delivery failed.');
+                Log::warning('SMS OTP failed; falling back to WhatsApp template', [
+                    'message' => $result['message'] ?? 'SMS OTP delivery failed.',
+                ]);
+
+                $this->chatamanService->sendOtp($phoneNumber, $otp, $locale);
             }
 
             return;
