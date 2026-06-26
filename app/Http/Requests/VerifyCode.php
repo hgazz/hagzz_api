@@ -26,8 +26,8 @@ class VerifyCode extends FormRequest
     public function rules(): array
     {
         return [
-            'otp'=>'required|numeric|min:5|exists:users,otp',
-            'phone_number'=>'required|exists:users,phone',
+            'otp'=>'required|string|min:5',
+            'phone_number'=>'required|string',
         ];
     }
 

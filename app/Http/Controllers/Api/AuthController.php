@@ -12,7 +12,6 @@ use App\Services\Chataman\ChatamanService;
 use App\Services\SMSMISR\SmsMisrOtpSender;
 use App\Support\InternationalPhoneNumber;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -272,18 +271,13 @@ class AuthController extends Controller
 
     public function verifyCode(VerifyCode $request)
     {
-        $user = User::where([
-            ['phone', $request->phone_number],
-            ['otp', $request->otp]
-        ])->with('sports')->first();
+        $otp = $this->normalizeOtp($request->otp);
+        $phoneCandidates = $this->phoneCandidates($request->phone_number, $request->country_code);
 
-        $diff =  Carbon::now()->diff($user->updated_at);
-        // $minutes = $diff->i;
-
-        // if($minutes >= 10 )
-        // {
-        //     return  $this->apiResponse(410 ,trans('api.auth.Otp Expired'));
-        // }
+        $user = User::whereIn('phone', $phoneCandidates)
+            ->where('otp', $otp)
+            ->with('sports')
+            ->first();
 
         if($user)
         {
@@ -291,7 +285,6 @@ class AuthController extends Controller
                 'otp' =>'',
                 'is_verify' => true
             ]);
-            auth()->loginUsingId($user->id);
 
 
             $ip = $request->ip();
@@ -302,11 +295,76 @@ class AuthController extends Controller
             return $this->apiResponse(200, trans('api.auth.the verify code successfully'), null, [
                 'token'=>$token,
                 'user'=> new UserSportResource($user),
-                'country' => auth()->user() ? auth()->user()->country->name : $location->countryCode,
+                'country' => $user->country ? $user->country->name : $location->countryCode,
             ]);
         }
 
+        Log::warning('OTP verification failed', [
+            'phone_suffixes' => array_values(array_unique(array_map(
+                fn ($phone) => substr($phone, -4),
+                $phoneCandidates
+            ))),
+            'otp_length' => strlen($otp),
+            'otp_exists' => User::where('otp', $otp)->exists(),
+            'phone_exists' => User::whereIn('phone', $phoneCandidates)->exists(),
+        ]);
+
         return  $this->apiResponse(400 ,trans('api.auth.failed the otp'));
+    }
+
+    private function normalizeOtp(?string $otp): string
+    {
+        $otp = trim((string) $otp);
+        $normalized = '';
+
+        foreach (preg_split('//u', $otp, -1, PREG_SPLIT_NO_EMPTY) as $character) {
+            $codepoint = mb_ord($character, 'UTF-8');
+
+            if ($codepoint >= 0x0660 && $codepoint <= 0x0669) {
+                $normalized .= (string) ($codepoint - 0x0660);
+                continue;
+            }
+
+            if ($codepoint >= 0x06F0 && $codepoint <= 0x06F9) {
+                $normalized .= (string) ($codepoint - 0x06F0);
+                continue;
+            }
+
+            if (ctype_digit($character)) {
+                $normalized .= $character;
+            }
+        }
+
+        return $normalized;
+    }
+
+    private function phoneCandidates(string $phoneNumber, ?string $countryCode = null): array
+    {
+        $rawPhone = trim($phoneNumber);
+        $digits = preg_replace('/\D/', '', $rawPhone);
+        $candidates = array_filter([
+            $rawPhone,
+            preg_replace('/\s+/', '', $rawPhone),
+            $digits,
+        ]);
+
+        if ($countryCode) {
+            $countryDigits = ltrim(preg_replace('/\D/', '', $countryCode), '0');
+            if ($countryDigits && $digits) {
+                $withoutCountry = str_starts_with($digits, $countryDigits)
+                    ? substr($digits, strlen($countryDigits))
+                    : $digits;
+
+                $candidates[] = $withoutCountry;
+                $candidates[] = ltrim($withoutCountry, '0');
+
+                if (!str_starts_with($withoutCountry, '0')) {
+                    $candidates[] = '0' . $withoutCountry;
+                }
+            }
+        }
+
+        return array_values(array_unique(array_filter($candidates)));
     }
     public function logout()
     {
