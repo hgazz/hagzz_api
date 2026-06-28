@@ -35,6 +35,9 @@ return [
         'url' => env('AWS_S3_URL','https://bokit-app.s3.eu-north-1.amazonaws.com'),
         'bucket' => env('AWS_BUCKET','bokit-app'),
     ],
+    'storage' => [
+        'url' => env('ASSET_STORAGE_URL', env('AWS_S3_URL', 'https://bokit-app.s3.eu-north-1.amazonaws.com')),
+    ],
     'sms' => [
         'environment' => env('SMS_ENVIRONMENT',1),// 1 = live, 2 = test
         'username' => env('SMS_USERNAME','a61cb53f-8b66-474b-9cb9-8044decb4d3f'),

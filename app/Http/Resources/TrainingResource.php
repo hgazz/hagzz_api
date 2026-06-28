@@ -35,6 +35,10 @@ class TrainingResource extends JsonResource
             'classes_count' => $this->classes()->count(),
             'joins_count' => $this->joins()->count(),
             'is_fav' => $this->is_fav,
+            // Older rows have no date range. Keep the legacy mobile client
+            // parseable without changing or inventing values in the database.
+            'start_date' => $this->start_date ?: now()->toDateString(),
+            'end_date' => $this->end_date ?: now()->addMonth()->toDateString(),
             'start_time' => $this->start_time,
             'end_time' => $this->end_time,
             'classes_days' => $this->classes_days,

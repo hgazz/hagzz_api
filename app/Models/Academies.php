@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\StorageUrl;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\HasTranslations;
@@ -38,7 +39,7 @@ class Academies extends Model
 
     public function getLogoAttribute($value)
     {
-        return is_null($value) ? null : config('services.s3.url') . DIRECTORY_SEPARATOR . self::PATH . DIRECTORY_SEPARATOR . $value;
+        return StorageUrl::asset($value, self::PATH, 'fallbacks/academy.svg');
     }
 
     public function sports()

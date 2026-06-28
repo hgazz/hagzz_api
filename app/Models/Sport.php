@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\StorageUrl;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
@@ -22,7 +23,7 @@ class Sport extends Model
 
     public function getIconAttribute($value)
     {
-        return is_null($value) ? null : config('services.s3.url') . DIRECTORY_SEPARATOR . self::PATH . DIRECTORY_SEPARATOR . $value;
+        return StorageUrl::asset($value, self::PATH, 'fallbacks/sport.svg');
     }
 
     // sports
