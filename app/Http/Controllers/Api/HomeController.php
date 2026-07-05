@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 use Stevebauman\Location\Facades\Location;
 
@@ -29,8 +30,9 @@ class HomeController extends Controller
     use apiResponse;
     public function home(Request $request)
     {
+        $authenticated = auth('api')->check();
 
-        if(auth('api')->check())
+        if($authenticated)
         {
             $countryid = auth('api')->user()->country_id;
             if($countryid == 1)
@@ -41,26 +43,58 @@ class HomeController extends Controller
             }
         }else {
             $ip = $request->ip();
-            $location = Location::get($ip);
-            $countryCode = $location && isset($location->countryCode)
-                ? strtolower($location->countryCode)
-                : 'eg';
+            $countryCode = Cache::remember("home:country:{$ip}", now()->addDay(), function () use ($ip) {
+                $location = Location::get($ip);
+
+                return $location && isset($location->countryCode)
+                    ? strtolower($location->countryCode)
+                    : 'eg';
+            });
+        }
+
+        if (!$authenticated) {
+            $locale = app()->getLocale();
+            $data = Cache::remember(
+                "home:guest:{$locale}:{$countryCode}",
+                now()->addMinute(),
+                fn () => $this->guestHomeData($request, $countryCode)
+            );
+
+            return $this->apiResponse(200, trans('api.home.All Data in Home Screen'), null, $data);
         }
 
         $banners = Banner::limit(6)->inRandomOrder()->get();
-        $sports = auth('api')->check() ? $this->getUserSports() : SportResource::collection(Sport::limit(6)->inRandomOrder()->get(['id','name','icon']));
-        $academies = auth('api')->check() ? PartnerResource::collection($this->getPartnersWithAuth()) : PartnerResource::collection($this->getPartnersGuest())  ;
-        $trainings = auth('api')->check() ? $this->getUserTraining() : $this->getRandomTrainings();
+        $sports = $this->getUserSports();
+        $academies = PartnerResource::collection($this->getPartnersWithAuth());
+        $trainings = $this->getUserTraining();
         return $this->apiResponse(200,trans('api.home.All Data in Home Screen'),null,[
             'banners'=> $banners,
             'sports related user authenticated'=> $sports,
             'academies and related sports'=> $academies,
             'training' => [
-                'trainings_count' => auth('api')->check() ? Training::whereHas('address',function($q){$q->where('country_id',auth('api')->user()->country_id);})->isActive()->count()   : Training::isActive()->count(),
+                'trainings_count' => Training::whereHas('address',function($q){$q->where('country_id',auth('api')->user()->country_id);})->isActive()->count(),
                 'trainings' => $trainings
             ],
             'country' => $countryCode,
         ]);
+    }
+
+    private function guestHomeData(Request $request, string $countryCode): array
+    {
+        return [
+            'banners' => Banner::limit(6)->inRandomOrder()->get()->toArray(),
+            'sports related user authenticated' => SportResource::collection(
+                Sport::limit(6)->inRandomOrder()->get(['id', 'name', 'icon'])
+            )->resolve($request),
+            'academies and related sports' => PartnerResource::collection(
+                $this->getPartnersGuest()
+            )->resolve($request),
+            'training' => [
+                'trainings_count' => Training::isActive()->count(),
+                'trainings' => $this->getRandomTrainings()->resolve($request),
+            ],
+            'country' => $countryCode,
+        ];
     }
     protected function getUserTraining()
     {
@@ -103,6 +137,7 @@ class HomeController extends Controller
         ])->inRandomOrder()
             ->limit(4)
             ->isActive()
+            ->withCount(['classes', 'joins'])
             ->get();
         return TrainingResource::collection($trainings);
     }

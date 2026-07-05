@@ -55,7 +55,13 @@ class Training extends Model
 
     public function getIsFavAttribute()
     {
-        return $this->favorites()->where('user_id', auth('api')->id())->exists();
+        $userId = auth('api')->id();
+
+        if (!$userId) {
+            return false;
+        }
+
+        return $this->favorites()->where('user_id', $userId)->exists();
     }
 
     public function favorites(): HasMany

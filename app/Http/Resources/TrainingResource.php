@@ -32,8 +32,8 @@ class TrainingResource extends JsonResource
             'active' => $this->active,
             'sport_id' => $this->sport_id,
             'discount_price' => $this->discount_price != 0 ? $this->price - $this->discount_price : 0,
-            'classes_count' => $this->classes()->count(),
-            'joins_count' => $this->joins()->count(),
+            'classes_count' => $this->resource->getAttribute('classes_count') ?? $this->classes()->count(),
+            'joins_count' => $this->resource->getAttribute('joins_count') ?? $this->joins()->count(),
             'is_fav' => $this->is_fav,
             // Older rows have no date range. Keep the legacy mobile client
             // parseable without changing or inventing values in the database.
