@@ -20,7 +20,7 @@ class TrainingController extends Controller
     {
         $pageSize = 10;
         $page = (request()->has('page')) ? request('page') : 1;
-        $query = Training::query()->select(['id','name','price','end_date','max_players','level','gender','age_group','academy_id','address_id','sport_id']);
+        $query = Training::query()->select(['id','name','price','max_players','level','gender','age_group','academy_id','address_id','sport_id']);
         $total = $query->count();
         $query = $query->skip($page * $pageSize - $pageSize)->limit($pageSize);
         $trainings = $query->with(['academy'=> function ($query) {

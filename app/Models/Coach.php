@@ -44,9 +44,8 @@ class Coach extends Model
     {
         // Use Eloquent relationships to sum the duration of classes associated with this coach's trainings
         $totalMinutes = $this->trainings()
-            ->where('end_date', '<', now()) // Only include past trainings
-            ->whereHas('classes') // Ensure trainings have classes
-            ->with('classes') // Eager load classes
+            ->whereHas('classes', fn ($query) => $query->whereDate('date', '<', today()))
+            ->with(['classes' => fn ($query) => $query->whereDate('date', '<', today())])
             ->get()
             ->flatMap(function ($training) {
                 return $training->classes;
