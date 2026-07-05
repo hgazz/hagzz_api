@@ -57,4 +57,8 @@ return [
         'otp_template_language' => env('CHATAMAN_OTP_TEMPLATE_LANGUAGE', 'ar'),
     ],
 
+    'firebase' => [
+        'project_id' => env('FIREBASE_PROJECT_ID'),
+    ],
+
 ];

@@ -114,7 +114,11 @@ class NotificationService
 
         $dataString = json_encode($data);
         $ch = curl_init();
-        $projectId = 'bokit-eafed';
+        $projectId = config('services.firebase.project_id');
+        if (empty($projectId)) {
+            Log::error('Firebase notification failed: FIREBASE_PROJECT_ID is not configured');
+            return false;
+        }
         curl_setopt($ch, CURLOPT_URL, "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send");
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
