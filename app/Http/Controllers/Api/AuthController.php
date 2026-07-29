@@ -102,7 +102,8 @@ class AuthController extends Controller
         try {
             DB::beginTransaction();
 
-            $otp = $validatedData['phone'] == '01070809633' ? '12345' : rand(10000, 99999);
+            $isTest = $this->isTestPhone($validatedData['phone']);
+            $otp = $isTest ? '12345' : rand(10000, 99999);
 
             if ($request->has('old_phone')) {
                 $user = User::where('phone', $request->old_phone)->first();
@@ -118,7 +119,7 @@ class AuthController extends Controller
                 ]));
             }
 
-            if ($validatedData['phone'] !== '01070809633') {
+            if (!$isTest) {
                 $this->sendOtp(
                     $validatedData['send_type'] ?? 'whatsapp',
                     InternationalPhoneNumber::format($validatedData['country_code'], $validatedData['phone']),
@@ -145,30 +146,63 @@ class AuthController extends Controller
     }
 
 
+    private function isTestPhone(?string $phone): bool
+    {
+        if (!$phone) return false;
+        $clean = preg_replace('/\D/', '', $phone);
+        return in_array($clean, ['01017799580', '201017799580', '1017799580', '01070809633', '201070809633', '1070809633']);
+    }
+
     public function login(Request $request)
     {
-        $otp = $request->phone == '01070809633' ? '12345' : rand(10000,99999);
-//        $otp =  rand(10000,99999);
-        $validation = Validator::make($request->all(),[
-            'phone'=> 'required|exists:users,phone',
+        $isTest = $this->isTestPhone($request->phone);
+        $otp = $isTest ? '12345' : rand(10000, 99999);
+
+        // If test phone, auto-ensure user exists
+        if ($isTest) {
+            User::firstOrCreate(
+                ['phone' => $request->phone],
+                [
+                    'name' => 'Google Play Reviewer',
+                    'gender' => 'male',
+                    'birthdate' => '1995-01-01',
+                    'country_id' => 1,
+                    'city_id' => 1,
+                    'area_id' => 1,
+                    'country_code' => '+20',
+                    'otp' => '12345',
+                    'is_verify' => true,
+                    'language' => 'ar'
+                ]
+            );
+        }
+
+        $rules = [
+            'phone' => $isTest ? 'required' : 'required|exists:users,phone',
             'country_code' => 'required',
             'send_type' => 'nullable|in:sms,whatsapp',
-        ]);
+        ];
+
+        $validation = Validator::make($request->all(), $rules);
 
         if ($validation->fails()){
             return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
         }
 
         try {
-            $user = $this->userModel::where('phone',$request->phone)->withCount('sports')->first();
-            $user->update(['otp' => $otp]);
-            if($request->has('fcm_token'))
-            {
-                $user->update(['fcm_token' => $request->fcm_token]);
+            $user = $this->userModel::where('phone', $request->phone)->withCount('sports')->first();
+            if ($user) {
+                $user->update(['otp' => $otp]);
+                if ($request->has('fcm_token')) {
+                    $user->update(['fcm_token' => $request->fcm_token]);
+                }
             }
-            if($request->phone == '01070809633') {
-                $user->update(['otp' => '12345', 'fcm_token' => $request->fcm_token]);
-            }else{
+
+            if ($isTest) {
+                if ($user) {
+                    $user->update(['otp' => '12345', 'fcm_token' => $request->fcm_token]);
+                }
+            } else {
                 $this->sendOtp(
                     $request->send_type ?? 'whatsapp',
                     InternationalPhoneNumber::format($request->country_code, $request->phone),
@@ -227,9 +261,10 @@ class AuthController extends Controller
             return $this->apiResponse(400, trans('api.validation_error'), $validation->errors());
         }
         $user = $this->userModel::where('phone',$request->phone)->first();
-        $otp = $request->phone == '01070809633' ? '12345' : rand(10000,99999);
+        $isTest = $this->isTestPhone($request->phone);
+        $otp = $isTest ? '12345' : rand(10000,99999);
         try {
-            if ($request->phone !== '01070809633') {
+            if (!$isTest) {
                 $this->sendOtp(
                     $request->send_type ?? 'whatsapp',
                     InternationalPhoneNumber::format($request->country_code ?? $user->country_code, $request->phone),
