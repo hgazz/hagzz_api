@@ -28,6 +28,9 @@ use Stevebauman\Location\Facades\Location;
 |
 */
 
+// Read-only demo catalog is isolated from booking IDs, payments and FCM-token updates.
+Route::get('mobile-catalog', [\App\Http\Controllers\Api\MobileCatalogController::class, 'index']);
+
 Route::group(['middleware' => ['api', 'fcm_token']], function () {
     Route::controller(AuthController::class)->group(function () {
         Route::post('/register','register');
