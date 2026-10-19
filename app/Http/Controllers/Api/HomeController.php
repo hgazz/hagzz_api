@@ -63,7 +63,7 @@ class HomeController extends Controller
             return $this->apiResponse(200, trans('api.home.All Data in Home Screen'), null, $data);
         }
 
-        $banners = Banner::limit(6)->inRandomOrder()->get();
+        $banners = Banner::visibleIn($countryCode)->limit(6)->inRandomOrder()->get();
         $sports = $this->getUserSports();
         $academies = PartnerResource::collection($this->getPartnersWithAuth());
         $trainings = $this->getUserTraining();
@@ -82,7 +82,7 @@ class HomeController extends Controller
     private function guestHomeData(Request $request, string $countryCode): array
     {
         return [
-            'banners' => Banner::limit(6)->inRandomOrder()->get()->toArray(),
+            'banners' => Banner::visibleIn($countryCode)->limit(6)->inRandomOrder()->get()->toArray(),
             'sports related user authenticated' => SportResource::collection(
                 Sport::limit(6)->inRandomOrder()->get(['id', 'name', 'icon'])
             )->resolve($request),

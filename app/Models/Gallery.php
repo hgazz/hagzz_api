@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Support\StorageUrl;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -23,7 +25,7 @@ class Gallery extends Model
 
     public function getImageAttribute($value)
     {
-        return config('services.s3.url') . DIRECTORY_SEPARATOR . self::PATH . DIRECTORY_SEPARATOR . $value;
+        return StorageUrl::asset($value, self::PATH, 'fallbacks/academy.svg');
     }
     public function academy()
     {

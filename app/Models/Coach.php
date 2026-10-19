@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Support\StorageUrl;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
@@ -14,7 +16,7 @@ class Coach extends Model
     const PATH = 'images/coaches';
     public function getImageAttribute($value)
     {
-        return is_null($value) ? null : config('services.s3.url') . DIRECTORY_SEPARATOR . self::PATH . DIRECTORY_SEPARATOR . $value;
+        return blank($value) ? null : StorageUrl::asset($value, self::PATH, 'fallbacks/user.svg');
     }
     protected $fillable = ['name', 'description', 'image', 'active', 'academy_id', 'gender', 'license', 'license_type', 'birth_date'];
     protected $hidden = ['created_at', 'updated_at'];
